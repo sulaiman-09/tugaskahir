@@ -13,11 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Panggil seeder khusus pengguna agar akun demo (admin, sales, dll.) dibuat
+        $this->call([
+            UserSeeder::class,
         ]);
     }
 }
