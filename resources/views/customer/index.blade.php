@@ -3,6 +3,21 @@
 @section('title', 'Data Customer')
 
 @section('content')
+    @php
+        $filters = [
+            'all' => 'All Records',
+            'today' => 'Today',
+            'yesterday' => 'Yesterday',
+            'this_week' => 'This Week',
+            'last_week' => 'Last Week',
+            'this_month' => 'This Month',
+            'last_month' => 'Last Month',
+            'last_7_days' => 'Last 7 Days',
+            'last_30_days' => 'Last 30 Days',
+        ];
+        $currentFilter = request('filter', 'all'); // default 'all'
+    @endphp
+
     <div class="container mt-4">
         <div class="page-header mb-3">
             <h1 class="page-title">Data Customer</h1>
@@ -15,76 +30,118 @@
             </div>
         @endif
 
-        {{-- Filter by Date --}}
+        {{-- FILTER BY DATE --}}
         <div class="card mb-4 p-3 shadow-sm">
             <h5 class="mb-3">Filter by Date:</h5>
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-primary btn-sm">All Records</button>
-                <button class="btn btn-outline-primary btn-sm">Today</button>
-                <button class="btn btn-outline-primary btn-sm">Yesterday</button>
-                <button class="btn btn-outline-primary btn-sm">This Week</button>
-                <button class="btn btn-outline-primary btn-sm">Last Week</button>
-                <button class="btn btn-outline-primary btn-sm">This Month</button>
-                <button class="btn btn-outline-primary btn-sm">Last Month</button>
-                <button class="btn btn-outline-primary btn-sm">Last 7 Days</button>
-                <button class="btn btn-outline-primary btn-sm">Last 30 Days</button>
-                <button class="btn btn-outline-dark btn-sm">Custom Date Range</button>
+                @foreach ($filters as $key => $label)
+                    <a href="{{ route('customer.index', ['filter' => $key]) }}"
+                        class="btn btn-sm {{ $currentFilter == $key ? 'btn-primary' : 'btn-outline-primary' }}">
+                        {{ $label }}
+                    </a>
+                @endforeach
+
+                {{-- Custom Range --}}
+                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="collapse"
+                    data-bs-target="#customRange">
+                    Custom Date Range
+                </button>
+            </div>
+
+            {{-- Custom Range Form --}}
+            <div id="customRange" class="collapse mt-3">
+                <form method="GET" action="{{ route('customer.index') }}" class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label">From</label>
+                        <input type="date" name="from" value="{{ request('from') }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">To</label>
+                        <input type="date" name="to" value="{{ request('to') }}" class="form-control">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" name="filter" value="custom" class="btn btn-primary w-100">Apply</button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <div class="mb-3 d-flex gap-2">
             <!-- Tombol Modal -->
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCustomerModal">
-                + Tambah Lead Baru 
+                + Tambah Lead Baru
             </button>
         </div>
-
 
         {{-- Tabel Data Customer --}}
         <div class="card shadow-sm">
             <div class="card-body">
-                <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Pelanggan</th>
-                            <th>Nomor Telepon</th>
-                            <th>Email</th>
-                            <th>Lokasi & Alamat</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Coverage</th>
-                            <th>Product</th>
-                            <th>Assign To</th>
-                            <th>Submitted At</th>
-                            <th>Submitted</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($customers as $index => $customer)
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle" style="min-width: 1200px;">
+                        <thead class="table-dark">
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $customer['name'] }}</td>
-                                <td>{{ $customer['phone'] }}</td>
-                                <td>{{ $customer['email'] }}</td>
-                                <td>{{ $customer['address'] }}</td>
-                                <td>{{ $customer['latitude'] }}</td>
-                                <td>{{ $customer['longitude'] }}</td>
-                                <td>{{ $customer['coverage'] }}</td>
-                                <td>{{ $customer['product'] }}</td>
-                                <td>{{ $customer['assign_to'] }}</td>
-                                <td>{{ $customer['submitted_at'] }}</td>
-                                <td>{{ $customer['submitted'] }}</td>
+                                <th>No</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Nomor Telepon</th>
+                                <th>Email</th>
+                                <th>Alamat</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Coverage</th>
+                                <th>Produk</th>
+                                <th>Assign To</th>
+                                <th>Submitted At</th>
+                                <th>Submitted</th>
+                                <th>Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="12" class="text-center text-muted">Belum ada data customer</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($customers as $index => $customer)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $customer['name'] }}</td>
+                                    <td>{{ $customer['phone'] }}</td>
+                                    <td>{{ $customer['email'] }}</td>
+                                    <td>{{ $customer['address'] }}</td>
+                                    <td>{{ $customer['latitude'] }}</td>
+                                    <td>{{ $customer['longitude'] }}</td>
+                                    <td>{{ $customer['coverage'] }}</td>
+                                    <td>{{ $customer['product'] }}</td>
+                                    <td>{{ $customer['assign_to'] }}</td>
+                                    <td>{{ $customer['submitted_at'] }}</td>
+                                    <td>{{ $customer['submitted'] }}</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                            {{-- Edit --}}
+                                            <a href="{{ route('customer.edit', $customer['id']) }}"
+                                                class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            {{-- Hapus --}}
+                                            <form action="{{ route('customer.destroy', $customer['id']) }}" method="POST"
+                                                onsubmit="return confirm('Apakah yakin ingin menghapus customer ini?')"
+                                                class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="13" class="text-center text-muted">Belum ada data customer</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
     </div>
 
     <!-- Modal Create Customer -->
@@ -121,12 +178,12 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="email@example.com">
+                                <input type="email" name="email" class="form-control"
+                                    placeholder="email@example.com">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Kode Referral</label>
-                                <input type="text" name="referral_code" class="form-control"
-                                    placeholder="Masukkan kode referral (opsional)">
+                                <input type="text" name="referral_code" class="form-control" placeholder="Opsional">
                             </div>
                         </div>
 
@@ -135,28 +192,30 @@
                             <div class="col-md-3">
                                 <label class="form-label">Provinsi</label>
                                 <select name="province" class="form-select">
-                                    <option>Pilih Provinsi</option>
+                                    <option value="">Pilih Provinsi</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kota/Kabupaten</label>
                                 <select name="city" class="form-select">
-                                    <option>Pilih Kota/Kabupaten</option>
+                                    <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kecamatan</label>
                                 <select name="district" class="form-select">
-                                    <option>Pilih Kecamatan</option>
+                                    <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kelurahan/Desa</label>
                                 <select name="village" class="form-select">
-                                    <option>Pilih Kelurahan/Desa</option>
+                                    <option value="">Pilih Kelurahan/Desa</option>
                                 </select>
                             </div>
+                        </div>
 
+                        <div class="row mb-3">
                             <div class="col-md-4">
                                 <label class="form-label">Divisi</label>
                                 <select name="division" class="form-select" required>
@@ -186,7 +245,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <h2>Data Customer</h2>
+        <h1 class="mb-4 fw-bold">Data Customer</h1>
 
         <!-- Filter by Date -->
         <div class="filter-box">
