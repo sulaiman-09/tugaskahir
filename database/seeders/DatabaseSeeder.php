@@ -14,8 +14,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Panggil seeder khusus pengguna agar akun demo (admin, sales, dll.) dibuat
+        // dan juga user test yang baru ditambahkan
         $this->call([
             UserSeeder::class,
+            TestUserSeeder::class,
         ]);
     }
 }

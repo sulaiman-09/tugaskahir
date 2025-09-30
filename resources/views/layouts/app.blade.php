@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Life Media CMS')</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <!-- ✅ Tambahkan Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -17,19 +22,21 @@
             background: #f5f5f5;
         }
 
+        /* --- PERUBAHAN CSS --- */
         .header {
             background: #2c3e50;
             color: white;
             padding: 15px 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             position: fixed;
             top: 0;
-            left: 0;
+            left: 250px;
             right: 0;
             z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 70px;
         }
 
         .logo {
@@ -85,14 +92,17 @@
             background: #c0392b;
         }
 
+        /* --- PERUBAHAN CSS --- */
         .sidebar {
             position: fixed;
-            top: 70px;
+            top: 0;
             left: 0;
             width: 250px;
-            height: calc(100vh - 70px);
+            height: 100vh;
             background: #34495e;
             overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
         }
 
         .sidebar-header {
@@ -100,7 +110,11 @@
             background: #2c3e50;
             color: white;
             font-weight: bold;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 70px;
         }
 
         .sidebar-menu {
@@ -185,7 +199,7 @@
             background: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .stat-card h3 {
@@ -206,7 +220,7 @@
             background: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
@@ -236,6 +250,10 @@
                 transition: transform 0.3s;
             }
 
+            .header {
+                left: 0;
+            }
+
             .main-content {
                 margin-left: 0;
             }
@@ -258,13 +276,13 @@
             margin: 20px 0;
         }
     </style>
+
+    {{-- Tempat CSS tambahan dari setiap halaman --}}
+    @stack('styles')
 </head>
+
 <body>
     <header class="header">
-        <div class="logo">
-            <div class="logo-icon"></div>
-            <span>Life media</span>
-        </div>
         <div class="user-menu">
             <div class="user-info">
                 <span>{{ auth()->user()->name ?? 'Admin User' }}</span>
@@ -278,90 +296,73 @@
     </header>
 
     <nav class="sidebar">
-        <div class="sidebar-header">Menu</div>
+        <div class="sidebar-header">
+            <img src="{{ asset('images/logolifemedia.png') }}" alt="Life Media Logo"
+                style="height:55px;width:auto;display:block;" />
+        </div>
+
         <ul class="sidebar-menu">
-            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'report')
-            <li>
-                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <span class="icon">📊</span>
-                    Dashboard
-                </a>
-            </li>
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'report')
+                <li>
+                    <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <span class="icon">📊</span> Dashboard
+                    </a>
+                </li>
             @endif
 
-            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'sales')
-            <li>
-                <a href="{{ route('customer') }}" class="{{ request()->routeIs('customer') ? 'active' : '' }}">
-                    <span class="icon">👥</span>
-                    Customer
-                </a>
-            </li>
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'sales')
+                <li>
+                    <a href="{{ route('customer.index') }}"
+                        class="{{ request()->routeIs('customer.*') ? 'active' : '' }}">
+                        <span class="icon">👥</span> Customer
+                    </a>
+                </li>
             @endif
 
-            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'sudirman park')
-            <li>
-                <a href="{{ route('sudirman-park') }}" class="{{ request()->routeIs('sudirman-park') ? 'active' : '' }}">
-                    <span class="icon">🏢</span>
-                    Sudirman Park
-                </a>
-            </li>
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'sudirman park')
+                <li>
+                    <a href="{{ route('sudirman-park') }}"
+                        class="{{ request()->routeIs('sudirman-park') ? 'active' : '' }}">
+                        <span class="icon">🏢</span> Sudirman Park
+                    </a>
+                </li>
             @endif
 
-            @if(auth()->user()->role == 'admin')
-            <li>
-                <a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active' : '' }}">
-                    <span class="icon">📦</span>
-                    Product
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('banner') }}" class="{{ request()->routeIs('banner') ? 'active' : '' }}">
-                    <span class="icon">🖼️</span>
-                    Banner
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('division') }}" class="{{ request()->routeIs('division') ? 'active' : '' }}">
-                    <span class="icon">🏛️</span>
-                    Division
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('career') }}" class="{{ request()->routeIs('career') ? 'active' : '' }}">
-                    <span class="icon">💼</span>
-                    Career
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('news') }}" class="{{ request()->routeIs('news') ? 'active' : '' }}">
-                    <span class="icon">📰</span>
-                    News
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('settings-content') }}" class="{{ request()->routeIs('settings-content') ? 'active' : '' }}">
-                    <span class="icon">⚙️</span>
-                    Settings Content
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('user-management') }}" class="{{ request()->routeIs('user-management') ? 'active' : '' }}">
-                    <span class="icon">👤</span>
-                    User Management
-                </a>
-            </li>
+            @if (auth()->user()->role == 'admin')
+                <li><a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active' : '' }}"><span
+                            class="icon">📦</span> Product</a></li>
+                <li><a href="{{ route('banner') }}" class="{{ request()->routeIs('banner') ? 'active' : '' }}"><span
+                            class="icon">🖼️</span> Banner</a></li>
+                <li><a href="{{ route('division') }}"
+                        class="{{ request()->routeIs('division') ? 'active' : '' }}"><span class="icon">🏛️</span>
+                        Division</a></li>
+                <li><a href="{{ route('career') }}" class="{{ request()->routeIs('career') ? 'active' : '' }}"><span
+                            class="icon">💼</span> Career</a></li>
+                <li><a href="{{ route('news') }}" class="{{ request()->routeIs('news') ? 'active' : '' }}"><span
+                            class="icon">📰</span> News</a></li>
+                <li><a href="{{ route('settings-content') }}"
+                        class="{{ request()->routeIs('settings-content') ? 'active' : '' }}"><span
+                            class="icon">⚙️</span> Settings Content</a></li>
+                <li><a href="{{ route('user-management') }}"
+                        class="{{ request()->routeIs('user-management') ? 'active' : '' }}"><span
+                            class="icon">👤</span> User Management</a></li>
             @endif
         </ul>
     </nav>
 
     <main class="main-content">
-        @if(session('error'))
-            <div class="access-denied">
-                {{ session('error') }}
-            </div>
+        @if (session('error'))
+            <div class="access-denied">{{ session('error') }}</div>
         @endif
 
         @yield('content')
     </main>
+
+    {{-- Tempat script tambahan dari setiap halaman --}}
+    @stack('scripts')
+
+    <!-- ✅ Tambahkan Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
