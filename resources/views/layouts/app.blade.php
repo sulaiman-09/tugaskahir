@@ -9,7 +9,7 @@
 
     <!-- ✅ Tambahkan Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Versi terbaru -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
@@ -305,12 +305,11 @@
             <img src="{{ asset('images/logolifemedia.png') }}" alt="Life Media Logo"
                 style="height:55px;width:auto;display:block;" />
         </div>
-
         <ul class="sidebar-menu">
             @if (auth()->user()->role == 'admin' || auth()->user()->role == 'report')
                 <li>
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <span class="icon">📊</span> Dashboard
+                        <span class="icon">📈</span> Dashboard
                     </a>
                 </li>
             @endif
@@ -328,31 +327,97 @@
                 <li>
                     <a href="{{ route('sudirman-park') }}"
                         class="{{ request()->routeIs('sudirman-park') ? 'active' : '' }}">
-                        <span class="icon">🏢</span> Sudirman Park
+                        <span class="icon">🏙️</span> Sudirman Park
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'sales')
+                <li>
+                    <a href="{{ route('products.index') }}"
+                        class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
+                        <span class="icon">🛒</span> Product
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'marketing')
+                <li>
+                    <a href="{{ route('banner.index') }}"
+                        class="{{ request()->routeIs('banner.*') ? 'active' : '' }}">
+                        <span class="icon">📢</span> Banner
                     </a>
                 </li>
             @endif
 
             @if (auth()->user()->role == 'admin')
-                <li><a href="{{ route('product') }}" class="{{ request()->routeIs('product') ? 'active' : '' }}"><span
-                            class="icon">📦</span> Product</a></li>
-                <li><a href="{{ route('banner') }}" class="{{ request()->routeIs('banner') ? 'active' : '' }}"><span
-                            class="icon">🖼️</span> Banner</a></li>
-                <li><a href="{{ route('division') }}"
-                        class="{{ request()->routeIs('division') ? 'active' : '' }}"><span class="icon">🏛️</span>
-                        Division</a></li>
-                <li><a href="{{ route('career') }}" class="{{ request()->routeIs('career') ? 'active' : '' }}"><span
-                            class="icon">💼</span> Career</a></li>
-                <li><a href="{{ route('news') }}" class="{{ request()->routeIs('news') ? 'active' : '' }}"><span
-                            class="icon">📰</span> News</a></li>
-                <li><a href="{{ route('settings-content') }}"
-                        class="{{ request()->routeIs('settings-content') ? 'active' : '' }}"><span
-                            class="icon">⚙️</span> Settings Content</a></li>
-                <li><a href="{{ route('user-management') }}"
-                        class="{{ request()->routeIs('user-management') ? 'active' : '' }}"><span
-                            class="icon">👤</span> User Management</a></li>
+                <li>
+                    <a href="{{ route('division.index') }}"
+                        class="{{ request()->routeIs('division.*') ? 'active' : '' }}">
+                        <span class="icon">🏛️</span> Division
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'hr')
+                <li>
+                    <a href="{{ route('career.index') }}"
+                        class="{{ request()->routeIs('career.*') ? 'active' : '' }}">
+                        <span class="icon">💼</span> Career
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'marketing')
+                <li>
+                    <a href="{{ route('news.index') }}" class="{{ request()->routeIs('news.*') ? 'active' : '' }}">
+                        <span class="icon">📰</span> News
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'marketing')
+                <li>
+                    <a href="{{ route('settings-content.index') }}"
+                        class="{{ request()->routeIs('settings-content.*') ? 'active' : '' }}">
+                        <span class="icon">⚙️</span> Settings Content
+                    </a>
+                </li>
+            @endif
+
+            @if (auth()->user()->role == 'admin')
+                <li
+                    class="dropdown {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}">
+                    <a href="#" class="dropdown-toggle" data-bs-toggle="collapse"
+                        data-bs-target="#userManagementMenu" aria-expanded="false">
+                        <span class="icon">👤</span> User Management
+                        <span class="arrow">▼</span>
+                    </a>
+
+                    <ul id="userManagementMenu"
+                        class="collapse list-unstyled {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}">
+                        <li><a href="{{ route('users.index') }}"
+                                class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
+                                <span class="icon">👥</span> User
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('roles.index') }}"
+                                class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                <span class="icon">🧩</span> Role
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('permissions.index') }}"
+                                class="{{ request()->routeIs('permissions.*') ? 'active' : '' }}">
+                                <span class="icon">🔒</span> Permission
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             @endif
         </ul>
+
     </nav>
 
     <main class="main-content">

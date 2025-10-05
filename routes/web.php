@@ -6,6 +6,15 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SudirmanParkController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BannerController;
+use App\Http\Controllers\DivisiController;
+use App\Http\Controllers\CareerController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\SettingsContentController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 // Redirect root ke login
 Route::get('/', function () {
@@ -27,8 +36,8 @@ Route::middleware('auth')->group(function () {
 
     // Customer - Admin dan Sales bisa akses
     // Route::get('/customer', function () {
-       // return view('pages.customer');
-   // })->middleware('role:admin,sales')->name('customer');
+    // return view('pages.customer');
+    // })->middleware('role:admin,sales')->name('customer');
 
     // Sudirman Park - Admin dan sudirman park bisa akses
     Route::get('/sudirman-park', function () {
@@ -78,10 +87,43 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
     });
 
-
     Route::prefix('sudirmanpark')->name('sudirmanpark.')->group(function () {
         Route::get('/', [SudirmanParkController::class, 'index'])->name('index');
         Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
         Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    });
+
+    Route::resource('/banner', BannerController::class);
+
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('division', App\Http\Controllers\DivisionController::class);
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/career', [CareerController::class, 'index'])->name('career.index');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('news', NewsController::class);
+    });
+
+    Route::resource('settings-content', SettingsContentController::class);
+    Route::post('settings-content/{id}/toggle', [SettingsContentController::class, 'toggleStatus'])
+        ->name('settings-content.toggle');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     });
 });
