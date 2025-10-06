@@ -94,7 +94,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['auth'])->group(function () {
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+        Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
+        Route::post('/product', [ProductController::class, 'store'])->name('product.store');
     });
 
     Route::resource('/banner', BannerController::class);
@@ -115,15 +117,15 @@ Route::middleware('auth')->group(function () {
     Route::post('settings-content/{id}/toggle', [SettingsContentController::class, 'toggleStatus'])
         ->name('settings-content.toggle');
 
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    });
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store'); // <— Tambahkan ini    
 
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-    });
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
 
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
-    });
+    Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
+    Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+    Route::post('/permissions/store', [PermissionController::class, 'store'])->name('permissions.store');
 });

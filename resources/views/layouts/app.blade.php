@@ -334,8 +334,8 @@
 
             @if (auth()->user()->role == 'admin' || auth()->user()->role == 'sales')
                 <li>
-                    <a href="{{ route('products.index') }}"
-                        class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
+                    <a href="{{ route('product.index') }}"
+                        class="{{ request()->routeIs('product.*') ? 'active' : '' }}">
                         <span class="icon">🛒</span> Product
                     </a>
                 </li>
@@ -386,36 +386,41 @@
             @endif
 
             @if (auth()->user()->role == 'admin')
-                <li
-                    class="dropdown {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}">
-                    <a href="#" class="dropdown-toggle" data-bs-toggle="collapse"
-                        data-bs-target="#userManagementMenu" aria-expanded="false">
-                        <span class="icon">👤</span> User Management
-                        <span class="arrow">▼</span>
+                <li class="mb-2">
+                    <a href="#userManagementMenu" data-bs-toggle="collapse" role="button"
+                        aria-expanded="{{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'true' : 'false' }}"
+                        aria-controls="userManagementMenu"
+                        class="d-flex justify-content-between align-items-center {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}">
+                        <span>
+                            <i class="fas fa-users me-2"></i> User Management
+                        </span>
+                        <i class="fas fa-chevron-down small"></i>
                     </a>
 
                     <ul id="userManagementMenu"
-                        class="collapse list-unstyled {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}">
-                        <li><a href="{{ route('users.index') }}"
+                        class="collapse list-unstyled ps-4 mt-1 {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}">
+                        <li class="mb-1">
+                            <a href="{{ route('users.index') }}"
                                 class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                <span class="icon">👥</span> User
+                                <span class="icon me-2">👥</span> User
                             </a>
                         </li>
-                        <li>
+                        <li class="mb-1">
                             <a href="{{ route('roles.index') }}"
                                 class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
-                                <span class="icon">🧩</span> Role
+                                <span class="icon me-2">🧩</span> Role
                             </a>
                         </li>
-                        <li>
+                        <li class="mb-1">
                             <a href="{{ route('permissions.index') }}"
                                 class="{{ request()->routeIs('permissions.*') ? 'active' : '' }}">
-                                <span class="icon">🔒</span> Permission
+                                <span class="icon me-2">🔒</span> Permission
                             </a>
                         </li>
                     </ul>
                 </li>
             @endif
+
         </ul>
 
     </nav>

@@ -9,7 +9,7 @@ class ProductController extends Controller
     public function index()
     {
         // Data dummy
-        $products = [
+        $product = [
             (object)[
                 'category_name' => 'Broadband Internet',
                 'slug' => 'broadband-internet',
@@ -47,6 +47,32 @@ class ProductController extends Controller
             ]
         ];
 
-        return view('product.index', compact('products'));
+        return view('product.index', compact('product'));
+    }
+
+    public function create()
+    {
+        return view('product.create');
+    }
+
+    public function store(Request $request)
+    {
+        // Validasi data
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:255',
+            'speed' => 'nullable|string|max:255',
+            'description' => 'required|string',
+            'web_image' => 'nullable|image',
+            'apps_image' => 'nullable|image',
+            'category' => 'required|string',
+            'price' => 'nullable|numeric',
+            'sudirman_product' => 'nullable|boolean',
+        ]);
+
+        // Simpan data (contoh saja, belum ke DB karena kamu pakai dummy)
+        // dd($validated); // untuk debug
+
+        // Redirect ke index atau tampilkan sukses
+        return redirect()->route('product.index')->with('success', 'Product created successfully.');
     }
 }

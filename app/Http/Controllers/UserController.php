@@ -17,4 +17,26 @@ class UserController extends Controller
 
         return view('user.index', compact('users'));
     }
+
+    // Menampilkan form tambah user
+    public function create()
+    {
+        return view('user.create');
+    }
+
+    // ✅ Menyimpan user baru (sementara hanya simulasi)
+    public function store(Request $request)
+    {
+        // Validasi input sederhana
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:3|confirmed',
+            'role' => 'required',
+        ]);
+
+        // Sementara hanya redirect kembali ke daftar user
+        // (nanti bisa ditambah logika simpan ke database)
+        return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan!');
+    }
 }
