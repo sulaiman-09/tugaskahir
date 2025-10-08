@@ -73,75 +73,138 @@
             </button>
         </div>
 
-        {{-- Tabel Data Customer --}}
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle" style="min-width: 1200px;">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Pelanggan</th>
-                                <th>Nomor Telepon</th>
-                                <th>Email</th>
-                                <th>Alamat</th>
-                                <th>Latitude</th>
-                                <th>Longitude</th>
-                                <th>Coverage</th>
-                                <th>Produk</th>
-                                <th>Assign To</th>
-                                <th>Submitted At</th>
-                                <th>Submitted</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($customers as $index => $customer)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $customer['name'] }}</td>
-                                    <td>{{ $customer['phone'] }}</td>
-                                    <td>{{ $customer['email'] }}</td>
-                                    <td>{{ $customer['address'] }}</td>
-                                    <td>{{ $customer['latitude'] }}</td>
-                                    <td>{{ $customer['longitude'] }}</td>
-                                    <td>{{ $customer['coverage'] }}</td>
-                                    <td>{{ $customer['product'] }}</td>
-                                    <td>{{ $customer['assign_to'] }}</td>
-                                    <td>{{ $customer['submitted_at'] }}</td>
-                                    <td>{{ $customer['submitted'] }}</td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center align-items-center gap-2">
-                                            {{-- Edit --}}
-                                            <a href="{{ route('customer.edit', $customer['id']) }}"
-                                                class="btn btn-sm btn-warning" title="Edit">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            {{-- Hapus --}}
-                                            <form action="{{ route('customer.destroy', $customer['id']) }}" method="POST"
-                                                onsubmit="return confirm('Apakah yakin ingin menghapus customer ini?')"
-                                                class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="13" class="text-center text-muted">Belum ada data customer</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Aksi kanan: Tombol Print dan Eye (Show/Hide Columns) -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <!-- Tombol Print Dropdown -->
+            <div class="dropdown position-relative" style="z-index: 1055;">
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center"
+                    type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                    data-bs-display="static" title="Export Data" style="border-radius: 8px;">
+                    <i class="fa fa-print"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top" aria-labelledby="exportDropdown"
+                    style="min-width: 160px; border-radius: 10px;">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
+                            <i class="fa fa-file-excel me-2 text-success"></i> Export XLSX
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
+                            <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
+                        </a>
+                    </li>
+                </ul>
             </div>
+
+            <!-- Tombol Eye (Show/Hide Columns) -->
+            <div class="dropdown position-relative" style="z-index: 1055;">
+                <button class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button"
+                    id="columnDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static"
+                    title="Show/Hide Columns" style="border-radius: 8px;">
+                    <i class="fa fa-eye"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top" aria-labelledby="columnDropdown"
+                    style="min-width: 200px; border-radius: 10px;">
+                    <li class="fw-bold text-secondary px-2 mb-2">Toggle Columns</li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    @php
+                        $columns = [
+                            0 => 'No',
+                            1 => 'Nama Pelanggan',
+                            2 => 'Nomor Telepon',
+                            3 => 'Email',
+                            4 => 'Alamat',
+                            5 => 'Latitude',
+                            6 => 'Longitude',
+                            7 => 'Coverage',
+                            8 => 'Produk',
+                            9 => 'Assign To',
+                            10 => 'Submitted At',
+                            11 => 'Submitted',
+                            12 => 'Aksi',
+                        ];
+                    @endphp
+
+                    @foreach ($columns as $index => $col)
+                        <li>
+                            <label class="dropdown-item">
+                                <input type="checkbox" class="form-check-input me-2 column-toggle"
+                                    data-column="{{ $index }}" checked>
+                                {{ $col }}
+                            </label>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            {{-- Search (di kanan) --}}
+            <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center"
+                style="max-width: 250px;">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
+                    value="{{ request('search') }}">
+                <button type="submit" class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
+                    style="border-radius: 8px;">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
         </div>
 
+        {{-- Tabel Data Customer --}}
+        <div class="table-responsive mt-3">
+            <table class="table table-striped table-hover align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        @foreach ($columns as $col)
+                            <th>{{ $col }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($customers as $index => $customer)
+                        <tr>
+                            <td class="fw-semibold">{{ $index + 1 }}</td>
+                            <td>{{ $customer['name'] }}</td>
+                            <td>{{ $customer['phone'] }}</td>
+                            <td>{{ $customer['email'] }}</td>
+                            <td>{{ $customer['address'] }}</td>
+                            <td>{{ $customer['latitude'] }}</td>
+                            <td>{{ $customer['longitude'] }}</td>
+                            <td>{{ $customer['coverage'] }}</td>
+                            <td>{{ $customer['product'] }}</td>
+                            <td>{{ $customer['assign_to'] }}</td>
+                            <td>{{ $customer['submitted_at'] }}</td>
+                            <td>{{ $customer['submitted'] }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <a href="{{ route('customer.edit', $customer['id']) }}" class="btn btn-sm btn-warning"
+                                        title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form action="{{ route('customer.destroy', $customer['id']) }}" method="POST"
+                                        onsubmit="return confirm('Apakah yakin ingin menghapus customer ini?')"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="{{ count($columns) }}" class="text-center text-muted">Belum ada data customer
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Modal Create Customer -->
@@ -155,8 +218,8 @@
                         <h5 class="modal-title" id="createCustomerLabel">Tambah Lead Baru</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
                     <div class="modal-body">
+                        {{-- Form Fields (Nama, Phone, Alamat, Email, Referral, Wilayah, Divisi, Produk, Coverage) --}}
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Nama Pelanggan</label>
@@ -165,16 +228,14 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Nomor Telepon</label>
-                                <input type="text" name="phone" class="form-control" placeholder="Contoh: 0812345678"
-                                    required>
+                                <input type="text" name="phone" class="form-control"
+                                    placeholder="Contoh: 0812345678" required>
                             </div>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Alamat</label>
                             <textarea name="address" class="form-control" rows="2" placeholder="Masukkan alamat lengkap" required></textarea>
                         </div>
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Email</label>
@@ -186,7 +247,6 @@
                                 <input type="text" name="referral_code" class="form-control" placeholder="Opsional">
                             </div>
                         </div>
-
                         <h6 class="mt-3">Wilayah</h6>
                         <div class="row mb-3">
                             <div class="col-md-3">
@@ -214,7 +274,6 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label class="form-label">Divisi</label>
@@ -253,4 +312,25 @@
             </div>
         </div>
     </div>
+
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.column-toggle');
+            const table = document.querySelector('.table');
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const colIndex = this.getAttribute('data-column');
+                    const cells = table.querySelectorAll('tr > *:nth-child(' + (parseInt(colIndex) +
+                        1) + ')');
+                    cells.forEach(cell => {
+                        cell.style.display = this.checked ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

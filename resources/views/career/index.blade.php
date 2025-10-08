@@ -1,25 +1,55 @@
 @extends('layouts.app')
 
+@section('title', 'Career Management')
+
 @section('content')
     <div class="container-fluid">
-        <h3 class="mb-3">Career Management</h3>
+        <div class="card shadow-sm p-4">
 
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold mb-0">List Career</h6>
+            {{-- Judul --}}
+            <h4 class="fw-bold mb-3 text-dark">Career Management</h4>
 
-                <form action="{{ route('career.index') }}" method="GET" class="d-flex">
-                    <input type="text" name="search" class="form-control form-control-sm"
-                        placeholder="Search..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-sm btn-secondary ms-2">
+            {{-- Bagian atas: Export dan Search --}}
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                {{-- Tombol Export (di kiri) --}}
+                <div class="dropdown position-relative" style="z-index: 1055;">
+                    <button class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button"
+                        id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static"
+                        title="Export Data" style="border-radius: 8px;">
+                        <i class="fa fa-print"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"
+                        aria-labelledby="exportDropdown" style="min-width: 160px; border-radius: 10px;">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
+                                <i class="fa fa-file-excel me-2 text-success"></i> Export XLSX
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
+                                <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Search (di kanan) --}}
+                <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center"
+                    style="max-width: 250px;">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
+                        value="{{ request('search') }}">
+                    <button type="submit"
+                        class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
+                        style="border-radius: 8px;">
                         <i class="fa fa-search"></i>
                     </button>
                 </form>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-header">
+            {{-- Tabel Data Career --}}
+            <div class="table-responsive mt-2">
+                <table class="table table-striped table-hover align-middle text-center">
+                    <thead class="table-primary">
                         <tr>
                             <th>ID</th>
                             <th>Image</th>
@@ -33,33 +63,78 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($careers as $career)
+                        @forelse ($careers as $career)
                             <tr>
                                 <td>{{ $career->id }}</td>
-                                <td><img src="{{ $career->image }}" alt="Career Image" width="50"
-                                        class="rounded"></td>
-                                <td>{{ $career->title }}</td>
+                                <td>
+                                    <img src="{{ $career->image }}" alt="Career Image" width="60"
+                                        class="rounded shadow-sm border">
+                                </td>
+                                <td class="fw-semibold">{{ $career->title }}</td>
                                 <td>{{ $career->type }}</td>
                                 <td>{{ $career->education }}</td>
                                 <td>{{ $career->location }}</td>
                                 <td>
-                                    <span
-                                        class="badge bg-success">{{ $career->status }}</span>
+                                    <span class="badge {{ $career->status === 'Active' ? 'bg-success' : 'bg-secondary' }}">
+                                        {{ $career->status }}
+                                    </span>
                                 </td>
-                                <td>{{ $career->created_at }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary">
-                                        <i class="fa fa-edit"></i> Edit
+                                <td>{{ \Carbon\Carbon::parse($career->created_at)->format('d M Y') }}</td>
+                                <td class="text-nowrap">
+                                    <button class="btn btn-sm btn-warning me-1" title="Edit">
+                                        <i class="fa fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="fa fa-trash"></i> Delete
+                                    <button class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-muted text-center">No data found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+
+
         </div>
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .btn-outline-primary {
+            border: 1.5px solid #007bff;
+            color: #007bff;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table-dark th {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+    </style>
+@endpush

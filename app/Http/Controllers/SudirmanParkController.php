@@ -40,6 +40,11 @@ class SudirmanParkController extends Controller
         SudirmanPark::create($validated);
 
         return redirect()->route('sudirmanpark.index')
-                         ->with('success', 'Customer baru berhasil ditambahkan.');
+            ->with('success', 'Customer baru berhasil ditambahkan.');
+    }
+
+    public function alamat()
+    {
+        return view('sudirmanpark.alamat');
     }
 }

@@ -34,47 +34,6 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin,report')
         ->name('dashboard');
 
-    // Customer - Admin dan Sales bisa akses
-    // Route::get('/customer', function () {
-    // return view('pages.customer');
-    // })->middleware('role:admin,sales')->name('customer');
-
-    // Sudirman Park - Admin dan sudirman park bisa akses
-    Route::get('/sudirman-park', function () {
-        return view('pages.sudirman-park');
-    })->middleware('role:admin,sudirman park')->name('sudirman-park');
-
-    // Menu lainnya hanya untuk admin
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/product', function () {
-            return view('pages.product');
-        })->name('product');
-
-        Route::get('/banner', function () {
-            return view('pages.banner');
-        })->name('banner');
-
-        Route::get('/division', function () {
-            return view('pages.division');
-        })->name('division');
-
-        Route::get('/career', function () {
-            return view('pages.career');
-        })->name('career');
-
-        Route::get('/news', function () {
-            return view('pages.news');
-        })->name('news');
-
-        Route::get('/settings-content', function () {
-            return view('pages.settings-content');
-        })->name('settings-content');
-
-        Route::get('/user-management', function () {
-            return view('pages.user-management');
-        })->name('user-management');
-    });
-
     // ================================
     // Customer Management (Controller)
     // ================================
@@ -87,13 +46,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('sudirmanpark')->name('sudirmanpark.')->group(function () {
-        Route::get('/', [SudirmanParkController::class, 'index'])->name('index');
-        Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
-        Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
-    });
+    Route::prefix('sudirmanpark')
+        ->name('sudirmanpark.')
+        ->middleware('role:admin,sudirman park')
+        ->group(function () {
+            Route::get('/', [SudirmanParkController::class, 'index'])->name('index');
+            Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
+            Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
+            Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
+        });
 
-    Route::middleware(['auth'])->group(function () {
+
+    Route::middleware('role:admin,sudirmanpark')->group(function () {
         Route::get('/product', [ProductController::class, 'index'])->name('product.index');
         Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/product', [ProductController::class, 'store'])->name('product.store');

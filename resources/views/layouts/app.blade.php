@@ -15,6 +15,7 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
     <style>
         * {
             margin: 0;
@@ -27,7 +28,7 @@
             background: #f5f5f5;
         }
 
-        /* --- PERUBAHAN CSS --- */
+        /* --- HEADER --- */
         .header {
             background: #2c3e50;
             color: white;
@@ -42,44 +43,13 @@
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             height: 70px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .logo-icon {
-            width: 35px;
-            height: 35px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-icon::before {
-            content: 'e';
-            color: #2c3e50;
-            font-size: 18px;
-            font-weight: bold;
-            font-style: italic;
+            transition: all 0.3s ease-in-out;
         }
 
         .user-menu {
             display: flex;
             align-items: center;
             gap: 15px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .logout-btn {
@@ -91,23 +61,26 @@
             cursor: pointer;
             text-decoration: none;
             font-size: 14px;
+            transition: background 0.3s ease-in-out;
         }
 
         .logout-btn:hover {
             background: #c0392b;
         }
 
-        /* --- PERUBAHAN CSS --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
+            bottom: 0;
             width: 250px;
             height: 100vh;
             background: #34495e;
             overflow-y: auto;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 1001;
+            transition: all 0.3s ease-in-out;
         }
 
         .sidebar-header {
@@ -137,13 +110,14 @@
             padding: 15px 20px;
             color: #bdc3c7;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.2s ease-in-out;
         }
 
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
             background: #2c3e50;
             color: white;
+            transform: translateX(4px);
         }
 
         .sidebar-menu .icon {
@@ -155,11 +129,14 @@
             font-size: 16px;
         }
 
+        /* --- KONTEN UTAMA --- */
         .main-content {
             margin-left: 250px;
             margin-top: 70px;
             padding: 30px;
             min-height: calc(100vh - 70px);
+            transition: all 0.3s ease-in-out;
+            animation: fadeIn 0.25s ease-in;
         }
 
         .page-header {
@@ -221,38 +198,36 @@
             color: #2c3e50;
         }
 
-        .chart-container {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+        .access-denied {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
         }
 
-        .chart-header {
-            color: #3498db;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ecf0f1;
+        /* === FIX SIDEBAR BERGESER & TAMBAH TRANSISI SMOOTH === */
+        html,
+        body {
+            overflow-x: hidden;
         }
 
-        .chart-wrapper {
-            position: relative;
-            height: 400px;
-        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s;
             }
 
             .header {
@@ -266,19 +241,6 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .access-denied {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
         }
     </style>
 
@@ -325,8 +287,8 @@
 
             @if (auth()->user()->role == 'admin' || auth()->user()->role == 'sudirman park')
                 <li>
-                    <a href="{{ route('sudirman-park') }}"
-                        class="{{ request()->routeIs('sudirman-park') ? 'active' : '' }}">
+                    <a href="{{ route('sudirmanpark.index') }}"
+                        class="{{ request()->routeIs('sudirmanpark.*') ? 'active' : '' }}">
                         <span class="icon">🏙️</span> Sudirman Park
                     </a>
                 </li>
@@ -420,16 +382,13 @@
                     </ul>
                 </li>
             @endif
-
         </ul>
-
     </nav>
 
     <main class="main-content">
         @if (session('error'))
             <div class="access-denied">{{ session('error') }}</div>
         @endif
-
         @yield('content')
     </main>
 
@@ -438,6 +397,20 @@
 
     <!-- ✅ Tambahkan Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ✅ Efek fade-out halus sebelum pindah halaman -->
+    <script>
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', e => {
+                const main = document.querySelector('.main-content');
+                main.style.opacity = 0;
+                setTimeout(() => {
+                    window.location = link.href;
+                }, 150);
+                e.preventDefault();
+            });
+        });
+    </script>
 </body>
 
 </html>
