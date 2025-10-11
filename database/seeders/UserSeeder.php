@@ -41,5 +41,16 @@ class UserSeeder extends Seeder
             'password' => Hash::make('report123'),
             'role' => 'report',
         ]);
+
+        // Test user
+        // Removed duplicate test user to avoid unique constraint violation
+        /*
+         User::create([
+            'name' => 'Test',
+            'email' => 'test@lifemedia.com',
+            'password' => Hash::make('qwerty'),
+            'role' => 'admin',
+        ]);
+        */
     }
 }

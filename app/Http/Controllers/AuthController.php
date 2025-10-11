@@ -32,7 +32,20 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
             
-            return redirect()->intended('/dashboard');
+            $user = Auth::user();
+            $role = $user->role;
+            
+            switch ($role) {
+                case 'admin':
+                case 'report':
+                    return redirect()->intended('/dashboard');
+                case 'sales':
+                    return redirect('/customer');
+                case 'sudirman park':
+                    return redirect('/sudirmanpark');
+                default:
+                    return redirect('/dashboard');
+            }
         }
 
         return back()->withErrors([

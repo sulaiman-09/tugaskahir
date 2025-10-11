@@ -461,14 +461,14 @@
             <h2 class="form-title">Welcome to Life Media Content Management System</h2>
             <p class="form-subtitle">Please log in here</p>
 
-            <!-- Demo accounts info 
-            <div class="demo-accounts">
+            <!-- Demo accounts info -->
+            {{-- <div class="demo-accounts">
                 <h4>Demo Accounts:</h4>
                 <p><strong>Admin:</strong> admin@lifemedia.com / admin123</p>
                 <p><strong>Sales:</strong> sales@lifemedia.com / sales123</p>
                 <p><strong>Sudirman Park:</strong> sudirmanpark@lifemedia.com / sudirman123</p>
                 <p><strong>Report:</strong> report@lifemedia.com / report123</p>
-            </div> -->
+            </div> --}}
 
             @if ($errors->any())
                 <div class="error-message">
