@@ -1,147 +1,131 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Customer;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    // Dummy data customer
-    private $customers = [
-        [
-            'id' => 1,
-            'name' => 'Nasya',
-            'phone' => '08123456789',
-            'email' => 'nasya@example.com',
-            'address' => 'Jl. Sudirman No. 1',
-            'latitude' => '-7.797068',
-            'longitude' => '110.370529',
-            'coverage' => 'Yogyakarta Internet 50Mbps',
-            'product' => 'Paket Premium',
-            'assign_to' => 'Admin',
-            'submitted_at' => '2025-09-25',
-            'submitted' => 'Yes',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Budi',
-            'phone' => '08129876543',
-            'email' => 'budi@example.com',
-            'address' => 'Jl. Malioboro No. 2',
-            'latitude' => '-7.792345',
-            'longitude' => '110.367890',
-            'coverage' => 'Yogyakarta Internet 20Mbps',
-            'product' => 'Paket Basic',
-            'assign_to' => 'CS',
-            'submitted_at' => '2025-09-24',
-            'submitted' => 'No',
-        ],
-    ];
-
-    // INDEX + FILTER
+    // INDEX: Menampilkan semua data customer
     public function index(Request $request)
     {
-        $customers = $this->customers;
+        $query = Customer::query();
 
+        // Fitur filter tanggal
         if ($request->has('filter')) {
             $today = date('Y-m-d');
             $yesterday = date('Y-m-d', strtotime('-1 day'));
 
-            $customers = array_filter($customers, function ($c) use ($request, $today, $yesterday) {
-                switch ($request->filter) {
-                    case 'today':
-                        return $c['submitted_at'] == $today;
-                    case 'yesterday':
-                        return $c['submitted_at'] == $yesterday;
-                    case 'last_7_days':
-                        return strtotime($c['submitted_at']) >= strtotime('-7 days');
-                    case 'last_30_days':
-                        return strtotime($c['submitted_at']) >= strtotime('-30 days');
-                    default:
-                        return true;
-                }
-            });
+            switch ($request->filter) {
+                case 'today':
+                    $query->whereDate('created_at', $today);
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', $yesterday);
+                    break;
+                case 'last_7_days':
+                    $query->whereDate('created_at', '>=', now()->subDays(7));
+                    break;
+                case 'last_30_days':
+                    $query->whereDate('created_at', '>=', now()->subDays(30));
+                    break;
+            }
         }
 
+        $customers = $query->orderBy('created_at', 'desc')->get();
         return view('customer.index', compact('customers'));
     }
 
-    // CREATE (Modal biasanya di blade, bisa dilewatkan)
+    // CREATE: Menampilkan form tambah customer
     public function create()
     {
-        return view('customer.create'); // opsional, kalau pakai modal cukup di index
+        return view('customer.create');
     }
 
-    // STORE
+    // STORE: Menyimpan data baru ke database
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'email' => 'nullable|email|max:255|unique:customers,email',
             'address' => 'required|string',
-            'coverage' => 'nullable|string|max:255',
+            'referral_code' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'village' => 'nullable|string|max:255',
+            'division' => 'nullable|string|max:255',
+            'product_category' => 'nullable|string|max:255',
             'product' => 'nullable|string|max:255',
+            'latitude' => 'nullable|string|max:255',
+            'longitude' => 'nullable|string|max:255',
+            'coverage' => 'nullable|string|max:255',
+            'assign_to' => 'nullable|string|max:255',
+            'submitted' => 'nullable|string|max:255',
+            'submitted_at' => 'nullable|date',
         ]);
 
-        // Simulasi insert dummy
-        // Biasanya Customer::create($validated);
+        Customer::create($validated);
 
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil ditambahkan.');
+        return redirect()->route('customer.index')
+            ->with('success', 'Customer berhasil ditambahkan dan tersimpan ke database.');
     }
 
-    // EDIT
+
+    // EDIT: Menampilkan form edit data
     public function edit($id)
     {
-        $customer = collect($this->customers)->firstWhere('id', $id);
-
-        if (!$customer) {
-            return redirect()->route('customer.index')->with('error', 'Customer tidak ditemukan.');
-        }
-
+        $customer = Customer::findOrFail($id);
         return view('customer.edit', compact('customer'));
     }
 
-    // UPDATE
+    // UPDATE: Menyimpan perubahan data ke database
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
+            // Data utama
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'email' => 'nullable|email|max:255|unique:customers,email,' . $id,
             'address' => 'required|string',
-            'coverage' => 'nullable|string|max:255',
+            'referral_code' => 'nullable|string|max:255',
+
+            // Data wilayah
+            'province' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'village' => 'nullable|string|max:255',
+
+            // Data tambahan
+            'division' => 'nullable|string|max:255',
+            'product_category' => 'nullable|string|max:255',
             'product' => 'nullable|string|max:255',
+            'coverage' => 'nullable|string|max:255',
+            'latitude' => 'nullable|string|max:255',
+            'longitude' => 'nullable|string|max:255',
+
+            // Metadata
+            'assign_to' => 'nullable|string|max:255',
+            'submitted' => 'nullable|string|max:255',
+            'submitted_at' => 'nullable|date',
         ]);
 
-        // Ambil data dari session atau default dummy
-        $customers = session('customers', $this->customers);
+        $customer = Customer::findOrFail($id);
+        $customer->update($validated);
 
-        // Update data sesuai ID
-        foreach ($customers as &$customer) {
-            if ($customer['id'] == $id) {
-                $customer['name'] = $validated['name'];
-                $customer['phone'] = $validated['phone'];
-                $customer['email'] = $validated['email'];
-                $customer['address'] = $validated['address'];
-                $customer['coverage'] = $validated['coverage'] ?? $customer['coverage'];
-                $customer['product'] = $validated['product'] ?? $customer['product'];
-            }
-        }
-        unset($customer); // tambahkan ini supaya reference aman
-
-        // Simpan kembali ke session
-        session(['customers' => $customers]);
-
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil diperbarui.');
+        return redirect()->route('customer.index')
+            ->with('success', 'Data customer berhasil diperbarui di tabel customers.');
     }
 
-    // DESTROY
+    // DESTROY: Menghapus data dari database
     public function destroy($id)
     {
-        // Simulasi hapus dummy
-        // Biasanya Customer::find($id)->delete();
+        $customer = Customer::findOrFail($id);
+        $customer->delete();
 
-        return redirect()->route('customer.index')->with('success', 'Customer berhasil dihapus.');
+        return redirect()->route('customer.index')
+            ->with('success', 'Customer berhasil dihapus dari tabel customers.');
     }
 }

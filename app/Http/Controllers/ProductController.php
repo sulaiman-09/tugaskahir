@@ -3,76 +3,70 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\ProductCategory;
 
 class ProductController extends Controller
 {
+    // Tampilkan semua data dari tabel product_categories
     public function index()
     {
-        // Data dummy
-        $product = [
-            (object)[
-                'category_name' => 'Broadband Internet',
-                'slug' => 'broadband-internet',
-                'short_description' => 'Internet cepat dan stabil untuk rumah tangga dan bisnis kecil',
-                'show_price' => true,
-                'benefits' => [
-                    ['icon' => '📺', 'text' => 'Bonus puluhan channel TV'],
-                    ['icon' => '📶', 'text' => 'Koneksi stabil untuk aktivitas online'],
-                    ['icon' => '💰', 'text' => 'Harga terjangkau untuk rumah tangga'],
-                    ['icon' => '∞', 'text' => 'Internet tanpa batasan kuota'],
-                ]
-            ],
-            (object)[
-                'category_name' => 'Business Solutions',
-                'slug' => 'business-solutions',
-                'short_description' => 'Solusi komprehensif untuk konektivitas dan entertainment bisnis',
-                'show_price' => false,
-                'benefits' => [
-                    ['icon' => '⚡', 'text' => 'Prioritas layanan pelanggan'],
-                    ['icon' => '📡', 'text' => 'Memenuhi kebutuhan bisnis modern'],
-                    ['icon' => '🌐', 'text' => 'IP statis untuk server dan hosting'],
-                    ['icon' => '🛡️', 'text' => 'SLA jaminan kecepatan & uptime'],
-                ]
-            ],
-            (object)[
-                'category_name' => 'Promo Spesial Jepara',
-                'slug' => 'promo-spesial-jepara',
-                'short_description' => 'Nikmati internet cepat dan stabil dengan harga spesial khusus Jepara',
-                'show_price' => true,
-                'benefits' => [
-                    ['icon' => '🏷️', 'text' => 'Promo khusus hanya untuk area Jepara'],
-                    ['icon' => '📶', 'text' => 'Koneksi stabil untuk aktivitas harian'],
-                    ['icon' => '💰', 'text' => 'Harga bersahabat untuk keluarga'],
-                ]
-            ]
-        ];
-
+        $product = ProductCategory::orderBy('created_at', 'desc')->get();
         return view('product.index', compact('product'));
     }
 
+    // Tampilkan form tambah
     public function create()
     {
         return view('product.create');
     }
 
+    // Simpan data baru ke tabel product_categories
     public function store(Request $request)
     {
-        // Validasi data
         $validated = $request->validate([
-            'product_name' => 'required|string|max:255',
-            'speed' => 'nullable|string|max:255',
-            'description' => 'required|string',
-            'web_image' => 'nullable|image',
-            'apps_image' => 'nullable|image',
-            'category' => 'required|string',
-            'price' => 'nullable|numeric',
-            'sudirman_product' => 'nullable|boolean',
+            'category_name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:product_categories,slug',
+            'short_description' => 'nullable|string',
+            'show_price' => 'nullable|boolean',
         ]);
 
-        // Simpan data (contoh saja, belum ke DB karena kamu pakai dummy)
-        // dd($validated); // untuk debug
+        ProductCategory::create($validated);
 
-        // Redirect ke index atau tampilkan sukses
-        return redirect()->route('product.index')->with('success', 'Product created successfully.');
+        return redirect()->route('product.index')
+            ->with('success', 'Kategori produk berhasil ditambahkan ke database.');
+    }
+
+    // Edit kategori
+    public function edit($id)
+    {
+        $category = ProductCategory::findOrFail($id);
+        return view('product.edit', compact('category'));
+    }
+
+    // Update kategori
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'category_name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:product_categories,slug,' . $id,
+            'short_description' => 'nullable|string',
+            'show_price' => 'nullable|boolean',
+        ]);
+
+        $category = ProductCategory::findOrFail($id);
+        $category->update($validated);
+
+        return redirect()->route('product.index')
+            ->with('success', 'Kategori produk berhasil diperbarui.');
+    }
+
+    // Hapus kategori
+    public function destroy($id)
+    {
+        $category = ProductCategory::findOrFail($id);
+        $category->delete();
+
+        return redirect()->route('product.index')
+            ->with('success', 'Kategori produk berhasil dihapus.');
     }
 }

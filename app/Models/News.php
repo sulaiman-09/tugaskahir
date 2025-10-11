@@ -9,13 +9,13 @@ class News extends Model
 {
     use HasFactory;
 
+    protected $table = 'news'; // pastikan sesuai nama tabel
+
     protected $fillable = [
         'news_title',
         'news_content',
         'news_image',
-        'news_image_app',
-        'news_image_caption',
-        'news_created_date',
-        'admin',
+        'created_at',
+        'updated_at',
     ];
 }

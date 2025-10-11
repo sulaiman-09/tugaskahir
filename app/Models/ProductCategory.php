@@ -5,23 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Division extends Model
+class ProductCategory extends Model
 {
     use HasFactory;
 
-    protected $table = 'divisions'; // pastikan sesuai dengan nama tabel
+    protected $table = 'product_categories'; // pastikan sesuai nama tabel kamu
 
     protected $fillable = [
-        'name',
-        'description',
-        'status',
-        'customer_leads',
+        'category_name',
+        'slug',
+        'short_description',
+        'show_price',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
-        'status' => 'boolean',
-        'customer_leads' => 'integer',
+        'show_price' => 'boolean',
     ];
 }

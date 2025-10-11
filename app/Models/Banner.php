@@ -5,23 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Division extends Model
+class Banner extends Model
 {
     use HasFactory;
 
-    protected $table = 'divisions'; // pastikan sesuai dengan nama tabel
+    protected $table = 'banners'; // pastikan sesuai nama tabel di database kamu
 
     protected $fillable = [
         'name',
-        'description',
+        'web_image',
+        'mobile_image',
         'status',
-        'customer_leads',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [
         'status' => 'boolean',
-        'customer_leads' => 'integer',
     ];
 }

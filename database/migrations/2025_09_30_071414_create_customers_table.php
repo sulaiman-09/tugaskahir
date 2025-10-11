@@ -15,25 +15,19 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('phone');
-            $table->string('email')->nullable();
+            $table->string('email')->nullable()->unique();
             $table->text('address');
-            $table->string('referral_code')->nullable();
-            $table->string('province')->nullable();
-            $table->string('city')->nullable();
-            $table->string('district')->nullable();
-            $table->string('village')->nullable();
-            $table->string('division')->nullable();
-            $table->string('product_category')->nullable();
-            $table->string('product')->nullable();
-            $table->string('coverage')->nullable();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
+            $table->string('coverage')->nullable();
+            $table->string('product')->nullable();
             $table->string('assign_to')->nullable();
-            $table->date('submitted_at')->nullable();
             $table->string('submitted')->nullable();
+            $table->date('submitted_at')->nullable();
             $table->timestamps();
         });
     }
+
 
 
     /**

@@ -251,29 +251,30 @@
                         <div class="row mb-3">
                             <div class="col-md-3">
                                 <label class="form-label">Provinsi</label>
-                                <select name="province" class="form-select">
+                                <select id="province" name="province" class="form-select" required>
                                     <option value="">Pilih Provinsi</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kota/Kabupaten</label>
-                                <select name="city" class="form-select">
+                                <select id="city" name="city" class="form-select" disabled required>
                                     <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kecamatan</label>
-                                <select name="district" class="form-select">
+                                <select id="district" name="district" class="form-select" disabled required>
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Kelurahan/Desa</label>
-                                <select name="village" class="form-select">
+                                <select id="village" name="village" class="form-select" disabled required>
                                     <option value="">Pilih Kelurahan/Desa</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label class="form-label">Divisi</label>
@@ -316,6 +317,101 @@
 @endsection
 
 @push('scripts')
+    {{-- Script Wilayah Dinamis --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const districtSelect = document.getElementById('district');
+            const villageSelect = document.getElementById('village');
+
+            // Load Provinsi
+            fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+                .then(res => res.json())
+                .then(provinces => {
+                    provinces.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.name;
+                        opt.textContent = p.name;
+                        opt.dataset.id = p.id;
+                        provinceSelect.appendChild(opt);
+                    });
+                });
+
+            // Load Kota/Kabupaten
+            provinceSelect.addEventListener('change', function() {
+                const provinceId = this.selectedOptions[0]?.dataset.id;
+                citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                districtSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+                citySelect.disabled = true;
+                districtSelect.disabled = true;
+                villageSelect.disabled = true;
+
+                if (!provinceId) return;
+
+                fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`)
+                    .then(res => res.json())
+                    .then(cities => {
+                        cities.forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c.name;
+                            opt.textContent = c.name;
+                            opt.dataset.id = c.id;
+                            citySelect.appendChild(opt);
+                        });
+                        citySelect.disabled = false;
+                    });
+            });
+
+            // Load Kecamatan
+            citySelect.addEventListener('change', function() {
+                const cityId = this.selectedOptions[0]?.dataset.id;
+                districtSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+                districtSelect.disabled = true;
+                villageSelect.disabled = true;
+
+                if (!cityId) return;
+
+                fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cityId}.json`)
+                    .then(res => res.json())
+                    .then(districts => {
+                        districts.forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.name;
+                            opt.textContent = d.name;
+                            opt.dataset.id = d.id;
+                            districtSelect.appendChild(opt);
+                        });
+                        districtSelect.disabled = false;
+                    });
+            });
+
+            // Load Kelurahan/Desa
+            districtSelect.addEventListener('change', function() {
+                const districtId = this.selectedOptions[0]?.dataset.id;
+                villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+                villageSelect.disabled = true;
+
+                if (!districtId) return;
+
+                fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${districtId}.json`)
+                    .then(res => res.json())
+                    .then(villages => {
+                        villages.forEach(v => {
+                            const opt = document.createElement('option');
+                            opt.value = v.name;
+                            opt.textContent = v.name;
+                            villageSelect.appendChild(opt);
+                        });
+                        villageSelect.disabled = false;
+                    });
+            });
+        });
+    </script>
+
+    {{-- Script Toggle Kolom --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const checkboxes = document.querySelectorAll('.column-toggle');
