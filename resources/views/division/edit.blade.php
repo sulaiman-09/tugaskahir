@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add New Division')
+@section('title', 'Edit Division')
 
 @section('content')
 <div class="container py-4">
@@ -9,12 +9,13 @@
 
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-header bg-primary text-white text-center rounded-top-4">
-                    <h4 class="mb-0">Add New Division</h4>
+                    <h4 class="mb-0">Edit Division</h4>
                 </div>
 
                 <div class="card-body p-4">
-                    <form action="{{ route('division.store') }}" method="POST">
+                    <form action="{{ route('division.update', $division->id) }}" method="POST">
                         @csrf
+                        @method('PUT')
 
                         {{-- Nama Division --}}
                         <div class="mb-3">
@@ -25,7 +26,7 @@
                                 id="name" 
                                 class="form-control @error('name') is-invalid @enderror" 
                                 placeholder="Enter division name"
-                                value="{{ old('name') }}" 
+                                value="{{ old('name', $division->name) }}" 
                                 required
                             >
                             @error('name')
@@ -42,7 +43,7 @@
                                 class="form-control @error('description') is-invalid @enderror" 
                                 placeholder="Enter short description..."
                                 rows="3"
-                            >{{ old('description') }}</textarea>
+                            >{{ old('description', $division->description) }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -56,7 +57,7 @@
                                 id="status" 
                                 class="form-check-input" 
                                 value="1" 
-                                {{ old('status', true) ? 'checked' : '' }}
+                                {{ old('status', $division->status) ? 'checked' : '' }}
                             >
                             <label for="status" class="form-check-label fw-semibold">
                                 Active Status
@@ -69,7 +70,7 @@
                                 <i class="bi bi-arrow-left-circle me-1"></i> Back
                             </a>
                             <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-save2 me-1"></i> Save Division
+                                <i class="bi bi-save2 me-1"></i> Update Division
                             </button>
                         </div>
                     </form>

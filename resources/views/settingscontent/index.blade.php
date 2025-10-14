@@ -1,94 +1,55 @@
 @extends('layouts.app')
 
-@section('title', 'Setting Content')
+@section('title', 'Settings Content')
 
 @section('content')
-<div class="container mt-4">
-    <h2 class="fw-bold mb-4 text-primary">Setting Content</h2>
+<div class="container py-4">
+    <div class="card shadow-sm p-4">
+        <h4 class="fw-bold mb-3 text-dark">Settings Content</h4>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <button class="btn btn-outline-secondary">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
-                <div class="input-group w-25">
-                    <input type="text" class="form-control" placeholder="Search..." id="searchInput">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table id="contentTable" class="table table-striped table-hover align-middle">
-                    <thead class="table-light">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>No</th>
+                        <th>Title</th>
+                        <th>Name</th>
+                        <th>Type ID</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($contents as $index => $content)
                         <tr>
-                            <th>Title</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Order</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($contents as $item)
-                        <tr>
-                            <td>{{ $item->title }}</td>
-                            <td>{{ $item->name }}</td>
-                            <td>{{ $item->type }}</td>
-                            <td>{{ $item->order }}</td>
-                            <td class="text-center">
-                                <div class="form-check form-switch d-flex justify-content-center">
-                                    <input class="form-check-input toggle-status" 
-                                           type="checkbox" 
-                                           data-id="{{ $item->id }}"
-                                           {{ $item->status ? 'checked' : '' }}>
-                                </div>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $content->title }}</td>
+                            <td>{{ $content->name }}</td>
+                            <td>{{ $content->content_type_id }}</td>
+                            <td>{{ $content->order }}</td>
+                            <td>
+                                @if($content->is_active)
+                                    <span class="badge bg-success">Active</span>
+                                @else
+                                    <span class="badge bg-secondary">Inactive</span>
+                                @endif
                             </td>
-                            <td class="text-center">
-                                <a href="{{ route('settings-content.edit', $item->id) }}" 
-                                   class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
+                            <td>
+                                <a href="{{ route('settings-content.edit', $content->id) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil-square"></i> Edit
                                 </a>
                             </td>
                         </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
-                    <select class="form-select form-select-sm" style="width: 80px;">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
-                    </select>
-                    <small class="ms-2">Records per page</small>
-                </div>
-                <div>
-                    {{ $contents->links() }}
-                </div>
-            </div>
+                    @endforeach
+                    @if($contents->isEmpty())
+                        <tr>
+                            <td colspan="7">No data found.</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-{{-- JS: Toggle status --}}
-<script>
-document.querySelectorAll('.toggle-status').forEach(toggle => {
-    toggle.addEventListener('change', function() {
-        const id = this.dataset.id;
-        fetch(`/settings-content/${id}/toggle`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            },
-        });
-    });
-});
-</script>
 @endsection

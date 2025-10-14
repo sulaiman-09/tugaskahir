@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         Schema::create('divisions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 100);
             $table->text('description')->nullable();
             $table->boolean('status')->default(1);
-            $table->integer('customer_leads')->default(0);
+            $table->integer('customer_leads')->nullable();
             $table->timestamps();
         });
     }

@@ -4,129 +4,118 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="page-header mb-4">
-        <h1 class="page-title fw-bold">Edit Data Customer</h1>
-    </div>
+    <div class="card shadow-sm border-0 rounded-4">
+        {{-- Header --}}
+        <div class="card-header bg-primary text-white rounded-top-4">
+            <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Data Customer</h4>
+        </div>
 
-    <div class="card shadow-sm border-0 rounded-3 p-4">
-        <form method="POST" action="{{ route('customer.update', $customer->id) }}">
-            @csrf
-            @method('PUT')
+        <div class="card-body p-4">
+            <form method="POST" action="{{ route('customer.update', $customer->id) }}">
+                @csrf
+                @method('PUT')
 
-            {{-- Data Utama --}}
-            <h5 class="mb-3 fw-semibold text-primary">Data Utama</h5>
-            <div class="row g-4 mb-4">
-                <div class="col-md-6">
-                    <label class="form-label fw-medium">Nama Pelanggan</label>
-                    <input type="text" name="name" class="form-control rounded-2" value="{{ old('name', $customer->name) }}" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-medium">Nomor Telepon</label>
-                    <input type="text" name="phone" class="form-control rounded-2" value="{{ old('phone', $customer->phone) }}" required>
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label fw-medium">Alamat Lengkap</label>
-                    <textarea name="address" class="form-control rounded-2" rows="2" required>{{ old('address', $customer->address) }}</textarea>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-medium">Email</label>
-                    <input type="email" name="email" class="form-control rounded-2" value="{{ old('email', $customer->email) }}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-medium">Kode Referral</label>
-                    <input type="text" name="referral_code" class="form-control rounded-2" value="{{ old('referral_code', $customer->referral_code) }}">
-                </div>
-            </div>
-
-            {{-- Data Wilayah --}}
-            <h5 class="mt-4 mb-3 fw-semibold text-primary">Wilayah</h5>
-            <div class="row g-4 mb-4">
-                <div class="col-md-3">
-                    <label class="form-label fw-medium">Provinsi</label>
-                    <select id="province" name="province" class="form-select rounded-2">
-                        <option value="">Pilih Provinsi</option>
-                        <option value="{{ $customer->province }}" selected>{{ $customer->province }}</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-medium">Kota/Kabupaten</label>
-                    <select id="city" name="city" class="form-select rounded-2">
-                        <option value="{{ $customer->city }}" selected>{{ $customer->city }}</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-medium">Kecamatan</label>
-                    <select id="district" name="district" class="form-select rounded-2">
-                        <option value="{{ $customer->district }}" selected>{{ $customer->district }}</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-medium">Kelurahan/Desa</label>
-                    <select id="village" name="village" class="form-select rounded-2">
-                        <option value="{{ $customer->village }}" selected>{{ $customer->village }}</option>
-                    </select>
-                </div>
-            </div>
-
-            {{-- Data Tambahan --}}
-            <h5 class="mt-4 mb-3 fw-semibold text-primary">Data Tambahan</h5>
-            <div class="row g-4 mb-4">
-                <div class="col-md-4">
-                    <label class="form-label fw-medium">Division</label>
-                    <select name="division" class="form-select rounded-2">
-                        <option value="">Pilih Division</option>
-                        <option value="Marketing" {{ $customer->division == 'Marketing' ? 'selected' : '' }}>Marketing</option>
-                        <option value="Sales Retail" {{ $customer->division == 'Sales Retail' ? 'selected' : '' }}>Sales Retail</option>
-                    </select>
+                {{-- Data Utama --}}
+                <h5 class="fw-semibold text-secondary mb-3">🧍‍♂️ Data Utama</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nama Pelanggan <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" value="{{ old('name', $customer->name) }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nomor Telepon <span class="text-danger">*</span></label>
+                        <input type="text" name="phone" class="form-control" value="{{ old('phone', $customer->phone) }}" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Alamat Lengkap <span class="text-danger">*</span></label>
+                        <textarea name="address" class="form-control" rows="2" required>{{ old('address', $customer->address) }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email', $customer->email) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Kode Referral</label>
+                        <input type="text" name="referral_code" class="form-control" value="{{ old('referral_code', $customer->referral_code) }}">
+                    </div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-medium">Kategori Produk</label>
-                    <select name="product_category" class="form-select rounded-2">
-                        <option value="">Pilih Kategori</option>
-                        <option value="Broadband Internet" {{ $customer->product_category == 'Broadband Internet' ? 'selected' : '' }}>Broadband Internet</option>
-                        <option value="Business Solutions" {{ $customer->product_category == 'Business Solutions' ? 'selected' : '' }}>Business Solutions</option>
-                        <option value="Promo Spesial Jepara" {{ $customer->product_category == 'Promo Spesial Jepara' ? 'selected' : '' }}>Promo Spesial Jepara</option>
-                        <option value="Promo Spesial Sukoharjo" {{ $customer->product_category == 'Promo Spesial Sukoharjo' ? 'selected' : '' }}>Promo Spesial Sukoharjo</option>
-                        <option value="Sudirman Park" {{ $customer->product_category == 'Sudirman Park' ? 'selected' : '' }}>Sudirman Park</option>
-                    </select>
+                {{-- Data Wilayah --}}
+                <h5 class="fw-semibold text-secondary mb-3">📍 Data Wilayah</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Provinsi <span class="text-danger">*</span></label>
+                        <select id="province" name="province" class="form-select" required>
+                            <option value="{{ $customer->province }}" selected>{{ $customer->province ?? 'Pilih Provinsi' }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Kota/Kabupaten</label>
+                        <select id="city" name="city" class="form-select">
+                            <option value="{{ $customer->city }}" selected>{{ $customer->city ?? 'Pilih Kota/Kabupaten' }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Kecamatan</label>
+                        <select id="district" name="district" class="form-select">
+                            <option value="{{ $customer->district }}" selected>{{ $customer->district ?? 'Pilih Kecamatan' }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Kelurahan/Desa</label>
+                        <select id="village" name="village" class="form-select">
+                            <option value="{{ $customer->village }}" selected>{{ $customer->village ?? 'Pilih Kelurahan/Desa' }}</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-medium">Produk</label>
-                    <select name="product" class="form-select rounded-2">
-                        <option value="{{ $customer->product }}" selected>{{ $customer->product }}</option>
-                    </select>
+                {{-- Data Tambahan --}}
+                <h5 class="fw-semibold text-secondary mb-3">📦 Data Tambahan</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Division</label>
+                        <select name="division" class="form-select">
+                            <option value="">Pilih Division</option>
+                            <option value="Marketing" {{ $customer->division == 'Marketing' ? 'selected' : '' }}>Marketing</option>
+                            <option value="Sales Retail" {{ $customer->division == 'Sales Retail' ? 'selected' : '' }}>Sales Retail</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Kategori Produk</label>
+                        <select name="product_category" class="form-select">
+                            <option value="">Pilih Kategori</option>
+                            <option value="Broadband Internet" {{ $customer->product_category == 'Broadband Internet' ? 'selected' : '' }}>Broadband Internet</option>
+                            <option value="Business Solutions" {{ $customer->product_category == 'Business Solutions' ? 'selected' : '' }}>Business Solutions</option>
+                            <option value="Promo Spesial Jepara" {{ $customer->product_category == 'Promo Spesial Jepara' ? 'selected' : '' }}>Promo Spesial Jepara</option>
+                            <option value="Promo Spesial Sukoharjo" {{ $customer->product_category == 'Promo Spesial Sukoharjo' ? 'selected' : '' }}>Promo Spesial Sukoharjo</option>
+                            <option value="Sudirman Park" {{ $customer->product_category == 'Sudirman Park' ? 'selected' : '' }}>Sudirman Park</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Coverage</label>
+                        <select name="coverage" class="form-select">
+                            <option value="">Pilih Coverage</option>
+                            <option value="Cover" {{ $customer->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
+                            <option value="Uncover" {{ $customer->coverage == 'Uncover' ? 'selected' : '' }}>Uncover</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label fw-medium">Latitude</label>
-                    <input type="text" name="latitude" class="form-control rounded-2" value="{{ old('latitude', $customer->latitude) }}" placeholder="-7.797068">
+                {{-- Tombol Aksi --}}
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ route('customer.index') }}" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Batal
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save2 me-1"></i> Simpan Perubahan
+                    </button>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-medium">Longitude</label>
-                    <input type="text" name="longitude" class="form-control rounded-2" value="{{ old('longitude', $customer->longitude) }}" placeholder="110.370529">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-medium">Coverage</label>
-                    <select name="coverage" class="form-select rounded-2">
-                        <option value="">Pilih Coverage</option>
-                        <option value="Cover" {{ $customer->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
-                        <option value="Uncover" {{ $customer->coverage == 'Uncover' ? 'selected' : '' }}>Uncover</option>
-                    </select>
-                </div>
-            </div>
-
-            {{-- Tombol Aksi --}}
-            <div class="d-flex justify-content-end mt-4">
-                <a href="{{ route('customer.index') }}" class="btn btn-secondary me-3 px-4 py-2 rounded-2">Batal</a>
-                <button type="submit" class="btn btn-primary px-4 py-2 rounded-2">Simpan Perubahan</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
-{{-- Script Wilayah Dinamis (EMSIFA) --}}
+{{-- Script Wilayah --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const provinceSelect = document.getElementById('province');
@@ -148,11 +137,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-    // Event chaining untuk city, district, dan village
+    // Chained event
     provinceSelect.addEventListener('change', function() {
-        const provinceId = this.selectedOptions[0].dataset.id;
+        const provinceId = this.selectedOptions[0]?.dataset.id;
         citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+        districtSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
         if (!provinceId) return;
+
         fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`)
             .then(res => res.json())
             .then(cities => {
@@ -163,6 +155,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     opt.dataset.id = c.id;
                     if (c.name === "{{ $customer->city }}") opt.selected = true;
                     citySelect.appendChild(opt);
+                });
+            });
+    });
+
+    citySelect.addEventListener('change', function() {
+        const cityId = this.selectedOptions[0]?.dataset.id;
+        districtSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+        if (!cityId) return;
+
+        fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cityId}.json`)
+            .then(res => res.json())
+            .then(districts => {
+                districts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.name;
+                    opt.textContent = d.name;
+                    opt.dataset.id = d.id;
+                    if (d.name === "{{ $customer->district }}") opt.selected = true;
+                    districtSelect.appendChild(opt);
+                });
+            });
+    });
+
+    districtSelect.addEventListener('change', function() {
+        const districtId = this.selectedOptions[0]?.dataset.id;
+        villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+        if (!districtId) return;
+
+        fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${districtId}.json`)
+            .then(res => res.json())
+            .then(villages => {
+                villages.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.name;
+                    opt.textContent = v.name;
+                    if (v.name === "{{ $customer->village }}") opt.selected = true;
+                    villageSelect.appendChild(opt);
                 });
             });
     });

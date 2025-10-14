@@ -9,11 +9,17 @@ class SettingsContent extends Model
 {
     use HasFactory;
 
+    protected $table = 'content_sections';
+
     protected $fillable = [
+        'content_type_id',
         'title',
         'name',
-        'type',
         'order',
-        'status'
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }

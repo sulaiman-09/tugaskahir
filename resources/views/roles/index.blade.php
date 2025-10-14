@@ -89,12 +89,19 @@
                                     <td>{{ $role['permissions_count'] ?? 0 }}</td>
                                     <td>{{ $role['created_at'] ?? '—' }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-warning me-1" title="Edit">
+                                        <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-warning me-1"
+                                            title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-danger" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <form action="{{ route('roles.destroy', $role->id) }}" method="POST"
+                                            style="display:inline-block;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Yakin ingin hapus role ini?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

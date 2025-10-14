@@ -3,68 +3,74 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Role;
+use App\Models\Permission;
 
 class RoleController extends Controller
 {
     // Menampilkan daftar role
     public function index()
     {
-        // Data dummy sementara (bisa diganti dari database nanti)
-        $roles = session('roles', [
-            ['id' => 1, 'name' => 'Admin', 'permissions_count' => 8, 'created_at' => '29/11/2024 04:14:42'],
-            ['id' => 2, 'name' => 'Sales', 'permissions_count' => 5, 'created_at' => '29/11/2024 04:14:42'],
-            ['id' => 3, 'name' => 'Report', 'permissions_count' => 3, 'created_at' => '29/11/2024 04:14:42'],
-            ['id' => 4, 'name' => 'Sudirman Park', 'permissions_count' => 1, 'created_at' => '28/08/2025 17:30:12'],
-        ]);
-
+        $roles = Role::withCount('permissions')->get();
         return view('roles.index', compact('roles'));
     }
 
-    // Menampilkan form tambah role
+    // Form tambah role
     public function create()
     {
-        // Daftar permission dummy
-        $permissions = [
-            'create_sales',
-            'edit_sales',
-            'generate_reports',
-            'manage_users',
-            'sudirman_manage',
-            'view_dashboard',
-            'view_reports',
-            'view_sales'
-        ];
-
+        $permissions = Permission::pluck('name', 'id');
         return view('roles.create', compact('permissions'));
     }
 
-    // Menyimpan data role baru
+    // Simpan role baru
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'required|array|min:1',
         ]);
 
-        // Ambil data role yang sudah ada
-        $roles = session('roles', []);
-
-        // Buat ID baru berdasarkan jumlah role sebelumnya
-        $newId = count($roles) + 1;
-
-        // Data baru
-        $newRole = [
-            'id' => $newId,
+        $role = Role::create([
             'name' => $request->name,
-            'permissions_count' => count($request->permissions),
-            'created_at' => now()->format('d/m/Y H:i:s'),
-        ];
+            'guard_name' => 'web',
+        ]);
 
-        // Simpan ke session (sementara)
-        $roles[] = $newRole;
-        session(['roles' => $roles]);
+        $role->permissions()->attach($request->permissions);
 
-        // Redirect ke halaman index
         return redirect()->route('roles.index')->with('success', 'Role berhasil ditambahkan!');
+    }
+
+    // Form edit role
+    public function edit(Role $role)
+    {
+        $permissions = Permission::pluck('name', 'id');
+        $rolePermissions = $role->permissions->pluck('id')->toArray();
+        return view('roles.edit', compact('role', 'permissions', 'rolePermissions'));
+    }
+
+    // Update role
+    public function update(Request $request, Role $role)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'permissions' => 'required|array|min:1',
+        ]);
+
+        $role->update([
+            'name' => $request->name,
+        ]);
+
+        $role->permissions()->sync($request->permissions);
+
+        return redirect()->route('roles.index')->with('success', 'Role berhasil diupdate!');
+    }
+
+    // Hapus role
+    public function destroy(Role $role)
+    {
+        $role->permissions()->detach();
+        $role->delete();
+
+        return redirect()->route('roles.index')->with('success', 'Role berhasil dihapus!');
     }
 }
