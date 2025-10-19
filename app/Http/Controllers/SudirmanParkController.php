@@ -9,9 +9,10 @@ class SudirmanParkController extends Controller
 {
     public function index()
     {
-        $customers = SudirmanPark::latest()->get();
+        $customers = SudirmanPark::latest()->get(); // ambil semua data
         return view('sudirmanpark.index', compact('customers'));
     }
+
 
     public function create()
     {
@@ -46,5 +47,14 @@ class SudirmanParkController extends Controller
     public function alamat()
     {
         return view('sudirmanpark.alamat');
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $customer = SudirmanPark::findOrFail($id);
+        $customer->status = $request->status;
+        $customer->save();
+
+        return response()->json(['success' => true]);
     }
 }

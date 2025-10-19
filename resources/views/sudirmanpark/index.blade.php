@@ -117,36 +117,57 @@
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Fauzan Thoriq P</td>
-                            <td>85784870207</td>
-                            <td>fauzanthoriqpk@gmail.com</td>
-                            <td>A-01-AA</td>
-                            <td>IzPark 30 - Rp 275.000</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-secondary">View</button>
-                            </td>
-                            <td><span class="badge bg-success">Approved</span></td>
-                            <td>
-                                <select class="form-select form-select-sm">
-                                    <option value="registration">Registration</option>
-                                    <option value="processed">Processed</option>
-                                    <option value="approved" selected>Approved</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                            </td>
-                            <td>Status sudah diperbarui</td>
-                            <td>26-09-2025</td>
-                            <td class="text-nowrap">
-                                <button class="btn btn-sm btn-warning" title="Edit"><i
-                                        class="bi bi-pencil-square"></i></button>
-                                <button class="btn btn-sm btn-primary" title="Print"><i class="bi bi-printer"></i></button>
-                                <button class="btn btn-sm btn-danger" title="Hapus"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
+<tbody>
+@forelse($customers as $index => $customer)
+<tr>
+    <td>{{ $index + 1 }}</td>
+    <td>{{ $customer->name }}</td>
+    <td>{{ $customer->phone }}</td>
+    <td>{{ $customer->email }}</td>
+    <td>{{ $customer->tower }}</td>
+    <td>{{ $customer->package }}</td>
+    <td>
+        @if($customer->ktp)
+            <a href="{{ asset('uploads/ktp/'.$customer->ktp) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
+        @else
+            <span class="text-muted">No File</span>
+        @endif
+    </td>
+    <td>
+        <span class="badge 
+            @if($customer->status == 'approved') bg-success
+            @elseif($customer->status == 'processed') bg-warning
+            @elseif($customer->status == 'registration') bg-info
+            @elseif($customer->status == 'cancelled') bg-danger
+            @endif">
+            {{ ucfirst($customer->status) }}
+        </span>
+    </td>
+    <td>
+        <select class="form-select form-select-sm status-change" data-id="{{ $customer->id }}">
+            <option value="registration" {{ $customer->status == 'registration' ? 'selected' : '' }}>Registration</option>
+            <option value="processed" {{ $customer->status == 'processed' ? 'selected' : '' }}>Processed</option>
+            <option value="approved" {{ $customer->status == 'approved' ? 'selected' : '' }}>Approved</option>
+            <option value="cancelled" {{ $customer->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+        </select>
+    </td>
+    <td>Status sudah diperbarui</td>
+    <td>{{ $customer->created_at->format('d-m-Y') }}</td>
+    <td class="text-nowrap">
+        <a href="{{ route('sudirmanpark.edit', $customer->id) }}" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
+        <button class="btn btn-sm btn-primary" title="Print"><i class="bi bi-printer"></i></button>
+        <form action="{{ route('sudirmanpark.destroy', $customer->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Yakin hapus?')">
+            @csrf
+            @method('DELETE')
+            <button class="btn btn-sm btn-danger" title="Hapus"><i class="bi bi-trash"></i></button>
+        </form>
+    </td>
+</tr>
+@empty
+<tr><td colspan="12" class="text-center text-muted">Belum ada data customer</td></tr>
+@endforelse
+</tbody>
+
                 </table>
             </div>
         </div>

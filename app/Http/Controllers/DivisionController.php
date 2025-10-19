@@ -66,4 +66,13 @@ class DivisionController extends Controller
         return redirect()->route('division.index')
             ->with('success', 'Division berhasil dihapus.');
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $division = Division::findOrFail($id);
+        $division->status = $request->status; // true/false
+        $division->save();
+
+        return response()->json(['success' => true, 'status' => $division->status]);
+    }
 }

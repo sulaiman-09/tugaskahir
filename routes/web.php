@@ -54,8 +54,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
             Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
             Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
+            // Tambahan untuk edit/update/delete
+            Route::get('/{id}/edit', [SudirmanParkController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
+            Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
+            Route::patch('/sudirmanpark/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('sudirmanpark.updateStatus');
         });
-
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {
         Route::get('/product', [ProductController::class, 'index'])->name('product.index');
@@ -66,15 +70,20 @@ Route::middleware('auth')->group(function () {
         Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
 
-
     Route::resource('/banner', BannerController::class);
 
     Route::middleware(['auth'])->group(function () {
         Route::resource('division', App\Http\Controllers\DivisionController::class);
+
+        // Route khusus update status
+        Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
     });
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/career', [CareerController::class, 'index'])->name('career.index');
+        Route::get('/career/{id}/edit', [CareerController::class, 'edit'])->name('career.edit');
+        Route::put('/career/{id}', [CareerController::class, 'update'])->name('career.update');
+        Route::delete('/career/{id}', [CareerController::class, 'destroy'])->name('career.destroy');
     });
 
     Route::middleware(['auth'])->group(function () {

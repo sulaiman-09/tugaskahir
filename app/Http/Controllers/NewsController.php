@@ -37,31 +37,44 @@ class NewsController extends Controller
         return redirect()->route('news.index')->with('success', 'News added successfully!');
     }
 
-    public function edit(News $news)
+    public function edit($id)
     {
+        $news = News::where('news_id', $id)->firstOrFail();
         return view('news.edit', compact('news'));
     }
 
-    public function update(Request $request, News $news)
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $news = News::where('news_id', $id)->firstOrFail();
+
+        $validated = $request->validate([
             'news_title' => 'required|string|max:255',
+            'news_content' => 'required|string',
+            'news_image' => 'nullable|image',
+            'news_image_app' => 'nullable|image',
+            'news_image_caption' => 'nullable|string|max:255',
+            'admin' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->all();
-
+        // update gambar jika ada upload baru
         if ($request->hasFile('news_image')) {
-            $data['news_image'] = $request->file('news_image')->store('news', 'public');
+            $validated['news_image'] = $request->file('news_image')->store('uploads/news', 'public');
         }
 
-        $news->update($data);
+        if ($request->hasFile('news_image_app')) {
+            $validated['news_image_app'] = $request->file('news_image_app')->store('uploads/news', 'public');
+        }
+
+        $news->update($validated);
 
         return redirect()->route('news.index')->with('success', 'News updated successfully!');
     }
 
-    public function destroy(News $news)
+    public function destroy($id)
     {
+        $news = News::where('news_id', $id)->firstOrFail();
         $news->delete();
+
         return redirect()->route('news.index')->with('success', 'News deleted successfully!');
     }
 }

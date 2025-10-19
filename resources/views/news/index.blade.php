@@ -112,7 +112,7 @@
                     <tbody>
                         @forelse ($news as $item)
                             <tr>
-                                <td>{{ $item->id }}</td>
+                                <td>{{ $item->news_id }}</td>
                                 <td class="fw-semibold">{{ $item->news_title }}</td>
                                 <td>{{ Str::limit($item->news_content, 50) }}</td>
                                 <td>
@@ -133,17 +133,18 @@
                                 </td>
                                 <td>{{ $item->news_image_caption ?? '-' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($item->news_created_date)->format('d M Y') }}</td>
-                                <td>{{ $item->admin }}</td>
+                                <td>{{ $item->user ? $item->user->name : '-' }}</td>
                                 <td class="text-nowrap">
-                                    <a href="{{ route('news.edit', $item->id) }}" class="btn btn-sm btn-warning me-1"
-                                        title="Edit">
+                                    <a href="{{ route('news.edit', $item->news_id) }}"
+                                        class="btn btn-sm btn-warning me-1" title="Edit">
                                         <i class="fa fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('news.destroy', $item->id) }}" method="POST"
+                                    <form action="{{ route('news.destroy', $item->news_id) }}" method="POST"
                                         style="display:inline;">
-                                        @csrf @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" title="Delete"
-                                            onclick="return confirm('Delete this news?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Hapus"
+                                            onclick="return confirm('Yakin ingin hapus berita ini?')">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </form>

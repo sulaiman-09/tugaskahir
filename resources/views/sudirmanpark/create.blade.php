@@ -34,6 +34,7 @@
         <div class="mb-3">
             <label class="form-label">Paket *</label>
             <select name="package" class="form-select" required>
+                <option value="Pilih Paket">Pilih Paket</option>
                 <option value="Test Package - Rp 500.000">Test Package - Rp 500.000</option>
             </select>
         </div>

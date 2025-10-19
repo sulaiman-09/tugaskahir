@@ -9,18 +9,17 @@ class ProductCategory extends Model
 {
     use HasFactory;
 
-    protected $table = 'product_categories'; // pastikan sesuai nama tabel kamu
+    protected $table = 'product_categories';
 
     protected $fillable = [
         'category_name',
         'slug',
         'short_description',
         'show_price',
-        'created_at',
-        'updated_at'
     ];
 
-    protected $casts = [
-        'show_price' => 'boolean',
-    ];
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'product_category_id');
+    }
 }

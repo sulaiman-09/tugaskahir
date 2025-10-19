@@ -72,7 +72,7 @@
                                 </td>
                                 <td class="fw-semibold">{{ $career->title }}</td>
                                 <td>{{ $career->type }}</td>
-                                <td>{{ $career->education }}</td>
+                                <td>{{ $career->education_level }}</td>
                                 <td>{{ $career->location }}</td>
                                 <td>
                                     <span class="badge {{ $career->status === 'Active' ? 'bg-success' : 'bg-secondary' }}">
@@ -81,12 +81,18 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($career->created_at)->format('d M Y') }}</td>
                                 <td class="text-nowrap">
-                                    <button class="btn btn-sm btn-warning me-1" title="Edit">
+                                    <a href="{{ route('career.edit', $career->id) }}" class="btn btn-sm btn-warning me-1"
+                                        title="Edit">
                                         <i class="fa fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" title="Delete">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
+                                    </a>
+                                    <form action="{{ route('career.destroy', $career->id) }}" method="POST"
+                                        class="d-inline-block" onsubmit="return confirm('Yakin hapus?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
