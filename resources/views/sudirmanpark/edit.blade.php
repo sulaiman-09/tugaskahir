@@ -19,6 +19,20 @@
         </div>
 
         <!-- dan seterusnya... -->
+        <div class="mb-3">
+            <label class="form-label">Foto KTP</label>
+            @if($customer->ktp)
+                <div class="mb-2">
+                    <a href="{{ asset('storage/ktp/'.$customer->ktp) }}" target="_blank">Lihat KTP saat ini</a>
+                </div>
+            @endif
+            <input type="file" name="ktp" class="form-control" accept="image/*,.pdf">
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="visible" class="form-check-input" id="visibleCheck" {{ $customer->visible ? 'checked' : '' }}>
+            <label class="form-check-label" for="visibleCheck">Tampilkan di daftar</label>
+        </div>
     </form>
 </div>
 @endsection

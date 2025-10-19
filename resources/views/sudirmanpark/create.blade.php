@@ -51,7 +51,12 @@
 
         <div class="mb-3">
             <label class="form-label">Foto KTP</label>
-            <input type="file" name="ktp" class="form-control">
+            <input type="file" name="ktp" class="form-control" accept="image/*,.pdf">
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="visible" class="form-check-input" id="visibleCheck" checked>
+            <label class="form-check-label" for="visibleCheck">Tampilkan di daftar</label>
         </div>
 
         <div class="mb-3">

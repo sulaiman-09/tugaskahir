@@ -9,18 +9,22 @@ class SudirmanPark extends Model
 {
     use HasFactory;
 
-    protected $table = 'sudirman_customers'; // pastikan ini sesuai nama table
+    // Table used by this model
+    protected $table = 'sudirman_parks';
 
     protected $fillable = [
-        'customer_name',
-        'customer_phone',
-        'customer_email',
-        'tower_address_id',
-        'id_card_image',    // pastikan nama kolom sesuai database
-        'package_id',
+        'name',
+        'phone',
+        'email',
+        'tower',
+        'package',
         'status',
-        'status_change',
-        'created_at',
-        'updated_at',
+        'ktp',
+        'note',
+        'visible',
+    ];
+
+    protected $casts = [
+        'visible' => 'boolean',
     ];
 }

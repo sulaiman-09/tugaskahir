@@ -54,11 +54,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
             Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
             Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
+            Route::get('/export', [SudirmanParkController::class, 'export'])->name('export');
             // Tambahan untuk edit/update/delete
             Route::get('/{id}/edit', [SudirmanParkController::class, 'edit'])->name('edit');
             Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
-            Route::patch('/sudirmanpark/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('sudirmanpark.updateStatus');
+            // toggle/update status (AJAX)
+            Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
+            Route::patch('/sudirmanpark/{id}/status', [SudirmanParkController::class, 'updateStatus']);
         });
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {

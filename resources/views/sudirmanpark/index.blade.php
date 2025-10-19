@@ -95,15 +95,14 @@
                     </ul>
                 </div>
                 {{-- Search (di kanan) --}}
-                <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center"
-                    style="max-width: 250px;">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
-                        value="{{ request('search') }}">
-                    <button type="submit"
-                        class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
-                        style="border-radius: 8px;">
-                        <i class="fa fa-search"></i>
-                    </button>
+                <form action="{{ route('sudirmanpark.index') }}" method="GET" class="d-flex align-items-center ms-auto"
+                    style="max-width: 420px; width:100%;">
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="Search name, phone or email"
+                        value="{{ $q ?? request('q') }}">
+                    <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">
+                    <button type="submit" class="btn btn-primary btn-sm ms-2" style="border-radius:8px;"><i class="fa fa-search"></i></button>
+                    <a href="{{ route('sudirmanpark.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export CSV</a>
+                    <a href="{{ route('sudirmanpark.index', array_merge(request()->except('page'), ['show_all' => $showAll ? 0 : 1])) }}" class="btn btn-outline-secondary btn-sm ms-2">{{ $showAll ? 'Hide hidden' : 'Show all' }}</a>
                 </form>
             </div>
 
@@ -117,56 +116,56 @@
                             @endforeach
                         </tr>
                     </thead>
-<tbody>
-@forelse($customers as $index => $customer)
-<tr>
-    <td>{{ $index + 1 }}</td>
-    <td>{{ $customer->name }}</td>
-    <td>{{ $customer->phone }}</td>
-    <td>{{ $customer->email }}</td>
-    <td>{{ $customer->tower }}</td>
-    <td>{{ $customer->package }}</td>
-    <td>
-        @if($customer->ktp)
-            <a href="{{ asset('uploads/ktp/'.$customer->ktp) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
-        @else
-            <span class="text-muted">No File</span>
-        @endif
-    </td>
-    <td>
-        <span class="badge 
-            @if($customer->status == 'approved') bg-success
-            @elseif($customer->status == 'processed') bg-warning
-            @elseif($customer->status == 'registration') bg-info
-            @elseif($customer->status == 'cancelled') bg-danger
-            @endif">
-            {{ ucfirst($customer->status) }}
-        </span>
-    </td>
-    <td>
-        <select class="form-select form-select-sm status-change" data-id="{{ $customer->id }}">
-            <option value="registration" {{ $customer->status == 'registration' ? 'selected' : '' }}>Registration</option>
-            <option value="processed" {{ $customer->status == 'processed' ? 'selected' : '' }}>Processed</option>
-            <option value="approved" {{ $customer->status == 'approved' ? 'selected' : '' }}>Approved</option>
-            <option value="cancelled" {{ $customer->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-        </select>
-    </td>
-    <td>Status sudah diperbarui</td>
-    <td>{{ $customer->created_at->format('d-m-Y') }}</td>
-    <td class="text-nowrap">
-        <a href="{{ route('sudirmanpark.edit', $customer->id) }}" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
-        <button class="btn btn-sm btn-primary" title="Print"><i class="bi bi-printer"></i></button>
-        <form action="{{ route('sudirmanpark.destroy', $customer->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Yakin hapus?')">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-sm btn-danger" title="Hapus"><i class="bi bi-trash"></i></button>
-        </form>
-    </td>
-</tr>
-@empty
-<tr><td colspan="12" class="text-center text-muted">Belum ada data customer</td></tr>
-@endforelse
-</tbody>
+                    <tbody>
+                        @forelse($customers as $index => $customer)
+                            <tr>
+                                <td>{{ $customers->firstItem() + $index }}</td>
+                                <td class="text-start">{{ $customer->name }}</td>
+                                <td>{{ $customer->phone }}</td>
+                                <td>{{ $customer->email }}</td>
+                                <td>{{ $customer->tower }}</td>
+                                <td>{{ $customer->package }}</td>
+                                <td>
+                                    @if($customer->ktp)
+                                        <a href="{{ asset('storage/ktp/'.$customer->ktp) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
+                                    @else
+                                        <span class="text-muted">No File</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        @if($customer->status == 'approved') bg-success
+                                        @elseif($customer->status == 'processed') bg-warning
+                                        @elseif($customer->status == 'registration') bg-info
+                                        @elseif($customer->status == 'cancelled') bg-danger
+                                        @endif">
+                                        {{ ucfirst($customer->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm status-change" data-id="{{ $customer->id }}">
+                                        <option value="registration" {{ $customer->status == 'registration' ? 'selected' : '' }}>Registration</option>
+                                        <option value="processed" {{ $customer->status == 'processed' ? 'selected' : '' }}>Processed</option>
+                                        <option value="approved" {{ $customer->status == 'approved' ? 'selected' : '' }}>Approved</option>
+                                        <option value="cancelled" {{ $customer->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                    </select>
+                                </td>
+                                <td>{{ $customer->status_change ?? '-' }}</td>
+                                <td>{{ $customer->created_at->format('d-m-Y') }}</td>
+                                <td class="text-nowrap">
+                                    <a href="{{ route('sudirmanpark.edit', $customer->id) }}" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                    <button class="btn btn-sm btn-primary" title="Print"><i class="bi bi-printer"></i></button>
+                                    <form action="{{ route('sudirmanpark.destroy', $customer->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Yakin hapus?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-danger" title="Hapus"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="12" class="text-center text-muted">Belum ada data customer</td></tr>
+                        @endforelse
+                    </tbody>
 
                 </table>
             </div>
