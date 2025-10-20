@@ -14,7 +14,7 @@ class RoleController extends Controller
         $query = Role::withCount('permissions');
 
         if ($q = $request->query('search')) {
-            // Cari pada kolom yang valid di tabel roles
+            // Cari pada kolom role yang valid
             $query->where(function($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
                     ->orWhere('guard_name', 'like', "%{$q}%");
@@ -26,7 +26,6 @@ class RoleController extends Controller
             });
         }
 
-        // Gunakan pagination untuk konsistensi UI
         $roles = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('roles.index', compact('roles'));
     }

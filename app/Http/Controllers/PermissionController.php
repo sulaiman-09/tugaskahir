@@ -8,10 +8,22 @@ use App\Models\PermissionMenu;
 class PermissionController extends Controller
 {
     // Menampilkan semua permission
-    public function index()
+    public function index(Request $request)
     {
         // Menghitung jumlah role yang memiliki permission ini
-        $permissions = PermissionMenu::withCount('roles')->get();
+        $query = PermissionMenu::withCount('roles');
+
+        // Jika ada query pencarian, batasi hasil dengan kolom yang valid
+        if ($q = $request->query('search')) {
+            $query->where('name', 'like', "%{$q}%");
+
+            // Opsional: cari berdasarkan nama role yang menggunakan permission ini
+            $query->orWhereHas('roles', function($r) use ($q) {
+                $r->where('name', 'like', "%{$q}%");
+            });
+        }
+
+        $permissions = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('permissions.index', compact('permissions'));
     }
 
