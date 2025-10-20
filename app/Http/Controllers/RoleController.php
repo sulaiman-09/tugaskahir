@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Schema;
 
 class RoleController extends Controller
 {
@@ -13,16 +14,29 @@ class RoleController extends Controller
     {
         $query = Role::withCount('permissions');
 
-        if ($q = $request->query('search')) {
-            // Cari pada kolom role yang valid
-            $query->where(function($sub) use ($q) {
-                $sub->where('name', 'like', "%{$q}%")
-                    ->orWhere('guard_name', 'like', "%{$q}%");
+        if ($search = $request->query('search')) {
+            // Ambil daftar kolom nyata dari tabel roles
+            $table = (new Role)->getTable();
+            $columns = Schema::getColumnListing($table);
+
+            // Hilangkan kolom yang tidak layak dicari jika perlu
+            $ignore = ['password', 'remember_token'];
+            $columns = array_filter($columns, fn($c) => !in_array($c, $ignore));
+
+            // Buat where dinamis: jika pencarian numerik dan kolom adalah id, gunakan equality
+            $query->where(function($qb) use ($columns, $search) {
+                foreach ($columns as $col) {
+                    if ($col === 'id' && is_numeric($search)) {
+                        $qb->orWhere($col, $search);
+                    } else {
+                        $qb->orWhere($col, 'like', "%{$search}%");
+                    }
+                }
             });
 
             // Juga cari berdasarkan nama permission terkait
-            $query->orWhereHas('permissions', function($p) use ($q) {
-                $p->where('name', 'like', "%{$q}%");
+            $query->orWhereHas('permissions', function($p) use ($search) {
+                $p->where('name', 'like', "%{$search}%");
             });
         }
 

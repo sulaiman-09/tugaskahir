@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PermissionMenu;
+use Illuminate\Support\Facades\Schema;
 
 class PermissionController extends Controller
 {
@@ -13,13 +14,25 @@ class PermissionController extends Controller
         // Menghitung jumlah role yang memiliki permission ini
         $query = PermissionMenu::withCount('roles');
 
-        // Jika ada query pencarian, batasi hasil dengan kolom yang valid
-        if ($q = $request->query('search')) {
-            $query->where('name', 'like', "%{$q}%");
+        if ($search = $request->query('search')) {
+            $table = (new PermissionMenu)->getTable();
+            $columns = Schema::getColumnListing($table);
 
-            // Opsional: cari berdasarkan nama role yang menggunakan permission ini
-            $query->orWhereHas('roles', function($r) use ($q) {
-                $r->where('name', 'like', "%{$q}%");
+            $ignore = ['guard_name'];
+            $columns = array_filter($columns, fn($c) => !in_array($c, $ignore));
+
+            $query->where(function($qb) use ($columns, $search) {
+                foreach ($columns as $col) {
+                    if ($col === 'id' && is_numeric($search)) {
+                        $qb->orWhere($col, $search);
+                    } else {
+                        $qb->orWhere($col, 'like', "%{$search}%");
+                    }
+                }
+            });
+
+            $query->orWhereHas('roles', function($r) use ($search) {
+                $r->where('name', 'like', "%{$search}%");
             });
         }
 
