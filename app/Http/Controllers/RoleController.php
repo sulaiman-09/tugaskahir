@@ -9,9 +9,25 @@ use App\Models\Permission;
 class RoleController extends Controller
 {
     // Menampilkan daftar role
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::withCount('permissions')->get();
+        $query = Role::withCount('permissions');
+
+        if ($q = $request->query('search')) {
+            // Cari pada kolom yang valid di tabel roles
+            $query->where(function($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('guard_name', 'like', "%{$q}%");
+            });
+
+            // Juga cari berdasarkan nama permission terkait
+            $query->orWhereHas('permissions', function($p) use ($q) {
+                $p->where('name', 'like', "%{$q}%");
+            });
+        }
+
+        // Gunakan pagination untuk konsistensi UI
+        $roles = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('roles.index', compact('roles'));
     }
 
