@@ -69,21 +69,22 @@
         </div>
 
         {{-- Search dan Export --}}
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="dropdown">
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="dropdown">
-                    <i class="fa fa-print"></i> Export
-                </button>
-                <ul class="dropdown-menu shadow border-0">
-                    <li><a class="dropdown-item" href="#"><i class="fa fa-file-excel text-success me-2"></i> Export
-                            XLSX</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fa fa-file-csv text-info me-2"></i> Export CSV</a>
-                    </li>
-                </ul>
+        <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+            <div class="d-flex gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="dropdown">
+                        <i class="fa fa-print"></i> Export
+                    </button>
+                    <ul class="dropdown-menu shadow border-0">
+                        <li><a class="dropdown-item" href="{{ route('customer.export', request()->query()) }}"><i class="fa fa-file-csv text-info me-2"></i> Export CSV</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-file-excel text-success me-2"></i> Export XLSX (coming)</a></li>
+                    </ul>
+                </div>
+                <a href="{{ route('customer.create') }}" class="btn btn-success btn-sm">+ New Lead</a>
             </div>
 
-            <form action="{{ route('customer.index') }}" method="GET" class="d-flex" style="max-width: 250px;">
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
+            <form action="{{ route('customer.index') }}" method="GET" class="d-flex ms-auto" style="max-width: 420px; width:100%;">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name, phone, email or product"
                     value="{{ request('search') }}">
                 <button type="submit" class="btn btn-primary btn-sm ms-2"><i class="fa fa-search"></i></button>
             </form>
@@ -112,7 +113,7 @@
                 <tbody>
                     @forelse($customers as $index => $customer)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $customers->firstItem() + $index }}</td>
                             <td>{{ $customer->name }}</td>
                             <td>{{ $customer->phone }}</td>
                             <td>{{ $customer->email }}</td>
@@ -147,7 +148,8 @@
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
                                     <form action="{{ route('customer.destroy', $customer->id) }}" method="POST"
-                                        onsubmit="return confirm('Apakah yakin ingin menghapus customer ini?')">
+                                            class="delete-form"
+                                            data-name="{{ $customer->name }}">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-sm btn-danger">
@@ -165,5 +167,28 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="mt-3">{{ $customers->links() }}</div>
     </div>
+@push('scripts')
+    <script>
+        // confirm delete with modal-like prompt
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.delete-form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var name = form.dataset.name || 'this record';
+                    if (confirm('Hapus ' + name + '? Aksi ini tidak dapat dibatalkan.')) {
+                        form.submit();
+                    }
+                });
+            });
+            // enable bootstrap tooltips if available
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                var tipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                tipTriggerList.map(function (el) { return new bootstrap.Tooltip(el) });
+            }
+        });
+    </script>
+@endpush
 @endsection
