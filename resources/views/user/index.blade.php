@@ -7,9 +7,12 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">User Management</h2>
-            <a href="{{ route('users.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Add User
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('users.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add User
+                </a>
+                <a href="{{ route('users.export', request()->query()) }}" class="btn btn-success">Export CSV</a>
+            </div>
         </div>
 
         @if (session('success'))
@@ -43,11 +46,11 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST"
-                                            style="display:inline-block;">
+                                            style="display:inline-block;" class="delete-form" data-name="{{ $user->name }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Yakin ingin hapus user ini?')">
+                                                >
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>

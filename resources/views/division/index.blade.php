@@ -26,12 +26,7 @@
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"
                         aria-labelledby="exportDropdown" style="min-width: 160px; border-radius: 10px;">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
-                                <i class="fa fa-file-excel me-2 text-success"></i> Export XLSX
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
+                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="{{ route('division.export', request()->query()) }}">
                                 <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
                             </a>
                         </li>
@@ -40,9 +35,10 @@
 
                 {{-- Search --}}
                 <form action="{{ route('division.index') }}" method="GET" class="d-flex align-items-center ms-auto"
-                    style="max-width: 250px;">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
+                    style="max-width: 420px; width:100%;">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name"
                         value="{{ request('search') }}">
+                    <a href="{{ route('division.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export CSV</a>
                     <button type="submit"
                         class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
                         style="border-radius: 8px;">
@@ -84,11 +80,10 @@
                                     <i class="fa fa-edit"></i>
                                 </a>
                                 <form action="{{ route('division.destroy', $division->id) }}" method="POST"
-                                    style="display:inline;">
+                                    style="display:inline;" class="delete-form" data-name="{{ $division->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus"
-                                        onclick="return confirm('Are you sure?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </form>

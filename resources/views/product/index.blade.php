@@ -25,8 +25,9 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="fw-bold mb-0 text-dark">Category and Benefit</h6>
 
-                    <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center" style="max-width: 250px;">
+                    <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center" style="max-width: 420px; width:100%;">
                         <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..." value="{{ request('search') }}">
+                        <a href="{{ route('product.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export CSV</a>
                         <button type="submit" class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center">
                             <i class="fa fa-search"></i>
                         </button>
@@ -48,44 +49,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Broadband Internet</td>
-                                <td>broadband-internet</td>
-                                <td>Internet cepat dan stabil untuk rumah tangga dan bisnis kecil</td>
-                                <td><span class="badge bg-success">Shown</span></td>
-                                <td class="text-start">
-                                    <ul class="mb-0">
-                                        <li>📺 Bonus puluhan channel TV</li>
-                                        <li>📶 Koneksi stabil untuk aktivitas online</li>
-                                        <li>💰 Harga terjangkau untuk rumah tangga</li>
-                                        <li>∞ Internet tanpa batasan kuota</li>
-                                    </ul>
-                                </td>
-                                <td class="text-nowrap">
-                                    <button class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Business Solutions</td>
-                                <td>business-solutions</td>
-                                <td>Solusi komprehensif untuk konektivitas dan entertainment bisnis</td>
-                                <td><span class="badge bg-secondary">Hidden</span></td>
-                                <td class="text-start">
-                                    <ul class="mb-0">
-                                        <li>⚡ Prioritas layanan pelanggan</li>
-                                        <li>📊 Memenuhi kebutuhan bisnis modern</li>
-                                        <li>🌐 IP statis untuk server dan hosting</li>
-                                        <li>📡 SLA jaminan kecepatan & uptime</li>
-                                    </ul>
-                                </td>
-                                <td class="text-nowrap">
-                                    <button class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
+                            @forelse($product as $index => $cat)
+                                <tr>
+                                    <td>{{ $product->firstItem() + $index }}</td>
+                                    <td class="text-start">{{ $cat->category_name }}</td>
+                                    <td>{{ $cat->slug }}</td>
+                                    <td class="text-start">{{ Str::limit($cat->short_description, 150) }}</td>
+                                    <td>{{ $cat->show_price ? 'Shown' : 'Hidden' }}</td>
+                                    <td class="text-start">{{-- benefits placeholder --}}</td>
+                                    <td class="text-nowrap">
+                                        <a href="{{ route('product.edit', $cat->id) }}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
+                                        <form action="{{ route('product.destroy', $cat->id) }}" method="POST" style="display:inline-block;" class="delete-form" data-name="{{ $cat->category_name }}">
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="7" class="text-center text-muted">No categories found.</td></tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

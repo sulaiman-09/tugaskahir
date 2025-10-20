@@ -411,6 +411,7 @@
             });
         });
     </script>
+    <script src="{{ asset('js/admin-ui.js') }}"></script>
 </body>
 
 </html>

@@ -32,9 +32,10 @@
 
                 <!-- Search -->
                 <form action="{{ route('banner.index') }}" method="GET" class="d-flex align-items-center"
-                    style="max-width: 250px;">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
+                    style="max-width: 420px; width:100%;">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name"
                         value="{{ request('search') }}">
+                    <a href="{{ route('banner.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export CSV</a>
                     <button type="submit"
                         class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
                         style="border-radius: 8px;">
@@ -95,14 +96,9 @@
             <!-- Footer Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    <select class="form-select form-select-sm w-auto d-inline">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
-                    </select>
-                    <small class="text-muted ms-2">Records per page</small>
+                    <small class="text-muted">Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }} of {{ $banners->total() }} Results</small>
                 </div>
-                <small class="text-muted">Showing 1 to {{ count($banners) }} of {{ count($banners) }} Results</small>
+                <div>{{ $banners->links() }}</div>
             </div>
         </div>
     </div>

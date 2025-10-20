@@ -8,10 +8,47 @@ use Illuminate\Http\Request;
 class DivisionController extends Controller
 {
     // Menampilkan semua division
-    public function index()
+    public function index(Request $request)
     {
-        $divisions = Division::orderBy('created_at', 'desc')->paginate(10);
+        $query = Division::query();
+        if ($q = $request->query('search')) {
+            $query->where('name', 'like', "%{$q}%");
+        }
+
+        $divisions = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('division.index', compact('divisions'));
+    }
+
+    public function export(Request $request)
+    {
+        $q = $request->query('search');
+        $query = Division::query();
+        if ($q) $query->where('name', 'like', "%{$q}%");
+        $items = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'divisions_export_'.now()->format('Ymd_His').'.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function() use ($items) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['ID','Name','Description','Status','Customer Leads','Created At']);
+            foreach ($items as $i) {
+                fputcsv($out, [
+                    $i->id,
+                    $i->name,
+                    $i->description,
+                    $i->status,
+                    $i->customer_leads,
+                    $i->created_at,
+                ]);
+            }
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     // Menampilkan form tambah division

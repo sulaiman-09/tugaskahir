@@ -69,18 +69,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/product', [ProductController::class, 'index'])->name('product.index');
         Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/product', [ProductController::class, 'store'])->name('product.store');
+        Route::get('/product/export', [ProductController::class, 'export'])->name('product.export');
         Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('product.edit');
         Route::put('/product/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
 
     Route::resource('/banner', BannerController::class);
+    // banner export
+    Route::get('/banner/export', [BannerController::class, 'export'])->name('banner.export');
 
     Route::middleware(['auth'])->group(function () {
         Route::resource('division', App\Http\Controllers\DivisionController::class);
 
         // Route khusus update status
         Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
+        // export divisions
+        Route::get('/division/export', [App\Http\Controllers\DivisionController::class, 'export'])->name('division.export');
     });
 
     Route::middleware(['auth'])->group(function () {
@@ -103,6 +108,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store'); // <— Tambahkan ini    
+    Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
