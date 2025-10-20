@@ -5,10 +5,19 @@
 @section('content')
     <div class="container-fluid mt-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
             <h2 class="fw-bold">User Management</h2>
-            <div class="d-flex gap-2">
-                <a href="{{ route('users.create') }}" class="btn btn-primary">
+
+            <div class="d-flex align-items-center gap-2">
+                <form action="{{ route('users.index') }}" method="GET" class="d-flex">
+                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name or email..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary btn-sm ms-2"><i class="fa fa-search"></i></button>
+                    @if(request('search'))
+                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm ms-2">Clear</a>
+                    @endif
+                </form>
+
+                <a href="{{ route('users.create') }}" class="btn btn-primary ms-2">
                     <i class="bi bi-plus-lg"></i> Add User
                 </a>
             </div>
@@ -58,6 +67,13 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Pagination --}}
+                <div class="d-flex justify-content-end mt-3">
+                    @if(method_exists($users, 'links'))
+                        {{ $users->links() }}
+                    @endif
                 </div>
             </div>
         </div>
