@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('news_image_caption')->nullable();
             $table->string('news_created_date')->nullable();
             $table->string('admin')->nullable();
+            $table->unsignedBigInteger('news_user_id')->nullable(); // ✅ Tambahkan kolom ini
             $table->timestamps();
         });
     }

@@ -4,59 +4,55 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\News;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class NewsController extends Controller
 {
-    public function index()
+    /**
+     * Tampilkan daftar berita.
+     */
+    public function index(Request $request)
     {
-        $news = News::latest()->paginate(10);
+        // Query awal
+        $query = News::orderBy('news_created_date', 'desc');
+
+        // Filter search
+        if ($request->has('search') && $request->search != '') {
+            $query->where('news_title', 'like', '%' . $request->search . '%')
+                ->orWhere('news_content', 'like', '%' . $request->search . '%');
+        }
+
+        // Pagination + withQueryString supaya search tetap di pagination
+        $news = $query->paginate(10)->withQueryString();
+
         return view('news.index', compact('news'));
     }
 
+
+    /**
+     * Tampilkan form tambah berita.
+     */
     public function create()
     {
         return view('news.create');
     }
 
+    /**
+     * Simpan berita baru ke database.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'news_title' => 'required|string|max:255',
-            'news_content' => 'nullable|string',
-            'news_image' => 'nullable|image|mimes:jpg,jpeg,png',
-        ]);
-
-        $data = $request->all();
-
-        if ($request->hasFile('news_image')) {
-            $data['news_image'] = $request->file('news_image')->store('news', 'public');
-        }
-
-        News::create($data);
-
-        return redirect()->route('news.index')->with('success', 'News added successfully!');
-    }
-
-    public function edit($id)
-    {
-        $news = News::where('news_id', $id)->firstOrFail();
-        return view('news.edit', compact('news'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $news = News::where('news_id', $id)->firstOrFail();
-
         $validated = $request->validate([
             'news_title' => 'required|string|max:255',
-            'news_content' => 'required|string',
-            'news_image' => 'nullable|image',
-            'news_image_app' => 'nullable|image',
+            'news_content' => 'nullable|string',
+            'news_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'news_image_app' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'news_image_caption' => 'nullable|string|max:255',
             'admin' => 'nullable|string|max:255',
         ]);
 
-        // update gambar jika ada upload baru
+        // Upload gambar jika ada
         if ($request->hasFile('news_image')) {
             $validated['news_image'] = $request->file('news_image')->store('uploads/news', 'public');
         }
@@ -65,14 +61,83 @@ class NewsController extends Controller
             $validated['news_image_app'] = $request->file('news_image_app')->store('uploads/news', 'public');
         }
 
+        // Tambahkan kolom wajib agar tidak error
+        $validated['news_user_id'] = Auth::id();           // user yang membuat berita
+        $validated['admin'] = Auth::user()->name;          // nama admin
+        $validated['news_created_date'] = now();           // tanggal dibuat
+
+        News::create($validated);
+
+        return redirect()->route('news.index')->with('success', 'News added successfully!');
+    }
+
+    /**
+     * Tampilkan form edit berita.
+     */
+    public function edit($id)
+    {
+        $news = News::where('news_id', $id)->firstOrFail();
+        return view('news.edit', compact('news'));
+    }
+
+    /**
+     * Update data berita.
+     */
+    public function update(Request $request, $id)
+    {
+        $news = News::where('news_id', $id)->firstOrFail();
+
+        $validated = $request->validate([
+            'news_title' => 'required|string|max:255',
+            'news_content' => 'nullable|string',
+            'news_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'news_image_app' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'news_image_caption' => 'nullable|string|max:255',
+            'admin' => 'nullable|string|max:255',
+        ]);
+
+        // Hapus dan ganti gambar utama jika upload baru
+        if ($request->hasFile('news_image')) {
+            if ($news->news_image && Storage::disk('public')->exists($news->news_image)) {
+                Storage::disk('public')->delete($news->news_image);
+            }
+            $validated['news_image'] = $request->file('news_image')->store('uploads/news', 'public');
+        }
+
+        // Hapus dan ganti gambar app jika upload baru
+        if ($request->hasFile('news_image_app')) {
+            if ($news->news_image_app && Storage::disk('public')->exists($news->news_image_app)) {
+                Storage::disk('public')->delete($news->news_image_app);
+            }
+            $validated['news_image_app'] = $request->file('news_image_app')->store('uploads/news', 'public');
+        }
+
+        // Pastikan kolom admin dan user tetap tersimpan
+        $validated['news_user_id'] = $news->news_user_id;   // jangan diubah
+        $validated['admin'] = $news->admin;                 // jangan diubah
+        $validated['news_created_date'] = $news->news_created_date; // jangan diubah
+
         $news->update($validated);
 
         return redirect()->route('news.index')->with('success', 'News updated successfully!');
     }
 
+    /**
+     * Hapus berita beserta gambar dari storage.
+     */
     public function destroy($id)
     {
         $news = News::where('news_id', $id)->firstOrFail();
+
+        // Hapus file gambar jika ada
+        if ($news->news_image && Storage::disk('public')->exists($news->news_image)) {
+            Storage::disk('public')->delete($news->news_image);
+        }
+
+        if ($news->news_image_app && Storage::disk('public')->exists($news->news_image_app)) {
+            Storage::disk('public')->delete($news->news_image_app);
+        }
+
         $news->delete();
 
         return redirect()->route('news.index')->with('success', 'News deleted successfully!');

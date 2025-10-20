@@ -9,10 +9,16 @@
             {{-- Judul --}}
             <h4 class="fw-bold mb-3 text-dark">News Management</h4>
 
-            {{-- Bagian atas: Export, Eye Toggle, Search --}}
+            {{-- Bagian atas: Add News, Export, Eye Toggle, Search --}}
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
 
                 <div class="d-flex gap-2">
+                    {{-- Tombol Add News --}}
+                    <a href="{{ route('news.create') }}" class="btn btn-primary d-flex align-items-center gap-2"
+                        style="border-radius: 8px;">
+                        <i class="fa fa-plus"></i> Add News
+                    </a>
+
                     {{-- Tombol Export --}}
                     <div class="dropdown position-relative" style="z-index: 1055;">
                         <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"
@@ -36,48 +42,6 @@
                             </li>
                         </ul>
                     </div>
-
-                    {{-- Tombol Eye Toggle Columns --}}
-                    <div class="dropdown position-relative" style="z-index: 1055;">
-                        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"
-                            type="button" id="columnDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            data-bs-display="static" title="Show/Hide Columns" style="border-radius: 8px;">
-                            <i class="fa fa-eye"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"
-                            aria-labelledby="columnDropdown" style="min-width: 200px; border-radius: 10px;">
-                            <li class="fw-bold text-secondary px-2 mb-2">Toggle Columns</li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="1" checked>ID</label></li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="2" checked>Title</label>
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="3" checked>Content</label>
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="4" checked>Image</label>
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="5" checked>Image
-                                    App</label></li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="6" checked>Caption</label>
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="7" checked>Created</label>
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="8" checked>Admin</label>
-                            </li>
-                            <li><label class="dropdown-item"><input type="checkbox"
-                                        class="form-check-input me-2 column-toggle" data-column="9" checked>Action</label>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
 
                 {{-- Search --}}
@@ -92,6 +56,7 @@
                     </button>
                 </form>
             </div>
+
 
             {{-- Tabel Data --}}
             <div class="table-responsive mt-2">

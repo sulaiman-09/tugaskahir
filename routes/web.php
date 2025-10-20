@@ -61,8 +61,11 @@ Route::middleware('auth')->group(function () {
             Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
             // toggle/update status (AJAX)
-            Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
-            Route::patch('/sudirmanpark/{id}/status', [SudirmanParkController::class, 'updateStatus']);
+            Route::patch('/sudirmanpark/{id}/status', [App\Http\Controllers\SudirmanParkController::class, 'updateStatus'])
+                ->name('sudirmanpark.updateStatus');
+            Route::get('/sudirmanpark/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('sudirmanpark.createHomepass');
+            Route::get('/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('createHomepass');
+            Route::post('/homepass/store', [SudirmanParkController::class, 'storeHomepass'])->name('storeHomepass');
         });
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Models\SudirmanTowerAddress;
 
 class SudirmanParkController extends Controller
 {
@@ -177,7 +178,9 @@ class SudirmanParkController extends Controller
 
     public function alamat()
     {
-        return view('sudirmanpark.alamat');
+        $addresses = SudirmanTowerAddress::orderBy('created_at', 'desc')->get();
+
+        return view('sudirmanpark.alamat', compact('addresses'));
     }
 
     public function updateStatus(Request $request, $id)
@@ -188,4 +191,71 @@ class SudirmanParkController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function createHomepass()
+    {
+        return view('sudirmanpark.createHomepass');
+    }
+
+    public function storeHomepass(Request $request)
+    {
+        $request->validate([
+            'tower' => 'required|string|max:10',
+            'floor' => 'required|string|max:10',
+            'unit' => 'required|string|max:10',
+            'status' => 'required|string',
+        ]);
+
+        // Buat alamat lengkap otomatis
+        $alamatLengkap = strtoupper($request->tower . '-' . $request->floor . '-' . $request->unit);
+
+        // Simpan ke database
+        SudirmanTowerAddress::create([
+            'tower' => strtoupper($request->tower),
+            'floor' => strtoupper($request->floor),
+            'unit' => strtoupper($request->unit),
+            'alamat_lengkap' => $alamatLengkap,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass baru berhasil ditambahkan!');
+    }
+
+    public function editHomepass($id)
+    {
+        $address = SudirmanTowerAddress::findOrFail($id);
+        return view('sudirmanpark.editHomepass', compact('address'));
+    }
+
+    public function updateHomepass(Request $request, $id)
+    {
+        $request->validate([
+            'tower' => 'required|string|max:10',
+            'floor' => 'required|string|max:10',
+            'unit' => 'required|string|max:10',
+            'status' => 'required|string',
+        ]);
+
+        $address = SudirmanTowerAddress::findOrFail($id);
+        $alamatLengkap = strtoupper($request->tower . '-' . $request->floor . '-' . $request->unit);
+
+        $address->update([
+            'tower' => strtoupper($request->tower),
+            'floor' => strtoupper($request->floor),
+            'unit' => strtoupper($request->unit),
+            'alamat_lengkap' => $alamatLengkap,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass berhasil diperbarui!');
+    }
+
+    public function destroyHomepass($id)
+    {
+        $address = SudirmanTowerAddress::findOrFail($id);
+        $address->delete();
+
+        return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass berhasil dihapus!');
+    }
+    
 }
