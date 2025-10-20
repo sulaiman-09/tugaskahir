@@ -26,6 +26,7 @@ class RoleController extends Controller
             });
         }
 
+        // Kembalikan hasil dengan pagination agar UI konsisten
         $roles = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('roles.index', compact('roles'));
     }
