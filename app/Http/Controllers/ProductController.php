@@ -19,37 +19,7 @@ class ProductController extends Controller
         return view('product.index', compact('product'));
     }
 
-    public function export(Request $request)
-    {
-        $q = $request->query('search');
-        $query = ProductCategory::query();
-        if ($q) $query->where('category_name', 'like', "%{$q}%");
-        $items = $query->orderBy('created_at', 'desc')->get();
-
-        $filename = 'product_categories_export_'.now()->format('Ymd_His').'.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function() use ($items) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID','Category Name','Slug','Short Description','Show Price','Created At']);
-            foreach ($items as $i) {
-                fputcsv($out, [
-                    $i->id,
-                    $i->category_name,
-                    $i->slug,
-                    $i->short_description,
-                    $i->show_price,
-                    $i->created_at,
-                ]);
-            }
-            fclose($out);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
+    // export removed per request
 
     // Tampilkan form tambah
     public function create()

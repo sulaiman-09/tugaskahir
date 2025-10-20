@@ -11,7 +11,6 @@
                 <a href="{{ route('users.create') }}" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Add User
                 </a>
-                <a href="{{ route('users.export', request()->query()) }}" class="btn btn-success">Export CSV</a>
             </div>
         </div>
 

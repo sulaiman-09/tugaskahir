@@ -27,7 +27,6 @@
 
                     <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center" style="max-width: 420px; width:100%;">
                         <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..." value="{{ request('search') }}">
-                        <a href="{{ route('product.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export CSV</a>
                         <button type="submit" class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center">
                             <i class="fa fa-search"></i>
                         </button>
