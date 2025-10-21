@@ -77,7 +77,6 @@
                     </button>
                     <ul class="dropdown-menu shadow border-0">
                         <li><a class="dropdown-item" href="{{ route('customer.export', request()->query()) }}"><i class="fa fa-file-csv text-info me-2"></i> Export CSV</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fa fa-file-excel text-success me-2"></i> Export XLSX (coming)</a></li>
                     </ul>
                 </div>
                 <a href="{{ route('customer.create') }}" class="btn btn-success btn-sm">+ New Lead</a>

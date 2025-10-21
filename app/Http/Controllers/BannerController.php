@@ -19,39 +19,6 @@ class BannerController extends Controller
         return view('banner.index', compact('banners'));
     }
 
-    // Export CSV
-    public function export(Request $request)
-    {
-        $q = $request->query('search');
-        $query = Banner::query();
-        if ($q) $query->where('name', 'like', "%{$q}%");
-        $items = $query->orderBy('created_at', 'desc')->get();
-
-        $filename = 'banners_export_'.now()->format('Ymd_His').'.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function() use ($items) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID','Name','Web Image','Mobile Image','Status','Created At']);
-            foreach ($items as $i) {
-                fputcsv($out, [
-                    $i->id,
-                    $i->name,
-                    $i->web_image,
-                    $i->mobile_image,
-                    $i->status,
-                    $i->created_at,
-                ]);
-            }
-            fclose($out);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
     // Tampilkan form tambah banner
     public function create()
     {
@@ -65,16 +32,19 @@ class BannerController extends Controller
             'name' => 'required|string|max:255',
             'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'mobile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'status' => 'nullable|boolean',
         ]);
 
-        // Upload gambar jika ada
+        unset($validated['status']);
+
         if ($request->hasFile('web_image')) {
             $validated['web_image'] = $request->file('web_image')->store('banners', 'public');
         }
         if ($request->hasFile('mobile_image')) {
             $validated['mobile_image'] = $request->file('mobile_image')->store('banners', 'public');
         }
+
+        // 🩹 Tambahkan baris ini (biar field path gak null)
+        $validated['path'] = $validated['web_image'] ?? '';
 
         Banner::create($validated);
 
@@ -95,12 +65,12 @@ class BannerController extends Controller
             'name' => 'required|string|max:255',
             'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'mobile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'status' => 'nullable|boolean',
         ]);
+
+        unset($validated['status']); // cegah error karena kolom tidak ada
 
         $banner = Banner::findOrFail($id);
 
-        // Upload gambar baru jika ada
         if ($request->hasFile('web_image')) {
             $validated['web_image'] = $request->file('web_image')->store('banners', 'public');
         }
@@ -120,5 +90,40 @@ class BannerController extends Controller
         $banner->delete();
 
         return redirect()->route('banner.index')->with('success', 'Banner berhasil dihapus.');
+    }
+
+    public function export(Request $request)
+    {
+        $q = $request->query('search');
+        $query = Banner::query();
+
+        if ($q) {
+            $query->where('name', 'like', "%{$q}%");
+        }
+
+        $items = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'banners_export_' . now()->format('Ymd_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($items) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['ID', 'Name', 'Web Image', 'Mobile Image', 'Created At']);
+            foreach ($items as $i) {
+                fputcsv($out, [
+                    $i->id,
+                    $i->name,
+                    $i->web_image,
+                    $i->mobile_image,
+                    $i->created_at,
+                ]);
+            }
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

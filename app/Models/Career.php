@@ -2,20 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Career extends Model
 {
-    protected $table = 'careers'; // sesuaikan dengan nama table
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'type',
         'education_level',
         'location',
-        'job_overview',
+        'overview',
         'job_requirements',
         'description',
         'image',
-        'status',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }

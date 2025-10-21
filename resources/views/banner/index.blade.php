@@ -8,34 +8,18 @@
         <!-- Card Utama -->
         <div class="card shadow-sm border-0 p-4">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                <!-- Tombol Print Dropdown -->
-                <div class="dropdown position-relative" style="z-index: 1055;">
-                    <button class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center"
-                        type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                        data-bs-display="static" title="Export Data" style="border-radius: 8px;">
-                        <i class="fa fa-print"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"
-                        aria-labelledby="exportDropdown" style="min-width: 170px; border-radius: 10px;">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
-                                <i class="fa fa-file-excel me-2 text-success"></i> Export XLSX
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
-                                <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <!-- Tombol Add Banner -->
+                <a href="{{ route('banner.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
+                    <i class="fa fa-plus me-2"></i> Add Banner
+                </a>
 
                 <!-- Search -->
                 <form action="{{ route('banner.index') }}" method="GET" class="d-flex align-items-center"
                     style="max-width: 420px; width:100%;">
                     <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name"
                         value="{{ request('search') }}">
-                    <a href="{{ route('banner.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export CSV</a>
+                    <a href="{{ route('banner.export', request()->query()) }}" class="btn btn-success btn-sm ms-2">Export
+                        CSV</a>
                     <button type="submit"
                         class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
                         style="border-radius: 8px;">
@@ -75,13 +59,22 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-warning me-1" title="Edit">
+                                    {{-- Tombol Edit --}}
+                                    <a href="{{ route('banner.edit', $banner->id) }}" class="btn btn-sm btn-warning me-1"
+                                        title="Edit">
                                         <i class="fa fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" title="Delete">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
+                                    </a>
+                                    {{-- Tombol Delete --}}
+                                    <form action="{{ route('banner.destroy', $banner->id) }}" method="POST"
+                                        class="d-inline" onsubmit="return confirm('Yakin ingin menghapus banner ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
+
                             </tr>
                         @empty
                             <tr>
@@ -92,11 +85,11 @@
                 </table>
             </div>
 
-
             <!-- Footer Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
-                    <small class="text-muted">Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }} of {{ $banners->total() }} Results</small>
+                    <small class="text-muted">Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }}
+                        of {{ $banners->total() }} Results</small>
                 </div>
                 <div>{{ $banners->links() }}</div>
             </div>

@@ -26,17 +26,10 @@
                             data-bs-display="static" title="Export Data" style="border-radius: 8px;">
                             <i class="fa fa-print"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"
-                            aria-labelledby="exportDropdown" style="min-width: 160px; border-radius: 10px;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"aria-labelledby="exportDropdown" style="min-width: 160px; border-radius: 10px;">
                             <li>
                                 <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light"
-                                    href="#">
-                                    <i class="fa fa-file-excel me-2 text-success"></i> Export XLSX
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light"
-                                    href="#">
+                                    href="{{ route('news.export.csv') }}">
                                     <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
                                 </a>
                             </li>
@@ -100,8 +93,8 @@
                                 <td>{{ \Carbon\Carbon::parse($item->news_created_date)->format('d M Y') }}</td>
                                 <td>{{ $item->user ? $item->user->name : '-' }}</td>
                                 <td class="text-nowrap">
-                                    <a href="{{ route('news.edit', $item->news_id) }}"
-                                        class="btn btn-sm btn-warning me-1" title="Edit">
+                                    <a href="{{ route('news.edit', $item->news_id) }}" class="btn btn-sm btn-warning me-1"
+                                        title="Edit">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                     <form action="{{ route('news.destroy', $item->news_id) }}" method="POST"

@@ -22,29 +22,40 @@ class DivisionController extends Controller
     public function export(Request $request)
     {
         $q = $request->query('search');
-        $query = Division::query();
-        if ($q) $query->where('name', 'like', "%{$q}%");
+        $query = \App\Models\Division::query();
+
+        // Filter by search
+        if ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhere('status', 'like', "%{$q}%");
+            });
+        }
+
         $items = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'divisions_export_'.now()->format('Ymd_His').'.csv';
+        $filename = 'divisions_export_' . now()->format('Ymd_His') . '.csv';
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
-        $callback = function() use ($items) {
+        $callback = function () use ($items) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID','Name','Description','Status','Customer Leads','Created At']);
+            fputcsv($out, ['ID', 'Name', 'Description', 'Status', 'Customer Leads', 'Created At']);
+
             foreach ($items as $i) {
                 fputcsv($out, [
                     $i->id,
                     $i->name,
                     $i->description,
-                    $i->status,
+                    $i->status ? 'Active' : 'Inactive',
                     $i->customer_leads,
                     $i->created_at,
                 ]);
             }
+
             fclose($out);
         };
 

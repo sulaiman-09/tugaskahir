@@ -8,6 +8,7 @@
 
             <h4 class="fw-bold mb-3 text-dark">Edit Career</h4>
 
+            {{-- Form Update --}}
             <form action="{{ route('career.update', $career->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -43,7 +44,7 @@
 
                 {{-- Education Level --}}
                 <div class="mb-3">
-                    <label for="education" class="form-label">Education Level</label>
+                    <label for="education_level" class="form-label">Education Level</label>
                     <select class="form-select @error('education_level') is-invalid @enderror" id="education_level"
                         name="education_level">
                         @php
@@ -56,7 +57,7 @@
                             </option>
                         @endforeach
                     </select>
-                    @error('education')
+                    @error('education_level')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -83,12 +84,11 @@
                 {{-- Job Requirements --}}
                 <div class="mb-3">
                     <label class="form-label">Job Requirements</label>
+                    @php
+                        $requirements = $career->job_requirements ? explode("\n", $career->job_requirements) : [];
+                    @endphp
 
                     <div id="requirements-wrapper" class="d-flex flex-column gap-2">
-                        @php
-                            $requirements = $career->job_requirements ? explode("\n", $career->job_requirements) : [];
-                        @endphp
-
                         @forelse($requirements as $req)
                             <div class="d-flex gap-2 requirement-item">
                                 <input type="text" name="job_requirements[]" class="form-control"
@@ -104,8 +104,7 @@
                         @endforelse
                     </div>
 
-                    <button type="button" id="add-requirement" class="btn btn-sm btn-primary mt-2">+ Add
-                        Requirement</button>
+                    <button type="button" id="add-requirement" class="btn btn-sm btn-primary mt-2">+ Add Requirement</button>
                     @error('job_requirements')
                         <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
@@ -127,6 +126,7 @@
                     <input type="file" class="form-control @error('image') is-invalid @enderror" id="image"
                         name="image">
                     @if ($career->image)
+                        <small class="text-muted d-block mt-1">Current image:</small>
                         <img src="{{ asset($career->image) }}" alt="Current Image" class="img-thumbnail mt-2"
                             width="150">
                     @endif
@@ -138,10 +138,9 @@
                 {{-- Status --}}
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
-                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status"
-                        required>
-                        <option value="Active" {{ old('status', $career->status) === 'Active' ? 'selected' : '' }}>Active
-                        </option>
+                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                        <option value="Active" {{ old('status', $career->status) === 'Active' ? 'selected' : '' }}>
+                            Active</option>
                         <option value="Inactive" {{ old('status', $career->status) === 'Inactive' ? 'selected' : '' }}>
                             Inactive</option>
                     </select>
@@ -150,12 +149,14 @@
                     @enderror
                 </div>
 
-                {{-- Submit --}}
-                <button type="submit" class="btn btn-primary">Update Career</button>
-                <a href="{{ route('career.index') }}" class="btn btn-secondary">Cancel</a>
+                {{-- Buttons --}}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Update Career</button>
+                    <a href="{{ route('career.index') }}" class="btn btn-secondary">Cancel</a>
+                </div>
             </form>
 
-            {{-- Current Career Details --}}
+            {{-- Detail Informasi --}}
             <div class="mt-4">
                 <h5 class="mb-3">Current Career Details</h5>
 
@@ -165,15 +166,7 @@
                         <dd class="col-sm-9">{{ $career->type }}</dd>
 
                         <dt class="col-sm-3 fw-semibold">Education Level</dt>
-                        <dd class="col-sm-9">
-                            <input type="text"
-                                class="form-control form-control-sm @error('education_level') is-invalid @enderror"
-                                id="education_level" name="education_level"
-                                value="{{ old('education_level', $career->education_level) }}">
-                            @error('education_level')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </dd>
+                        <dd class="col-sm-9">{{ $career->education_level }}</dd>
 
                         <dt class="col-sm-3 fw-semibold">Location</dt>
                         <dd class="col-sm-9">{{ $career->location }}</dd>
@@ -197,28 +190,27 @@
     </div>
 @endsection
 
-
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const wrapper = document.getElementById('requirements-wrapper');
-            const addBtn = document.getElementById('add-requirement');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wrapper = document.getElementById('requirements-wrapper');
+        const addBtn = document.getElementById('add-requirement');
 
-            addBtn.addEventListener('click', function() {
-                const div = document.createElement('div');
-                div.classList.add('d-flex', 'gap-2', 'requirement-item');
-                div.innerHTML = `
-            <input type="text" name="job_requirements[]" class="form-control" placeholder="Enter requirement">
-            <button type="button" class="btn btn-danger btn-sm remove-requirement">Delete</button>
-        `;
-                wrapper.appendChild(div);
-            });
-
-            wrapper.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-requirement')) {
-                    e.target.parentElement.remove();
-                }
-            });
+        addBtn.addEventListener('click', function() {
+            const div = document.createElement('div');
+            div.classList.add('d-flex', 'gap-2', 'requirement-item');
+            div.innerHTML = `
+                <input type="text" name="job_requirements[]" class="form-control" placeholder="Enter requirement">
+                <button type="button" class="btn btn-danger btn-sm remove-requirement">Delete</button>
+            `;
+            wrapper.appendChild(div);
         });
-    </script>
+
+        wrapper.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-requirement')) {
+                e.target.parentElement.remove();
+            }
+        });
+    });
+</script>
 @endpush

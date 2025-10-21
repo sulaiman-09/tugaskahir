@@ -21,12 +21,8 @@
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"
                         aria-labelledby="exportDropdown" style="min-width: 160px; border-radius: 10px;">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
-                                <i class="fa fa-file-excel me-2 text-success"></i> Export XLSX
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light" href="#">
+                            <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light"
+                                href="{{ route('career.export', request()->query()) }}">
                                 <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
                             </a>
                         </li>
@@ -44,6 +40,13 @@
                         <i class="fa fa-search"></i>
                     </button>
                 </form>
+            </div>
+
+            {{-- Tombol Add Career --}}
+            <div class="mb-3">
+                <a href="{{ route('career.create') }}" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus"></i> Add Career
+                </a>
             </div>
 
             {{-- Tabel Data Career --}}

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\News;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class NewsController extends Controller
 {
@@ -141,5 +144,67 @@ class NewsController extends Controller
         $news->delete();
 
         return redirect()->route('news.index')->with('success', 'News deleted successfully!');
+    }
+
+    public function exportCsv()
+    {
+        $fileName = 'news_' . date('Y-m-d_H-i-s') . '.csv';
+        $newsList = News::select('news_title', 'news_image_caption', 'news_user_id', 'news_created_date')->get();
+
+        $response = new StreamedResponse(function () use ($newsList) {
+            $handle = fopen('php://output', 'w');
+            // Header CSV
+            fputcsv($handle, ['Title', 'Image Caption', 'Created By (User ID)', 'Created Date']);
+
+            foreach ($newsList as $news) {
+                fputcsv($handle, [
+                    $news->news_title,
+                    $news->news_image_caption,
+                    $news->news_user_id,
+                    $news->news_created_date,
+                ]);
+            }
+
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+
+        return $response;
+    }
+
+
+    public function exportXlsx()
+    {
+        $fileName = 'news_' . date('Y-m-d_H-i-s') . '.xlsx';
+        $newsList = News::select('news_title', 'news_image_caption', 'news_user_id', 'news_created_date')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->fromArray(['Title', 'Image Caption', 'Created By (User ID)', 'Created Date'], null, 'A1');
+
+        // Data
+        $row = 2;
+        foreach ($newsList as $news) {
+            $sheet->setCellValue('A' . $row, $news->news_title);
+            $sheet->setCellValue('B' . $row, $news->news_image_caption);
+            $sheet->setCellValue('C' . $row, $news->news_user_id);
+            $sheet->setCellValue('D' . $row, $news->news_created_date);
+            $row++;
+        }
+
+        // Auto size
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $tempFile = tempnam(sys_get_temp_dir(), 'news_export_');
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 }

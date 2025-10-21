@@ -77,17 +77,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
 
-    Route::resource('/banner', BannerController::class);
-    // banner export
-    Route::get('/banner/export', [BannerController::class, 'export'])->name('banner.export');
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('banner', App\Http\Controllers\BannerController::class)->except(['show']);
+        Route::get('/banner/export', [App\Http\Controllers\BannerController::class, 'export'])->name('banner.export');
+    });
 
     Route::middleware(['auth'])->group(function () {
-        Route::resource('division', App\Http\Controllers\DivisionController::class);
-
-        // Route khusus update status
-        Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
-        // export divisions
+        // Letakkan di atas dulu
         Route::get('/division/export', [App\Http\Controllers\DivisionController::class, 'export'])->name('division.export');
+        Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
+        // Baru resource di bawah
+        Route::resource('division', App\Http\Controllers\DivisionController::class);
     });
 
     Route::middleware(['auth'])->group(function () {
@@ -95,16 +95,25 @@ Route::middleware('auth')->group(function () {
         Route::get('/career/{id}/edit', [CareerController::class, 'edit'])->name('career.edit');
         Route::put('/career/{id}', [CareerController::class, 'update'])->name('career.update');
         Route::delete('/career/{id}', [CareerController::class, 'destroy'])->name('career.destroy');
+        Route::get('career/export', [App\Http\Controllers\CareerController::class, 'export'])->name('career.export');
+        Route::get('/career/create', [CareerController::class, 'create'])->name('career.create');
+        Route::post('/career', [CareerController::class, 'store'])->name('career.store');
     });
 
     Route::middleware(['auth'])->group(function () {
         Route::resource('news', NewsController::class);
+        Route::get('news/export/csv', [NewsController::class, 'exportCsv'])->name('news.export.csv');
+        Route::get('news/export/xlsx', [NewsController::class, 'exportXlsx'])->name('news.export.xlsx');
     });
 
     Route::prefix('settings-content')->group(function () {
         Route::get('/', [SettingsContentController::class, 'index'])->name('settings-content.index');
+        Route::get('/create', [SettingsContentController::class, 'create'])->name('settings-content.create');
+        Route::post('/', [SettingsContentController::class, 'store'])->name('settings-content.store');
         Route::get('/{id}/edit', [SettingsContentController::class, 'edit'])->name('settings-content.edit');
         Route::put('/{id}', [SettingsContentController::class, 'update'])->name('settings-content.update');
+        Route::delete('/{id}', [SettingsContentController::class, 'destroy'])->name('settings-content.destroy');
+        Route::get('settings-content/export', [SettingsContentController::class, 'export'])->name('settings-content.export');
     });
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

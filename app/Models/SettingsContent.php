@@ -15,7 +15,10 @@ class SettingsContent extends Model
         'content_type_id',
         'title',
         'name',
+        'description',
         'order',
+        'image',
+        'icon',
         'is_active',
     ];
 
