@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\SudirmanTowerAddress;
+use Illuminate\Support\Facades\Response;
 
 class SudirmanParkController extends Controller
 {
@@ -176,12 +177,26 @@ class SudirmanParkController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    public function alamat()
+    public function alamat(Request $request)
     {
-        $addresses = SudirmanTowerAddress::orderBy('created_at', 'desc')->get();
+        $q = $request->q;
+        $showAll = $request->query('show_all') == '1';
 
-        return view('sudirmanpark.alamat', compact('addresses'));
+        $query = SudirmanTowerAddress::query();
+
+        // Fitur search
+        if ($q) {
+            $query->where('tower', 'like', "%{$q}%")
+                ->orWhere('floor', 'like', "%{$q}%")
+                ->orWhere('unit', 'like', "%{$q}%")
+                ->orWhere('alamat_lengkap', 'like', "%{$q}%");
+        }
+
+        $addresses = $query->latest()->paginate(10)->withQueryString();
+
+        return view('sudirmanpark.alamat', compact('addresses', 'q', 'showAll'));
     }
+
 
     public function updateStatus(Request $request, $id)
     {
@@ -257,5 +272,47 @@ class SudirmanParkController extends Controller
 
         return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass berhasil dihapus!');
     }
-    
+
+    public function exportHomepass(Request $request)
+    {
+        $query = SudirmanTowerAddress::query(); // pakai model yang benar
+
+        // Fitur search
+        if ($request->filled('q')) {
+            $search = $request->input('q');
+            $query->where('tower', 'like', "%{$search}%")
+                ->orWhere('floor', 'like', "%{$search}%")
+                ->orWhere('unit', 'like', "%{$search}%")
+                ->orWhere('alamat_lengkap', 'like', "%{$search}%");
+        }
+
+        $homepasses = $query->get();
+
+        $csvHeader = ['Tower', 'Floor', 'Unit', 'Alamat Lengkap', 'Jumlah Customer', 'Status', 'Tanggal Dibuat'];
+        $filename = 'homepass_export_' . date('Ymd_His') . '.csv';
+
+        $callback = function () use ($homepasses, $csvHeader) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $csvHeader);
+
+            foreach ($homepasses as $h) {
+                fputcsv($file, [
+                    $h->tower,
+                    $h->floor,
+                    $h->unit,
+                    $h->alamat_lengkap,
+                    $h->jumlah_customer ?? 0,
+                    $h->status,
+                    $h->created_at->format('d/m/Y H:i:s'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$filename}"
+        ]);
+    }
 }

@@ -66,6 +66,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/sudirmanpark/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('sudirmanpark.createHomepass');
             Route::get('/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('createHomepass');
             Route::post('/homepass/store', [SudirmanParkController::class, 'storeHomepass'])->name('storeHomepass');
+            // Export Homepass / Alamat
+            Route::get('/homepass/export', [SudirmanParkController::class, 'exportHomepass'])->name('exportHomepass');
         });
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {

@@ -3,184 +3,180 @@
 @section('title', 'News Management')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="card shadow-sm p-4">
+    <div class="container py-4">
+        {{-- Judul --}}
+        <h3 class="fw-bold mb-4 text-dark">News Management</h3>
 
-            {{-- Judul --}}
-            <h4 class="fw-bold mb-3 text-dark">News Management</h4>
-
-            {{-- Bagian atas: Add News, Export, Eye Toggle, Search --}}
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-
-                <div class="d-flex gap-2">
-                    {{-- Tombol Add News --}}
-                    <a href="{{ route('news.create') }}" class="btn btn-primary d-flex align-items-center gap-2"
-                        style="border-radius: 8px;">
-                        <i class="fa fa-plus"></i> Add News
+        {{-- Card Utama --}}
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                {{-- Kiri: Export & Tambah --}}
+                <div class="d-flex align-items-center gap-2">
+                    {{-- Tombol Export --}}
+                    <a href="{{ route('news.export.csv') }}"
+                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                        <i class="fa fa-print me-2"></i> Export CSV
                     </a>
 
-                    {{-- Tombol Export --}}
-                    <div class="dropdown position-relative" style="z-index: 1055;">
-                        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"
-                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            data-bs-display="static" title="Export Data" style="border-radius: 8px;">
-                            <i class="fa fa-print"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 show-on-top"aria-labelledby="exportDropdown" style="min-width: 160px; border-radius: 10px;">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center rounded-2 py-2 hover-bg-light"
-                                    href="{{ route('news.export.csv') }}">
-                                    <i class="fa fa-file-csv me-2 text-info"></i> Export CSV
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    {{-- Tombol Add News --}}
+                    <a href="{{ route('news.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
+                        <i class="fa fa-plus me-2"></i> Add News
+                    </a>
                 </div>
 
-                {{-- Search --}}
-                <form action="{{ route('news.index') }}" method="GET" class="d-flex align-items-center"
-                    style="max-width: 250px;">
-                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Search..."
-                        value="{{ request('search') }}">
-                    <button type="submit"
-                        class="btn btn-primary btn-sm ms-2 d-flex align-items-center justify-content-center"
-                        style="border-radius: 8px;">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </form>
+                {{-- Kanan: Search --}}
+                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
+                    <form action="{{ route('news.index') }}" method="GET" class="d-flex w-100">
+                        <input type="text" name="search" class="form-control form-control-sm"
+                            placeholder="Search title, caption, or admin..." value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
 
-
             {{-- Tabel Data --}}
-            <div class="table-responsive mt-2">
-                <table class="table table-striped table-hover align-middle text-center" id="newsTable">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Content</th>
-                            <th>Image</th>
-                            <th>Image App</th>
-                            <th>Caption</th>
-                            <th>Created</th>
-                            <th>Admin</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($news as $item)
-                            <tr>
-                                <td>{{ $item->news_id }}</td>
-                                <td class="fw-semibold">{{ $item->news_title }}</td>
-                                <td>{{ Str::limit($item->news_content, 50) }}</td>
-                                <td>
-                                    @if ($item->news_image)
-                                        <img src="{{ asset($item->news_image) }}" alt="News Image" width="60"
-                                            class="rounded border shadow-sm">
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($item->news_image_app)
-                                        <img src="{{ asset($item->news_image_app) }}" alt="App Image" width="60"
-                                            class="rounded border shadow-sm">
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>{{ $item->news_image_caption ?? '-' }}</td>
-                                <td>{{ \Carbon\Carbon::parse($item->news_created_date)->format('d M Y') }}</td>
-                                <td>{{ $item->user ? $item->user->name : '-' }}</td>
-                                <td class="text-nowrap">
-                                    <a href="{{ route('news.edit', $item->news_id) }}" class="btn btn-sm btn-warning me-1"
-                                        title="Edit">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('news.destroy', $item->news_id) }}" method="POST"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Hapus"
-                                            onclick="return confirm('Yakin ingin hapus berita ini?')">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
+                        <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                            <tr class="fw-semibold text-dark">
+                                <th style="width: 50px;">ID</th>
+                                <th>Title</th>
+                                <th>Content</th>
+                                <th>Image (Web)</th>
+                                <th>Image (App)</th>
+                                <th>Caption</th>
+                                <th>Created Date</th>
+                                <th>Admin</th>
+                                <th style="width: 110px;">Action</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-muted text-center">No news found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse ($news as $item)
+                                <tr>
+                                    <td>{{ $item->news_id }}</td>
+                                    <td class="text-start ps-3 fw-semibold">{{ $item->news_title }}</td>
+                                    <td>{{ Str::limit($item->news_content, 50) }}</td>
+                                    <td>
+                                        @if ($item->news_image)
+                                            <img src="{{ asset($item->news_image) }}" alt="Web Image" width="70"
+                                                class="rounded border shadow-sm">
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($item->news_image_app)
+                                            <img src="{{ asset($item->news_image_app) }}" alt="App Image" width="70"
+                                                class="rounded border shadow-sm">
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $item->news_image_caption ?? '-' }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item->news_created_date)->format('d M Y') }}</td>
+                                    <td>{{ $item->user ? $item->user->name : '-' }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="{{ route('news.edit', $item->news_id) }}"
+                                                class="btn btn-warning btn-sm" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <form action="{{ route('news.destroy', $item->news_id) }}" method="POST"
+                                                class="delete-form" data-title="{{ $item->news_title }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="text-muted text-center py-4">No news data available</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {{-- Pagination --}}
-            <div class="d-flex justify-content-end mt-3">
+            <div class="d-flex justify-content-end mt-3 me-3 mb-3">
                 {{ $news->links() }}
             </div>
         </div>
     </div>
-@endsection
 
-@push('styles')
-    <style>
-        .btn-outline-primary {
-            border: 1.5px solid #007bff;
-            color: #007bff;
-            background: #fff;
-            transition: all 0.2s ease;
-        }
-
-        .btn-outline-primary:hover {
-            background: #007bff;
-            color: #fff;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .table th,
-        .table td {
-            vertical-align: middle;
-        }
-
-        /* Header biru lembut */
-        .table-primary th {
-            background-color: #cfe2ff;
-            color: #003366;
-        }
-
-        .dropdown-menu.show-on-top {
-            position: absolute !important;
-            right: 0 !important;
-            top: auto !important;
-            transform: translateY(40px);
-        }
-    </style>
-@endpush
-
-@push('scripts')
-    <script>
-        // Toggle kolom sesuai checkbox
-        document.querySelectorAll('.column-toggle').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                const colIndex = parseInt(this.dataset.column) - 1;
-                document.querySelectorAll('#newsTable tr').forEach(function(row) {
-                    if (row.cells[colIndex]) {
-                        row.cells[colIndex].style.display = checkbox.checked ? '' : 'none';
-                    }
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Konfirmasi hapus
+                document.querySelectorAll('.delete-form').forEach(form => {
+                    form.addEventListener('submit', e => {
+                        e.preventDefault();
+                        const title = form.dataset.title || 'berita ini';
+                        if (confirm(
+                            `Yakin ingin menghapus ${title}? Aksi ini tidak dapat dibatalkan.`)) {
+                            form.submit();
+                        }
+                    });
                 });
             });
-        });
-    </script>
-@endpush
+        </script>
+    @endpush
+
+    @push('styles')
+        <style>
+            /* Tombol */
+            .btn-outline-secondary {
+                border: 1.5px solid #6c757d;
+                color: #6c757d;
+                background: #fff;
+                transition: all 0.2s ease;
+            }
+
+            .btn-outline-secondary:hover {
+                background: #6c757d;
+                color: #fff;
+            }
+
+            .btn-primary {
+                background-color: #007bff;
+                border: none;
+                transition: all 0.2s ease;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+            /* Tabel */
+            .table th,
+            .table td {
+                vertical-align: middle;
+            }
+
+            .table thead {
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+            }
+
+            .table-striped>tbody>tr:nth-of-type(odd) {
+                background-color: #fdfdff;
+            }
+
+            .table-striped>tbody>tr:hover {
+                background-color: #eef5ff;
+            }
+
+            .fw-semibold {
+                font-weight: 600;
+            }
+        </style>
+    @endpush
+@endsection

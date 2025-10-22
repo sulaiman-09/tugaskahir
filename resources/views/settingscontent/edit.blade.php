@@ -3,113 +3,135 @@
 @section('title', 'Edit Content')
 
 @section('content')
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <div class="container py-4">
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
 
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-header bg-primary text-white text-center rounded-top-4">
-                    <h4 class="mb-0">Edit Content</h4>
-                </div>
-
-                <div class="card-body p-4">
-                    <form action="{{ route('settings-content.update', $content->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        {{-- Title --}}
-                        <div class="mb-3">
-                            <label for="title" class="form-label fw-semibold">Title</label>
-                            <input 
-                                type="text" 
-                                name="title"
-                                id="title"
-                                class="form-control @error('title') is-invalid @enderror" 
-                                value="{{ old('title', $content->title) }}"
-                                required
-                            >
-                            @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Name --}}
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Name</label>
-                            <input 
-                                type="text" 
-                                name="name"
-                                id="name"
-                                class="form-control @error('name') is-invalid @enderror" 
-                                value="{{ old('name', $content->name) }}"
-                                required
-                            >
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Content Type --}}
-                        <div class="mb-3">
-                            <label for="content_type_id" class="form-label fw-semibold">Type</label>
-                            <input 
-                                type="number" 
-                                name="content_type_id"
-                                id="content_type_id"
-                                class="form-control @error('content_type_id') is-invalid @enderror" 
-                                value="{{ old('content_type_id', $content->content_type_id) }}"
-                                required
-                            >
-                            @error('content_type_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Order --}}
-                        <div class="mb-3">
-                            <label for="order" class="form-label fw-semibold">Order</label>
-                            <input 
-                                type="number" 
-                                name="order"
-                                id="order"
-                                class="form-control @error('order') is-invalid @enderror" 
-                                value="{{ old('order', $content->order) }}"
-                                required
-                            >
-                            @error('order')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Status --}}
-                        <div class="form-check form-switch mb-4">
-                            <input 
-                                type="checkbox" 
-                                name="is_active"
-                                id="is_active" 
-                                class="form-check-input" 
-                                value="1" 
-                                {{ old('is_active', $content->is_active) ? 'checked' : '' }}
-                            >
-                            <label for="is_active" class="form-check-label fw-semibold">
-                                Active Status
-                            </label>
-                        </div>
-
-                        {{-- Tombol Aksi --}}
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('settings-content.index') }}" class="btn btn-outline-secondary px-4">
-                                <i class="bi bi-arrow-left-circle me-1"></i> Back
-                            </a>
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-save2 me-1"></i> Update Content
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            {{-- Header --}}
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-semibold text-dark">Edit Content</h5>
             </div>
 
+            {{-- Body --}}
+            <div class="card-body bg-light-subtle p-4">
+                <form action="{{ route('settings-content.update', $content->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+
+                    {{-- Data Utama --}}
+                    <div class="mb-4">
+                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Main Data</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Content Type <span class="text-danger">*</span></label>
+                                <input type="number" name="content_type_id"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                    value="{{ old('content_type_id', $content->content_type_id) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Title <span class="text-danger">*</span></label>
+                                <input type="text" name="title"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                    value="{{ old('title', $content->title) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                    value="{{ old('name', $content->name) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Order</label>
+                                <input type="number" name="order"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                    value="{{ old('order', $content->order) }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Deskripsi --}}
+                    <div class="mb-4">
+                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Description</h6>
+                        <textarea name="description" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="4"
+                            placeholder="Enter description...">{{ old('description', $content->description) }}</textarea>
+                    </div>
+
+                    {{-- Media --}}
+                    <div class="mb-4">
+                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Media</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Image</label>
+                                <input type="file" name="image" class="form-control rounded-3 shadow-sm border-0 bg-white">
+                                @if ($content->image)
+                                    <small class="text-muted">Current: {{ $content->image }}</small>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Icon</label>
+                                <input type="file" name="icon" class="form-control rounded-3 shadow-sm border-0 bg-white">
+                                @if ($content->icon)
+                                    <small class="text-muted">Current: {{ $content->icon }}</small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="mb-4">
+                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Status</h6>
+                        <div class="form-check form-switch ms-3">
+                            <input type="checkbox" name="is_active" class="form-check-input"
+                                {{ old('is_active', $content->is_active) ? 'checked' : '' }}>
+                            <label class="form-check-label fw-semibold small ms-2">Active</label>
+                        </div>
+                    </div>
+
+                    {{-- Tombol Aksi --}}
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+                        <a href="{{ route('settings-content.index') }}"
+                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                            Update Content
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    {{-- STYLE TAMBAHAN --}}
+    <style>
+        body {
+            background-color: #f8fafc !important;
+        }
+
+        .card {
+            background: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: #aacbff !important;
+            box-shadow: 0 0 5px rgba(99, 162, 255, 0.35) !important;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd !important;
+            border: none !important;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7 !important;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #f1f3f5 !important;
+        }
+
+        h6 {
+            font-size: 0.95rem;
+        }
+    </style>
 @endsection

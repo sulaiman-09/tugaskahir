@@ -18,176 +18,181 @@
         $currentFilter = request('filter', 'all');
     @endphp
 
-    <div class="container mt-4">
-        <div class="page-header mb-3">
-            <h1 class="page-title fw-bold">Data Customer</h1>
-        </div>
+    <div class="container py-4">
 
-        {{-- Alert sukses --}}
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        {{-- Judul --}}
+        <h3 class="fw-bold mb-4">Data Customer</h3>
 
-        {{-- Filter Tanggal --}}
-        <div class="card mb-4 p-3 shadow-sm border-0 rounded-3">
-            <h5 class="mb-3 fw-semibold text-primary">Filter by Date:</h5>
-            <div class="d-flex flex-wrap gap-2">
-                @foreach ($filters as $key => $label)
-                    <a href="{{ route('customer.index', ['filter' => $key]) }}"
-                        class="btn btn-sm {{ $currentFilter == $key ? 'btn-primary' : 'btn-outline-primary' }}">
-                        {{ $label }}
-                    </a>
-                @endforeach
-                <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="collapse"
-                    data-bs-target="#customRange">
-                    Custom Range
-                </button>
-            </div>
-
-            <div id="customRange" class="collapse mt-3">
-                <form method="GET" action="{{ route('customer.index') }}" class="row g-2">
-                    <div class="col-md-4">
-                        <label class="form-label">From</label>
-                        <input type="date" name="from" value="{{ request('from') }}" class="form-control">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">To</label>
-                        <input type="date" name="to" value="{{ request('to') }}" class="form-control">
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" name="filter" value="custom" class="btn btn-primary w-100">Apply</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        {{-- Tombol Tambah --}}
-        <div class="mb-3 d-flex gap-2">
-            <a href="{{ route('customer.create') }}" class="btn btn-primary">
-                + Tambah Lead Baru
-            </a>
-        </div>
-
-        {{-- Search dan Export --}}
-        <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
-            <div class="d-flex gap-2">
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="dropdown">
-                        <i class="fa fa-print"></i> Export
+        {{-- Filter --}}
+        <div class="card border-0 shadow-sm rounded-3 mb-3">
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    @foreach ($filters as $key => $label)
+                        <a href="{{ route('customer.index', ['filter' => $key]) }}"
+                            class="btn btn-sm {{ $currentFilter == $key ? 'btn-primary' : 'btn-outline-primary' }}">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                    <button type="button" class="btn btn-outline-dark btn-sm ms-1" data-bs-toggle="collapse"
+                        data-bs-target="#customRange">
+                        Custom Range
                     </button>
-                    <ul class="dropdown-menu shadow border-0">
-                        <li><a class="dropdown-item" href="{{ route('customer.export', request()->query()) }}"><i class="fa fa-file-csv text-info me-2"></i> Export CSV</a></li>
-                    </ul>
                 </div>
-                <a href="{{ route('customer.create') }}" class="btn btn-success btn-sm">+ New Lead</a>
+
+                <div id="customRange" class="collapse mt-3">
+                    <form method="GET" action="{{ route('customer.index') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small">From</label>
+                            <input type="date" name="from" value="{{ request('from') }}"
+                                class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">To</label>
+                            <input type="date" name="to" value="{{ request('to') }}"
+                                class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" name="filter" value="custom"
+                                class="btn btn-primary w-100 btn-sm">Apply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Card Tabel --}}
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                {{-- Kiri: Export & Tambah --}}
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('customer.export', request()->query()) }}"
+                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                        <i class="fa fa-print me-2"></i> Export CSV
+                    </a>
+
+                    <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm">
+                        + Tambah Lead Baru
+                    </a>
+                </div>
+
+                {{-- Kanan: Search --}}
+                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
+                    <form action="{{ route('customer.index') }}" method="GET" class="d-flex w-100">
+                        <input type="text" name="search" class="form-control form-control-sm"
+                            placeholder="Search name, phone, email or product" value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <form action="{{ route('customer.index') }}" method="GET" class="d-flex ms-auto" style="max-width: 420px; width:100%;">
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name, phone, email or product"
-                    value="{{ request('search') }}">
-                <button type="submit" class="btn btn-primary btn-sm ms-2"><i class="fa fa-search"></i></button>
-            </form>
+            {{-- Tabel --}}
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
+                        <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                            <tr class="fw-semibold text-dark">
+                                <th style="width: 40px;">No</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Nomor Telepon</th>
+                                <th>Email</th>
+                                <th>Alamat</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Coverage</th>
+                                <th>Produk</th>
+                                <th>Assign To</th>
+                                <th>Submitted At</th>
+                                <th>Submitted</th>
+                                <th style="width: 110px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($customers as $index => $customer)
+                                <tr>
+                                    <td>{{ $customers->firstItem() + $index }}</td>
+                                    <td class="text-start ps-3">{{ $customer->name }}</td>
+                                    <td>{{ $customer->phone }}</td>
+                                    <td>{{ $customer->email }}</td>
+                                    <td class="text-start">{{ $customer->address }}</td>
+                                    <td>{{ $customer->latitude }}</td>
+                                    <td>{{ $customer->longitude }}</td>
+                                    <td>
+                                        <select class="form-select form-select-sm coverage-dropdown"
+                                            data-id="{{ $customer->id }}">
+                                            <option value="">Select Coverage</option>
+                                            <option value="covered"
+                                                {{ $customer->coverage == 'covered' ? 'selected' : '' }}>Covered</option>
+                                            <option value="uncovered"
+                                                {{ $customer->coverage == 'uncovered' ? 'selected' : '' }}>Uncovered
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>{{ $customer->product }}</td>
+                                    <td>
+                                        <select class="form-select form-select-sm assign-dropdown"
+                                            data-id="{{ $customer->id }}">
+                                            <option value="">Select Division</option>
+                                            <option value="marketing"
+                                                {{ $customer->assign_to == 'marketing' ? 'selected' : '' }}>Marketing
+                                            </option>
+                                            <option value="sales retail"
+                                                {{ $customer->assign_to == 'sales retail' ? 'selected' : '' }}>Sales Retail
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>{{ $customer->submitted_at }}</td>
+                                    <td>{{ $customer->submitted }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="{{ route('customer.edit', $customer->id) }}"
+                                                class="btn btn-warning btn-sm" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <form action="{{ route('customer.destroy', $customer->id) }}" method="POST"
+                                                class="delete-form" data-name="{{ $customer->name }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-danger btn-sm" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="13" class="text-muted text-center py-4">Belum ada data customer</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        {{-- Tabel Data --}}
-        <div class="table-responsive shadow-sm rounded-3">
-            <table class="table table-striped table-hover align-middle text-center">
-                <thead class="table-primary">
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Pelanggan</th>
-                        <th>Nomor Telepon</th>
-                        <th>Email</th>
-                        <th>Alamat</th>
-                        <th>Latitude</th>
-                        <th>Longitude</th>
-                        <th>Coverage</th>
-                        <th>Produk</th>
-                        <th>Assign To</th>
-                        <th>Submitted At</th>
-                        <th>Submitted</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($customers as $index => $customer)
-                        <tr>
-                            <td>{{ $customers->firstItem() + $index }}</td>
-                            <td>{{ $customer->name }}</td>
-                            <td>{{ $customer->phone }}</td>
-                            <td>{{ $customer->email }}</td>
-                            <td>{{ $customer->address }}</td>
-                            <td>{{ $customer->latitude }}</td>
-                            <td>{{ $customer->longitude }}</td>
-                            <td>
-                                <select class="form-select form-select-sm coverage-dropdown" data-id="{{ $customer->id }}">
-                                    <option value="">Select Coverage</option>
-                                    <option value="covered" {{ $customer->coverage == 'covered' ? 'selected' : '' }}>
-                                        Covered</option>
-                                    <option value="uncovered" {{ $customer->coverage == 'uncovered' ? 'selected' : '' }}>
-                                        Uncovered</option>
-                                </select>
-                            </td>
-                            <td>{{ $customer->product }}</td>
-                            <td>
-                                <select class="form-select form-select-sm assign-dropdown" data-id="{{ $customer->id }}">
-                                    <option value="">Select Division</option>
-                                    <option value="marketing" {{ $customer->assign_to == 'marketing' ? 'selected' : '' }}>
-                                        Marketing</option>
-                                    <option value="sales retail"
-                                        {{ $customer->assign_to == 'sales retail' ? 'selected' : '' }}>Sales Retail
-                                    </option>
-                                </select>
-                            </td>
-                            <td>{{ $customer->submitted_at }}</td>
-                            <td>{{ $customer->submitted }}</td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="{{ route('customer.edit', $customer->id) }}" class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <form action="{{ route('customer.destroy', $customer->id) }}" method="POST"
-                                            class="delete-form"
-                                            data-name="{{ $customer->name }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="13" class="text-muted text-center">Belum ada data customer</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        {{-- Pagination --}}
+        <div class="d-flex justify-content-end mt-3">
+            {{ $customers->links() }}
         </div>
-
-        <div class="mt-3">{{ $customers->links() }}</div>
     </div>
-@push('scripts')
-    <script>
-        // confirm delete with modal-like prompt
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.delete-form').forEach(function(form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    var name = form.dataset.name || 'this record';
-                    if (confirm('Hapus ' + name + '? Aksi ini tidak dapat dibatalkan.')) {
-                        form.submit();
-                    }
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Konfirmasi hapus
+                document.querySelectorAll('.delete-form').forEach(form => {
+                    form.addEventListener('submit', e => {
+                        e.preventDefault();
+                        const name = form.dataset.name || 'record ini';
+                        if (confirm(
+                                `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
+                            form.submit();
+                        }
+                    });
                 });
             });
-            // enable bootstrap tooltips if available
-            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-                var tipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                tipTriggerList.map(function (el) { return new bootstrap.Tooltip(el) });
-            }
-        });
-    </script>
-@endpush
+        </script>
+    @endpush
 @endsection

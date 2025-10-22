@@ -23,5 +23,6 @@ class Career extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'job_requirements' => 'array', // <-- tambahkan ini
     ];
 }
