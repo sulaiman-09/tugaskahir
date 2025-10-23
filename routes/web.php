@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
             Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
             // Remove KTP file
             Route::delete('/{id}/ktp', [SudirmanParkController::class, 'removeKtp'])->name('removeKtp');
+            // Download KTP (secure via controller)
+            Route::get('/{id}/ktp/download', [SudirmanParkController::class, 'downloadKtp'])->name('downloadKtp');
 
             // Homepass (alamat tower) CRUD
             Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');

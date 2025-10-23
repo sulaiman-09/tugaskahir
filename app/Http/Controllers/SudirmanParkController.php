@@ -149,6 +149,19 @@ class SudirmanParkController extends Controller
         return back()->with('success', 'File KTP berhasil dihapus.');
     }
 
+    /**
+     * Download KTP file through controller to avoid direct file access issues
+     */
+    public function downloadKtp($id)
+    {
+        $customer = SudirmanPark::findOrFail($id);
+        if (!$customer->ktp || !Storage::exists('public/ktp/' . $customer->ktp)) {
+            abort(404);
+        }
+
+        return Storage::disk('public')->download('ktp/' . $customer->ktp);
+    }
+
     public function toggleStatus(Request $request, $id)
     {
         $customer = SudirmanPark::findOrFail($id);

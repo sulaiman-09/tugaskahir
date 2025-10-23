@@ -78,7 +78,7 @@
                                     <td>{{ $customer->package }}</td>
                                     <td>
                                         @if ($customer->ktp)
-                                            <a href="{{ asset('storage/ktp/' . $customer->ktp) }}" target="_blank"
+                                            <a href="{{ route('sudirmanpark.downloadKtp', $customer->id) }}" target="_blank"
                                                 class="btn btn-sm btn-outline-secondary">View</a>
                                         @else
                                             <span class="text-muted">No File</span>
