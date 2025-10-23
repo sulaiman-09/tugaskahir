@@ -78,8 +78,11 @@
                                     <td>{{ $customer->package }}</td>
                                     <td>
                                         @if ($customer->ktp)
-                                            <a href="{{ route('sudirmanpark.downloadKtp', $customer->id) }}" target="_blank"
-                                                class="btn btn-sm btn-outline-secondary">View</a>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary ktp-preview-btn"
+                                                data-preview-url="{{ route('sudirmanpark.previewKtp', $customer->id) }}"
+                                                data-ktp="{{ $customer->ktp }}">
+                                                View
+                                            </button>
                                         @else
                                             <span class="text-muted">No File</span>
                                         @endif
@@ -236,4 +239,93 @@
             });
         });
     </script>
+@endpush
+
+@push('scripts')
+        <script>
+                // KTP preview modal logic
+                document.addEventListener('DOMContentLoaded', function () {
+                        const modalHtml = `
+                        <div class="modal fade" id="ktpPreviewModal" tabindex="-1">
+                            <div class="modal-dialog modal-xl modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Preview KTP</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                                <div class="modal-body p-0">
+                                                    <div style="height:80vh; display:flex; align-items:center; justify-content:center;">
+                                                        <img id="ktpPreviewImage" src="" alt="KTP Preview" style="max-width:100%; max-height:100%; object-fit:contain; display:none;" />
+                                                        <iframe id="ktpPreviewFrame" src="" style="width:100%;height:100%;border:0;display:none;" frameborder="0"></iframe>
+                                                        <div id="ktpPreviewMessage" style="display:none;color:#fff;text-align:center;">Loading...</div>
+                                                    </div>
+                                                </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                        document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const ktpModalEl = document.getElementById('ktpPreviewModal');
+            const ktpModal = new bootstrap.Modal(ktpModalEl);
+            const img = document.getElementById('ktpPreviewImage');
+
+            const baseStorageUrl = '{{ asset('storage/ktp') }}';
+
+            document.querySelectorAll('.ktp-preview-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // prefer public storage url when filename available
+                    const filename = this.dataset.ktp;
+                    const fallbackUrl = this.dataset.previewUrl; // controller preview url
+                    // prefer controller preview route (it handles streaming and various fallbacks)
+                    const url = fallbackUrl;
+                                        // show loading
+                                        document.getElementById('ktpPreviewMessage').style.display = 'block';
+                                        img.style.display = 'none';
+                                        document.getElementById('ktpPreviewFrame').style.display = 'none';
+
+                                        // Determine by extension (simpler & compatible)
+                                        // determine by filename extension if available, otherwise rely on URL
+                                        const lower = (filename || url).toLowerCase();
+                                        const isPdf = lower.endsWith('.pdf');
+                                        const frame = document.getElementById('ktpPreviewFrame');
+                                        if (isPdf) {
+                                            frame.src = url;
+                                            frame.style.display = 'block';
+                                            document.getElementById('ktpPreviewMessage').style.display = 'none';
+                                            ktpModal.show();
+                                        } else {
+                                            // load image and detect if it's a valid visible image
+                                            img.onload = function () {
+                                                // if very small image (1x1 placeholder), consider not available
+                                                if (img.naturalWidth <= 2 && img.naturalHeight <= 2) {
+                                                    document.getElementById('ktpPreviewMessage').textContent = 'Preview tidak tersedia (gambar sangat kecil).';
+                                                    document.getElementById('ktpPreviewMessage').style.display = 'block';
+                                                    img.style.display = 'none';
+                                                } else {
+                                                    img.style.display = 'block';
+                                                    document.getElementById('ktpPreviewMessage').style.display = 'none';
+                                                }
+                                            };
+                                            img.onerror = function () {
+                                                document.getElementById('ktpPreviewMessage').textContent = 'File tidak ditemukan atau tidak dapat ditampilkan.';
+                                                document.getElementById('ktpPreviewMessage').style.display = 'block';
+                                                img.style.display = 'none';
+                                            };
+                                            img.src = url;
+                                            ktpModal.show();
+                                        }
+                                });
+                        });
+
+                        // clear image/iframe on close
+                        ktpModalEl.addEventListener('hidden.bs.modal', function () { 
+                            img.src = '';
+                            img.style.display = 'none';
+                            document.getElementById('ktpPreviewFrame').src = '';
+                            document.getElementById('ktpPreviewFrame').style.display = 'none';
+                            document.getElementById('ktpPreviewMessage').textContent = 'Loading...';
+                            document.getElementById('ktpPreviewMessage').style.display = 'none';
+                        });
+                });
+        </script>
 @endpush

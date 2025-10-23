@@ -87,11 +87,13 @@
             </div>
 
             {{-- Tampilkan di daftar --}}
-            <div class="mb-3 form-check">
-                <input type="checkbox" name="visible" class="form-check-input" id="visibleCheck"
-                    {{ old('visible', $customer->visible) ? 'checked' : '' }}>
-                <label class="form-check-label fw-semibold small" for="visibleCheck">Tampilkan di daftar</label>
-            </div>
+            @if (Schema::hasColumn('sudirman_parks', 'visible'))
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="visible" class="form-check-input" id="visibleCheck"
+                        {{ old('visible', $customer->visible) ? 'checked' : '' }}>
+                    <label class="form-check-label fw-semibold small" for="visibleCheck">Tampilkan di daftar</label>
+                </div>
+            @endif
 
             {{-- Catatan --}}
             <div class="mb-3">

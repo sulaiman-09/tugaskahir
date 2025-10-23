@@ -14,7 +14,6 @@ class SudirmanTowerAddress extends Model
         'tower',
         'floor',
         'unit',
-        'alamat_lengkap',
-        'status',
+        'is_active',
     ];
 }

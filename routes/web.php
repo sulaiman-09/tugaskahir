@@ -66,6 +66,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}/ktp', [SudirmanParkController::class, 'removeKtp'])->name('removeKtp');
             // Download KTP (secure via controller)
             Route::get('/{id}/ktp/download', [SudirmanParkController::class, 'downloadKtp'])->name('downloadKtp');
+            // Preview KTP inline for modal
+            Route::get('/{id}/ktp/preview', [SudirmanParkController::class, 'previewKtp'])->name('previewKtp');
 
             // Homepass (alamat tower) CRUD
             Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');

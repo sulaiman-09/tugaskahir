@@ -75,12 +75,11 @@
                                     <td>{{ $address->tower }}</td>
                                     <td>{{ $address->floor }}</td>
                                     <td>{{ $address->unit }}</td>
-                                    <td class="text-start ps-3">{{ $address->alamat_lengkap }}</td>
+                                    <td class="text-start ps-3">{{ $address->full_address }}</td>
                                     <td>{{ $address->jumlah_customer ?? 0 }}</td>
                                     <td>
-                                        <span
-                                            class="badge {{ $address->status == 'Aktif' ? 'bg-success' : 'bg-secondary' }}">
-                                            {{ ucfirst($address->status) }}
+                                        <span class="badge {{ $address->is_active ? 'bg-success' : 'bg-secondary' }}">
+                                            {{ $address->is_active ? 'Aktif' : 'Nonaktif' }}
                                         </span>
                                     </td>
                                     <td>{{ $address->created_at->format('d-m-Y') }}</td>
@@ -291,13 +290,29 @@
                 fetch(url, {
                     method: 'POST',
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
                     },
                     body: formData,
                 })
-                .then(res => res.json())
-                .then(data => {
+                .then(async res => {
                     hpSaveBtn.disabled = false;
+                    if (!res.ok) {
+                        // try to parse error message
+                        let msg = 'Gagal menyimpan homepass';
+                        try {
+                            const errJson = await res.json();
+                            if (errJson && errJson.message) msg = errJson.message;
+                        } catch (e) {
+                            // ignore parse error
+                        }
+                        alert(msg);
+                        return;
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data) return;
                     homepassModal.hide();
                     showToast(data.success ? 'Berhasil disimpan' : 'Gagal');
                     setTimeout(()=> location.reload(), 600);
@@ -315,9 +330,17 @@
                     const delData = new FormData();
                     delData.append('_token', '{{ csrf_token() }}');
                     delData.append('_method', 'DELETE');
-                    fetch(action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: delData })
-                    .then(res => res.json())
-                    .then(data => { showToast('Berhasil dihapus'); form.closest('tr').remove(); })
+                    fetch(action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }, body: delData })
+                    .then(async res => {
+                        if (!res.ok) {
+                            let msg = 'Gagal menghapus';
+                            try { const ej = await res.json(); if (ej && ej.message) msg = ej.message; } catch(e){}
+                            alert(msg);
+                            return;
+                        }
+                        return res.json();
+                    })
+                    .then(data => { if (!data) return; showToast('Berhasil dihapus'); form.closest('tr').remove(); })
                     .catch(()=> alert('Gagal menghapus'));
                 });
             });
