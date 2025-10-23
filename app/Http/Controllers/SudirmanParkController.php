@@ -142,6 +142,9 @@ class SudirmanParkController extends Controller
         }
         $customer->ktp = null;
         $customer->save();
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return back()->with('success', 'File KTP berhasil dihapus.');
     }

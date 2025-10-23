@@ -277,6 +277,9 @@
 
                 fetch(url, {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData,
                 })
                 .then(res => res.json())
@@ -299,7 +302,7 @@
                     const delData = new FormData();
                     delData.append('_token', '{{ csrf_token() }}');
                     delData.append('_method', 'DELETE');
-                    fetch(action, { method: 'POST', body: delData })
+                    fetch(action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: delData })
                     .then(res => res.json())
                     .then(data => { showToast('Berhasil dihapus'); form.closest('tr').remove(); })
                     .catch(()=> alert('Gagal menghapus'));
@@ -315,7 +318,7 @@
                     const delKtp = new FormData();
                     delKtp.append('_token', '{{ csrf_token() }}');
                     delKtp.append('_method', 'DELETE');
-                    fetch(form.action, { method: 'POST', body: delKtp })
+                    fetch(form.action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: delKtp })
                     .then(res => res.json())
                     .then(data => { showToast('KTP dihapus'); location.reload(); })
                     .catch(()=> alert('Gagal menghapus KTP'));
