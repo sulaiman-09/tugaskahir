@@ -105,6 +105,58 @@
             {{ $addresses->links() }}
         </div>
     </div>
+
+    <!-- Modal: Create / Edit Homepass -->
+    <div class="modal fade" id="homepassModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="homepassModalLabel">Tambah Homepass</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="homepassForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="hp_id">
+                        <div class="mb-3">
+                            <label class="form-label">Tower</label>
+                            <input type="text" name="tower" id="hp_tower" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Floor</label>
+                            <input type="text" name="floor" id="hp_floor" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Unit</label>
+                            <input type="text" name="unit" id="hp_unit" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" id="hp_status" class="form-select">
+                                <option value="Aktif">Aktif</option>
+                                <option value="Nonaktif">Nonaktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary" id="hpSaveBtn">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+        <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="liveToastBody">Action completed</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')
@@ -158,6 +210,127 @@
                     }
                 });
             });
+
+            // Homepass modal handlers
+            const homepassModalEl = document.getElementById('homepassModal');
+            const homepassModal = new bootstrap.Modal(homepassModalEl);
+            const homepassForm = document.getElementById('homepassForm');
+            const hpSaveBtn = document.getElementById('hpSaveBtn');
+
+            // Open create modal
+            document.querySelectorAll('a[href$="createHomepass"]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('homepassModalLabel').textContent = 'Tambah Homepass';
+                    homepassForm.reset();
+                    document.getElementById('hp_id').value = '';
+                    homepassModal.show();
+                });
+            });
+
+            // Open edit modal from edit button
+            document.querySelectorAll('a[href*="/homepass/"]').forEach(link => {
+                if (link.href.match(/\/homepass\/\d+\/edit$/)) {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        fetch(link.href)
+                            .then(res => res.text())
+                            .then(html => {
+                                // parse simple values from returned HTML (view editHomepass contains inputs with values)
+                                const tmp = document.createElement('div'); tmp.innerHTML = html;
+                                const tower = tmp.querySelector('input[name="tower"]').value;
+                                const floor = tmp.querySelector('input[name="floor"]').value;
+                                const unit = tmp.querySelector('input[name="unit"]').value;
+                                const status = tmp.querySelector('select[name="status"]').value;
+                                const idMatch = link.href.match(/homepass\/(\d+)\/edit$/);
+                                const id = idMatch ? idMatch[1] : '';
+                                document.getElementById('hp_id').value = id;
+                                document.getElementById('hp_tower').value = tower;
+                                document.getElementById('hp_floor').value = floor;
+                                document.getElementById('hp_unit').value = unit;
+                                document.getElementById('hp_status').value = status;
+                                document.getElementById('homepassModalLabel').textContent = 'Edit Homepass';
+                                homepassModal.show();
+                            });
+                    });
+                }
+            });
+
+            // Submit create/edit via AJAX
+            homepassForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                hpSaveBtn.disabled = true;
+                const id = document.getElementById('hp_id').value;
+                const url = id ? `/sudirmanpark/homepass/${id}` : `{{ route('sudirmanpark.storeHomepass') }}`;
+                const method = id ? 'PUT' : 'POST';
+
+                const payload = {
+                    tower: document.getElementById('hp_tower').value,
+                    floor: document.getElementById('hp_floor').value,
+                    unit: document.getElementById('hp_unit').value,
+                    status: document.getElementById('hp_status').value,
+                };
+
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    hpSaveBtn.disabled = false;
+                    homepassModal.hide();
+                    showToast(data.success ? 'Berhasil disimpan' : 'Gagal');
+                    setTimeout(()=> location.reload(), 600);
+                })
+                .catch(err => { hpSaveBtn.disabled = false; alert('Error saving homepass'); });
+            });
+
+            // Delete homepass via AJAX
+            document.querySelectorAll('form[action*="homepass"]').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    if (!confirm('Yakin ingin menghapus alamat ini?')) return;
+                    const action = form.action;
+                    fetch(action, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    }).then(res => res.json())
+                    .then(data => { showToast('Berhasil dihapus'); form.closest('tr').remove(); })
+                    .catch(()=> alert('Gagal menghapus'));
+                });
+            });
+
+            // KTP delete via AJAX in edit page
+            document.querySelectorAll('form[action$="/ktp"]').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    if (!confirm('Hapus file KTP?')) return;
+                    fetch(form.action, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    }).then(res => res.json())
+                    .then(data => { showToast('KTP dihapus'); location.reload(); })
+                    .catch(()=> alert('Gagal menghapus KTP'));
+                });
+            });
+
+            function showToast(message) {
+                const toastEl = document.getElementById('liveToast');
+                document.getElementById('liveToastBody').textContent = message;
+                const t = new bootstrap.Toast(toastEl);
+                t.show();
+            }
         });
     </script>
 @endpush

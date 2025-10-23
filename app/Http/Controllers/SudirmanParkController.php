@@ -240,13 +240,17 @@ class SudirmanParkController extends Controller
         $alamatLengkap = strtoupper($request->tower . '-' . $request->floor . '-' . $request->unit);
 
         // Simpan ke database
-        SudirmanTowerAddress::create([
+        $address = SudirmanTowerAddress::create([
             'tower' => strtoupper($request->tower),
             'floor' => strtoupper($request->floor),
             'unit' => strtoupper($request->unit),
             'alamat_lengkap' => $alamatLengkap,
             'status' => $request->status,
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'address' => $address], 201);
+        }
 
         return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass baru berhasil ditambahkan!');
     }
@@ -277,6 +281,10 @@ class SudirmanParkController extends Controller
             'status' => $request->status,
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'address' => $address]);
+        }
+
         return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass berhasil diperbarui!');
     }
 
@@ -284,6 +292,9 @@ class SudirmanParkController extends Controller
     {
         $address = SudirmanTowerAddress::findOrFail($id);
         $address->delete();
+        if (request()->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass berhasil dihapus!');
     }
