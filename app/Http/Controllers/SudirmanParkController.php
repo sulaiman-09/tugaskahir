@@ -57,11 +57,16 @@ class SudirmanParkController extends Controller
         ]);
 
         if ($request->hasFile('ktp')) {
-            $file = $request->file('ktp');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/ktp', $filename);
-            // store only filename (or use Storage::url later in views)
-            $validated['ktp'] = $filename;
+            try {
+                $file = $request->file('ktp');
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('public/ktp', $filename);
+                // store only filename (or use Storage::url later in views)
+                $validated['ktp'] = $filename;
+            } catch (\Exception $e) {
+                \Log::error('KTP upload failed: ' . $e->getMessage());
+                return back()->withErrors(['ktp' => 'Gagal menyimpan file KTP. Silakan cek permission/storage link.']);
+            }
         }
 
         $validated['visible'] = $request->has('visible') ? true : true; // default visible
@@ -98,10 +103,15 @@ class SudirmanParkController extends Controller
             if ($customer->ktp) {
                 Storage::delete('public/ktp/' . $customer->ktp);
             }
-            $file = $request->file('ktp');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/ktp', $filename);
-            $validated['ktp'] = $filename;
+            try {
+                $file = $request->file('ktp');
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/ktp', $filename);
+                $validated['ktp'] = $filename;
+            } catch (\Exception $e) {
+                \Log::error('KTP upload failed (update): ' . $e->getMessage());
+                return back()->withErrors(['ktp' => 'Gagal menyimpan file KTP. Silakan cek permission/storage link.']);
+            }
         }
 
         $validated['visible'] = $request->has('visible') ? true : false;
