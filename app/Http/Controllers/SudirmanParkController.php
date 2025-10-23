@@ -121,6 +121,21 @@ class SudirmanParkController extends Controller
         return back()->with('success', 'Customer dihapus.');
     }
 
+    /**
+     * Remove uploaded KTP file for a customer
+     */
+    public function removeKtp($id)
+    {
+        $customer = SudirmanPark::findOrFail($id);
+        if ($customer->ktp && Storage::exists('public/ktp/' . $customer->ktp)) {
+            Storage::delete('public/ktp/' . $customer->ktp);
+        }
+        $customer->ktp = null;
+        $customer->save();
+
+        return back()->with('success', 'File KTP berhasil dihapus.');
+    }
+
     public function toggleStatus(Request $request, $id)
     {
         $customer = SudirmanPark::findOrFail($id);

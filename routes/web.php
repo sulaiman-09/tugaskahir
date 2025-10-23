@@ -51,22 +51,27 @@ Route::middleware('auth')->group(function () {
         ->name('sudirmanpark.')
         ->middleware('role:admin,sudirman park')
         ->group(function () {
+            // Main CRUD
             Route::get('/', [SudirmanParkController::class, 'index'])->name('index');
             Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
             Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
-            Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
             Route::get('/export', [SudirmanParkController::class, 'export'])->name('export');
-            // Tambahan untuk edit/update/delete
             Route::get('/{id}/edit', [SudirmanParkController::class, 'edit'])->name('edit');
             Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
-            // toggle/update status (AJAX)
-            Route::patch('/sudirmanpark/{id}/status', [App\Http\Controllers\SudirmanParkController::class, 'updateStatus'])
-                ->name('sudirmanpark.updateStatus');
-            Route::get('/sudirmanpark/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('sudirmanpark.createHomepass');
+
+            // Ajax status update for a customer
+            Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
+            // Remove KTP file
+            Route::delete('/{id}/ktp', [SudirmanParkController::class, 'removeKtp'])->name('removeKtp');
+
+            // Homepass (alamat tower) CRUD
+            Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
             Route::get('/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('createHomepass');
-            Route::post('/homepass/store', [SudirmanParkController::class, 'storeHomepass'])->name('storeHomepass');
-            // Export Homepass / Alamat
+            Route::post('/homepass', [SudirmanParkController::class, 'storeHomepass'])->name('storeHomepass');
+            Route::get('/homepass/{id}/edit', [SudirmanParkController::class, 'editHomepass'])->name('editHomepass');
+            Route::put('/homepass/{id}', [SudirmanParkController::class, 'updateHomepass'])->name('updateHomepass');
+            Route::delete('/homepass/{id}', [SudirmanParkController::class, 'destroyHomepass'])->name('destroyHomepass');
             Route::get('/homepass/export', [SudirmanParkController::class, 'exportHomepass'])->name('exportHomepass');
         });
 

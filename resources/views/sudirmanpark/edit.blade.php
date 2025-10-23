@@ -75,6 +75,11 @@
                         <a href="{{ asset('storage/ktp/' . $customer->ktp) }}" target="_blank" class="text-primary">
                             Lihat KTP saat ini
                         </a>
+                        <form action="{{ route('sudirmanpark.removeKtp', $customer->id) }}" method="POST" class="d-inline ms-2">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus KTP</button>
+                        </form>
                     </div>
                 @endif
                 <input type="file" name="ktp" class="form-control rounded-3 shadow-sm border-0 bg-white"
