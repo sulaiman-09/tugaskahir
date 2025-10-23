@@ -261,24 +261,23 @@
                 e.preventDefault();
                 hpSaveBtn.disabled = true;
                 const id = document.getElementById('hp_id').value;
-                const url = id ? `/sudirmanpark/homepass/${id}` : `{{ route('sudirmanpark.storeHomepass') }}`;
-                const method = id ? 'PUT' : 'POST';
+                // Use FormData and POST with _method override when updating to avoid blocked HTTP verbs
+                const formData = new FormData();
+                formData.append('tower', document.getElementById('hp_tower').value);
+                formData.append('floor', document.getElementById('hp_floor').value);
+                formData.append('unit', document.getElementById('hp_unit').value);
+                formData.append('status', document.getElementById('hp_status').value);
+                formData.append('_token', '{{ csrf_token() }}');
 
-                const payload = {
-                    tower: document.getElementById('hp_tower').value,
-                    floor: document.getElementById('hp_floor').value,
-                    unit: document.getElementById('hp_unit').value,
-                    status: document.getElementById('hp_status').value,
-                };
+                let url = `{{ route('sudirmanpark.storeHomepass') }}`;
+                if (id) {
+                    url = `/sudirmanpark/homepass/${id}`;
+                    formData.append('_method', 'PUT');
+                }
 
                 fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    method: 'POST',
+                    body: formData,
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -287,7 +286,7 @@
                     showToast(data.success ? 'Berhasil disimpan' : 'Gagal');
                     setTimeout(()=> location.reload(), 600);
                 })
-                .catch(err => { hpSaveBtn.disabled = false; alert('Error saving homepass'); });
+                .catch(err => { hpSaveBtn.disabled = false; alert('Error saving homepass'); console.error(err); });
             });
 
             // Delete homepass via AJAX
@@ -296,13 +295,12 @@
                     e.preventDefault();
                     if (!confirm('Yakin ingin menghapus alamat ini?')) return;
                     const action = form.action;
-                    fetch(action, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    }).then(res => res.json())
+                    // send as POST with _method=DELETE for compatibility
+                    const delData = new FormData();
+                    delData.append('_token', '{{ csrf_token() }}');
+                    delData.append('_method', 'DELETE');
+                    fetch(action, { method: 'POST', body: delData })
+                    .then(res => res.json())
                     .then(data => { showToast('Berhasil dihapus'); form.closest('tr').remove(); })
                     .catch(()=> alert('Gagal menghapus'));
                 });
@@ -313,13 +311,12 @@
                 form.addEventListener('submit', function (e) {
                     e.preventDefault();
                     if (!confirm('Hapus file KTP?')) return;
-                    fetch(form.action, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    }).then(res => res.json())
+                    // use POST + _method override for delete to avoid server blocking DELETE
+                    const delKtp = new FormData();
+                    delKtp.append('_token', '{{ csrf_token() }}');
+                    delKtp.append('_method', 'DELETE');
+                    fetch(form.action, { method: 'POST', body: delKtp })
+                    .then(res => res.json())
                     .then(data => { showToast('KTP dihapus'); location.reload(); })
                     .catch(()=> alert('Gagal menghapus KTP'));
                 });
