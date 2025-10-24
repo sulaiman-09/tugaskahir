@@ -129,16 +129,16 @@
                                             </option>
                                         </select>
                                     </td>
-                                    <td>{{ $customer->product }}</td>
+                                    <td class="text-start">{{ $customer->product }}</td> {{-- Pastikan produk text-start agar tidak numpuk --}}
                                     <td>
                                         <select class="form-select form-select-sm assign-dropdown"
                                             data-id="{{ $customer->id }}">
                                             <option value="">Select Division</option>
-                                            <option value="marketing"
-                                                {{ $customer->assign_to == 'marketing' ? 'selected' : '' }}>Marketing
+                                            <option value="Marketing"
+                                                {{ $customer->assign_to == 'Marketing' ? 'selected' : '' }}>Marketing
                                             </option>
-                                            <option value="sales retail"
-                                                {{ $customer->assign_to == 'sales retail' ? 'selected' : '' }}>Sales Retail
+                                            <option value="Sales Retail"
+                                                {{ $customer->assign_to == 'Sales Retail' ? 'selected' : '' }}>Sales Retail
                                             </option>
                                         </select>
                                     </td>
@@ -167,6 +167,7 @@
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
             </div>

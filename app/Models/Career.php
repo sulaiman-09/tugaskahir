@@ -11,15 +11,17 @@ class Career extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'type',
         'education_level',
         'location',
-        'overview',
-        'job_requirements',
         'description',
-        'image',
+        'job_description',
+        'job_requirements',
+        'image_path',
         'is_active',
     ];
+
 
     protected $casts = [
         'is_active' => 'boolean',

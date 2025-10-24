@@ -21,17 +21,18 @@
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Banner Information</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Banner Name <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small">Banner Name <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" name="name"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     placeholder="Enter banner name" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Status <span class="text-danger">*</span></label>
-                                <select name="status"
-                                    class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
+                                <label class="form-label fw-semibold small">Status <span
+                                        class="text-danger">*</span></label>
+                                <select name="is_active" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
+                                    <option value="1" {{ $banner->is_active ? 'selected' : '' }}>Active</option>
+                                    <option value="0" {{ !$banner->is_active ? 'selected' : '' }}>Inactive</option>
                                 </select>
                             </div>
                         </div>
@@ -56,12 +57,10 @@
 
                     {{-- Tombol Aksi --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
-                        <a href="{{ route('banner.index') }}"
-                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                        <a href="{{ route('banner.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
                             Cancel
                         </a>
-                        <button type="submit"
-                            class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
                             Save Banner
                         </button>
                     </div>
@@ -80,7 +79,8 @@
             background: #ffffff;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: #aacbff !important;
             box-shadow: 0 0 5px rgba(99, 162, 255, 0.35) !important;
         }

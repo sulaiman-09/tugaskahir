@@ -13,14 +13,14 @@ class Banner extends Model
 
     protected $fillable = [
         'name',
-        'web_image',
-        'mobile_image',
-        'status',
+        'path',
+        'path_apps',
+        'is_active', // gunakan ini
         'created_at',
         'updated_at',
     ];
 
     protected $casts = [
-        'status' => 'boolean',
+        'is_active' => 'boolean',
     ];
 }

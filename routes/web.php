@@ -91,6 +91,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::resource('banner', App\Http\Controllers\BannerController::class)->except(['show']);
         Route::get('/banner/export', [App\Http\Controllers\BannerController::class, 'export'])->name('banner.export');
+        Route::patch('/banner/{banner}/toggle-status', [App\Http\Controllers\BannerController::class, 'toggleStatus'])
+            ->name('banner.toggle-status');
     });
 
     Route::middleware(['auth'])->group(function () {

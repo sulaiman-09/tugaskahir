@@ -25,12 +25,17 @@
         <div class="card border-0 shadow-sm rounded-3 mb-3">
             <div class="card-body py-3 d-flex flex-wrap gap-2 align-items-center">
 
+                {{-- Tombol Back --}}
+                <a href="{{ route('sudirmanpark.index') }}" class="btn btn-secondary btn-sm d-flex align-items-center">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+
                 {{-- Export --}}
                 <a href="{{ route('sudirmanpark.exportHomepass', request()->query()) }}"
                     class="btn btn-outline-secondary btn-sm d-flex align-items-center">
                     <i class="fa fa-print me-2"></i> Export CSV
                 </a>
-                
+
                 {{-- Tambah Alamat --}}
                 <a href="{{ route('sudirmanpark.createHomepass') }}"
                     class="btn btn-sm {{ request()->routeIs('sudirmanpark.createHomepass') ? 'btn-primary text-white' : 'btn-outline-primary' }}">
@@ -243,13 +248,14 @@
             // Open edit modal from edit button
             document.querySelectorAll('a[href*="/homepass/"]').forEach(link => {
                 if (link.href.match(/\/homepass\/\d+\/edit$/)) {
-                    link.addEventListener('click', function (e) {
+                    link.addEventListener('click', function(e) {
                         e.preventDefault();
                         fetch(link.href)
                             .then(res => res.text())
                             .then(html => {
                                 // parse simple values from returned HTML (view editHomepass contains inputs with values)
-                                const tmp = document.createElement('div'); tmp.innerHTML = html;
+                                const tmp = document.createElement('div');
+                                tmp.innerHTML = html;
                                 const tower = tmp.querySelector('input[name="tower"]').value;
                                 const floor = tmp.querySelector('input[name="floor"]').value;
                                 const unit = tmp.querySelector('input[name="unit"]').value;
@@ -261,7 +267,8 @@
                                 document.getElementById('hp_floor').value = floor;
                                 document.getElementById('hp_unit').value = unit;
                                 document.getElementById('hp_status').value = status;
-                                document.getElementById('homepassModalLabel').textContent = 'Edit Homepass';
+                                document.getElementById('homepassModalLabel').textContent =
+                                    'Edit Homepass';
                                 homepassModal.show();
                             });
                     });
@@ -269,7 +276,7 @@
             });
 
             // Submit create/edit via AJAX
-            homepassForm.addEventListener('submit', function (e) {
+            homepassForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 hpSaveBtn.disabled = true;
                 const id = document.getElementById('hp_id').value;
@@ -288,41 +295,45 @@
                 }
 
                 fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    body: formData,
-                })
-                .then(async res => {
-                    hpSaveBtn.disabled = false;
-                    if (!res.ok) {
-                        // try to parse error message
-                        let msg = 'Gagal menyimpan homepass';
-                        try {
-                            const errJson = await res.json();
-                            if (errJson && errJson.message) msg = errJson.message;
-                        } catch (e) {
-                            // ignore parse error
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData,
+                    })
+                    .then(async res => {
+                        hpSaveBtn.disabled = false;
+                        if (!res.ok) {
+                            // try to parse error message
+                            let msg = 'Gagal menyimpan homepass';
+                            try {
+                                const errJson = await res.json();
+                                if (errJson && errJson.message) msg = errJson.message;
+                            } catch (e) {
+                                // ignore parse error
+                            }
+                            alert(msg);
+                            return;
                         }
-                        alert(msg);
-                        return;
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    if (!data) return;
-                    homepassModal.hide();
-                    showToast(data.success ? 'Berhasil disimpan' : 'Gagal');
-                    setTimeout(()=> location.reload(), 600);
-                })
-                .catch(err => { hpSaveBtn.disabled = false; alert('Error saving homepass'); console.error(err); });
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (!data) return;
+                        homepassModal.hide();
+                        showToast(data.success ? 'Berhasil disimpan' : 'Gagal');
+                        setTimeout(() => location.reload(), 600);
+                    })
+                    .catch(err => {
+                        hpSaveBtn.disabled = false;
+                        alert('Error saving homepass');
+                        console.error(err);
+                    });
             });
 
             // Delete homepass via AJAX
             document.querySelectorAll('form[action*="homepass"]').forEach(form => {
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     if (!confirm('Yakin ingin menghapus alamat ini?')) return;
                     const action = form.action;
@@ -330,34 +341,57 @@
                     const delData = new FormData();
                     delData.append('_token', '{{ csrf_token() }}');
                     delData.append('_method', 'DELETE');
-                    fetch(action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }, body: delData })
-                    .then(async res => {
-                        if (!res.ok) {
-                            let msg = 'Gagal menghapus';
-                            try { const ej = await res.json(); if (ej && ej.message) msg = ej.message; } catch(e){}
-                            alert(msg);
-                            return;
-                        }
-                        return res.json();
-                    })
-                    .then(data => { if (!data) return; showToast('Berhasil dihapus'); form.closest('tr').remove(); })
-                    .catch(()=> alert('Gagal menghapus'));
+                    fetch(action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: delData
+                        })
+                        .then(async res => {
+                            if (!res.ok) {
+                                let msg = 'Gagal menghapus';
+                                try {
+                                    const ej = await res.json();
+                                    if (ej && ej.message) msg = ej.message;
+                                } catch (e) {}
+                                alert(msg);
+                                return;
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (!data) return;
+                            showToast('Berhasil dihapus');
+                            form.closest('tr').remove();
+                        })
+                        .catch(() => alert('Gagal menghapus'));
                 });
             });
 
             // KTP delete via AJAX in edit page
             document.querySelectorAll('form[action$="/ktp"]').forEach(form => {
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     if (!confirm('Hapus file KTP?')) return;
                     // use POST + _method override for delete to avoid server blocking DELETE
                     const delKtp = new FormData();
                     delKtp.append('_token', '{{ csrf_token() }}');
                     delKtp.append('_method', 'DELETE');
-                    fetch(form.action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: delKtp })
-                    .then(res => res.json())
-                    .then(data => { showToast('KTP dihapus'); location.reload(); })
-                    .catch(()=> alert('Gagal menghapus KTP'));
+                    fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: delKtp
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            showToast('KTP dihapus');
+                            location.reload();
+                        })
+                        .catch(() => alert('Gagal menghapus KTP'));
                 });
             });
 

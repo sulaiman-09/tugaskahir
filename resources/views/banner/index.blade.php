@@ -64,8 +64,8 @@
                                     </td>
                                     <td>
                                         <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch"
-                                                id="status{{ $loop->index }}" {{ $banner['status'] ? 'checked' : '' }}>
+                                            <input class="form-check-input toggle-status" type="checkbox"
+                                                data-id="{{ $banner->id }}" {{ $banner->is_active ? 'checked' : '' }}>
                                         </div>
                                     </td>
                                     <td>
@@ -121,6 +121,37 @@
                                 `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
                             form.submit();
                         }
+                    });
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.toggle-status').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const id = this.dataset.id;
+                        const is_active = this.checked ? 1 : 0;
+
+                        fetch(`/banner/${id}/toggle-status`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    is_active
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (!data.success) {
+                                    alert('Gagal mengubah status.');
+                                    checkbox.checked = !checkbox.checked; // rollback UI
+                                }
+                            })
+                            .catch(() => {
+                                alert('Terjadi error koneksi.');
+                                checkbox.checked = !checkbox.checked; // rollback UI
+                            });
                     });
                 });
             });

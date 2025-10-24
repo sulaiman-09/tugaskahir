@@ -20,6 +20,16 @@
                     @csrf
                     @method('PUT')
 
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     {{-- Job Information --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Job Information</h6>
@@ -34,9 +44,10 @@
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold small">Employment Type</label>
                                 <select name="type" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                    @foreach (['Full Time', 'Contract', 'Internship'] as $type)
+                                    @foreach (['Fulltime', 'Contract', 'Internship'] as $type)
                                         <option value="{{ $type }}"
-                                            {{ old('type', $career->type) === $type ? 'selected' : '' }}>{{ $type }}
+                                            {{ old('type', $career->type) === $type ? 'selected' : '' }}>
+                                            {{ $type }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -44,10 +55,17 @@
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold small">Education Level</label>
                                 <select name="education_level" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                    @foreach (['SMA/SMK', 'Diploma', 'S1', 'S2', 'S3'] as $level)
-                                        <option value="{{ $level }}"
-                                            {{ old('education_level', $career->education_level) == $level ? 'selected' : '' }}>
-                                            {{ $level }}</option>
+                                    @foreach ([
+                                        'SMA/SMK' => 'SMA / SMK',
+                                        'Diploma' => 'Diploma',
+                                        'S1' => 'S1',
+                                        'S2' => 'S2',
+                                        'S3' => 'S3',
+                                    ] as $value => $label)
+                                        <option value="{{ $value }}"
+                                            {{ old('education_level', $career->education_level) === $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -125,7 +143,7 @@
                             </div>
                             <div class="col-md-4 d-flex align-items-center gap-2">
                                 <input type="checkbox" class="form-check-input" name="is_active"
-                                    {{ $career->status == 'Active' ? 'checked' : '' }}>
+                                    {{ $career->is_active ? 'checked' : '' }}>
                                 <label class="form-label fw-semibold small mb-0">Active</label>
                             </div>
                         </div>

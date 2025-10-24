@@ -16,6 +16,16 @@
                 <form action="{{ route('career.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     {{-- Informasi Utama --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Job Information</h6>
@@ -30,17 +40,28 @@
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold small">Employment Type</label>
                                 <select name="type" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                    @foreach (['Full Time', 'Contract', 'Internship'] as $type)
-                                        <option value="{{ $type }}">{{ $type }}</option>
+                                    @foreach (['Fulltime', 'Contract', 'Internship'] as $type)
+                                        <option value="{{ $type }}"
+                                            {{ old('type', $career->type ?? 'Fulltime') === $type ? 'selected' : '' }}>
+                                            {{ $type }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold small">Education Level</label>
                                 <select name="education_level" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                    @foreach (['SMA/SMK', 'Diploma', 'S1', 'S2', 'S3'] as $level)
-                                        <option value="{{ $level }}" {{ $level == 'S1' ? 'selected' : '' }}>
-                                            {{ $level }}</option>
+                                    @foreach ([
+                                        'SMA/SMK' => 'SMA / SMK',
+                                        'Diploma' => 'Diploma',
+                                        'S1' => 'S1',
+                                        'S2' => 'S2',
+                                        'S3' => 'S3',
+                                    ] as $value => $label)
+                                        <option value="{{ $value }}"
+                                            {{ old('education_level', $career->education_level) === $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>

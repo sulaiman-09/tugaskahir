@@ -32,9 +32,8 @@ class BannerController extends Controller
             'name' => 'required|string|max:255',
             'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'mobile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'is_active' => 'required|boolean',
         ]);
-
-        unset($validated['status']);
 
         if ($request->hasFile('web_image')) {
             $validated['web_image'] = $request->file('web_image')->store('banners', 'public');
@@ -43,12 +42,9 @@ class BannerController extends Controller
             $validated['mobile_image'] = $request->file('mobile_image')->store('banners', 'public');
         }
 
-        // 🩹 Tambahkan baris ini (biar field path gak null)
-        $validated['path'] = $validated['web_image'] ?? '';
-
         Banner::create($validated);
 
-        return redirect()->route('banner.index')->with('success', 'Banner berhasil ditambahkan ke database.');
+        return redirect()->route('banner.index')->with('success', 'Banner berhasil ditambahkan.');
     }
 
     // Edit banner
@@ -61,15 +57,14 @@ class BannerController extends Controller
     // Update banner
     public function update(Request $request, $id)
     {
+        $banner = Banner::findOrFail($id);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'mobile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'is_active' => 'required|boolean',
         ]);
-
-        unset($validated['status']); // cegah error karena kolom tidak ada
-
-        $banner = Banner::findOrFail($id);
 
         if ($request->hasFile('web_image')) {
             $validated['web_image'] = $request->file('web_image')->store('banners', 'public');
@@ -125,5 +120,16 @@ class BannerController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function toggleStatus(Request $request, Banner $banner)
+    {
+        $banner->is_active = $request->is_active;
+        $banner->save();
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $banner->is_active,
+        ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Career;
+use Illuminate\Support\Str;
 
 class CareerController extends Controller
 {
@@ -31,6 +32,7 @@ class CareerController extends Controller
     {
         return view('career.create');
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -38,25 +40,25 @@ class CareerController extends Controller
             'type' => 'required|string|max:50',
             'education_level' => 'required|string|max:50',
             'location' => 'nullable|string|max:255',
-            'overview' => 'nullable|string',
             'description' => 'required|string',
             'job_requirements' => 'sometimes|array',
             'job_requirements.*' => 'string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'is_active' => 'sometimes|boolean',
+            // ubah rule ini ↓
+            'is_active' => 'nullable',
         ]);
 
-        // Pastikan checkbox is_active selalu ada
-        $validated['is_active'] = $request->has('is_active');
+        // Pastikan checkbox jadi boolean
+        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
 
-        // Job requirements harus array, default kosong jika tidak ada
         $validated['job_requirements'] = $request->input('job_requirements', []);
+        $validated['slug'] = Str::slug($validated['title']);
+        $validated['job_description'] = $validated['description'];
 
-        // Handle image upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $path = $file->store('careers', 'public');
-            $validated['image'] = 'storage/' . $path;
+            $validated['image_path'] = 'storage/' . $path;
         }
 
         Career::create($validated);
@@ -71,32 +73,27 @@ class CareerController extends Controller
         return view('career.edit', compact('career'));
     }
 
-
     public function update(Request $request, $id)
     {
-        $career = Career::findOrFail($id);
-
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|string|max:50',
-            'education_level' => 'required|string|max:50',
+            'education_level' => 'required|string|in:SMA/SMK,Diploma,S1,S2,S3',
             'location' => 'nullable|string|max:255',
-            'overview' => 'nullable|string',
             'description' => 'required|string',
             'job_requirements' => 'sometimes|array',
             'job_requirements.*' => 'string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'is_active' => 'sometimes|boolean',
+            'is_active' => 'nullable',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
-        $validated['job_requirements'] = $request->input('job_requirements', []);
+        $career = Career::findOrFail($id);
 
-        // Handle image upload dan hapus file lama jika ada
+        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
+        $validated['job_requirements'] = $request->input('job_requirements', []);
+        $validated['slug'] = Str::slug($validated['title']);
+
         if ($request->hasFile('image')) {
-            if ($career->image && file_exists(public_path($career->image))) {
-                unlink(public_path($career->image));
-            }
             $file = $request->file('image');
             $path = $file->store('careers', 'public');
             $validated['image'] = 'storage/' . $path;
