@@ -26,8 +26,26 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
 // Protected routes
 Route::middleware('auth')->group(function () {
+
+
+    // PRODUCT
+    Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
+    Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
+    Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('product.edit');
+    Route::put('/product/{id}', [ProductController::class, 'update'])->name('product.update');
+    Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+    Route::patch('/product/{id}/toggle-price', [ProductController::class, 'togglePrice'])->name('product.togglePrice');
+    
+    // CATEGORY
+    Route::get('/product/category/create', [ProductController::class, 'createCategory'])->name('product.category.create');
+    Route::post('/product/category/store', [ProductController::class, 'storeCategory'])->name('product.category.store');
+    Route::get('/product/category/{id}/edit', [ProductController::class, 'editCategory'])->name('product.category.edit');
+    Route::put('/product/category/{id}', [ProductController::class, 'updateCategory'])->name('product.category.update');
+    Route::delete('/product/category/{id}', [ProductController::class, 'destroyCategory'])->name('product.category.destroy');
 
     // Dashboard - Admin dan Report bisa akses
     Route::get('/dashboard', [DashboardController::class, 'index'])

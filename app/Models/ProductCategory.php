@@ -12,12 +12,15 @@ class ProductCategory extends Model
     protected $table = 'product_categories';
 
     protected $fillable = [
-        'category_name',
+        'name',
         'slug',
         'short_description',
         'show_price',
     ];
 
+    public $timestamps = true; // sesuaikan jika tabel punya created_at dan updated_at
+
+    // Relasi ke produk
     public function products()
     {
         return $this->hasMany(Product::class, 'product_category_id');

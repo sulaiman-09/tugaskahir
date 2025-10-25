@@ -9,28 +9,18 @@ class Product extends Model
 {
     use HasFactory;
 
-    // Tabel utama untuk produk
-    protected $table = 'products'; 
-
     protected $fillable = [
-        'product_category_id',
-        'product_name',
-        'slug',
-        'short_description',
-        'price',
-        'show_price',
-        'created_at',
-        'updated_at'
-    ];
+    'product_category_id',
+    'name',
+    'speed',
+    'description',
+    'price',
+    'show_price',
+    'web_image',
+    'apps_image'
+];
 
-    protected $casts = [
-        'show_price' => 'boolean',
-    ];
 
-    /**
-     * Relasi ke kategori produk.
-     * Setiap produk memiliki satu kategori.
-     */
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'product_category_id');
