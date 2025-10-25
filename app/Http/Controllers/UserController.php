@@ -7,12 +7,19 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    // Tampilkan semua user
-    public function index()
+    // Tampilkan semua user (search + paginate)
+    public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $query = User::query();
+        if ($q = $request->query('search')) {
+            $query->where('name', 'like', "%{$q}%")->orWhere('email', 'like', "%{$q}%");
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('user.index', compact('users'));
     }
+
+    // export removed per request
 
     // Form tambah user
     public function create()

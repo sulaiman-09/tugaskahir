@@ -12,7 +12,18 @@ class CustomerController extends Controller
     {
         $query = Customer::query();
 
-        // Fitur filter tanggal
+        // Search
+        if ($q = $request->query('search')) {
+            $query->where(function($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%")
+                    ->orWhere('address', 'like', "%{$q}%")
+                    ->orWhere('product', 'like', "%{$q}%");
+            });
+        }
+
+        // Fitur filter tanggal (preserve existing behavior)
         if ($request->has('filter')) {
             $today = date('Y-m-d');
             $yesterday = date('Y-m-d', strtotime('-1 day'));
@@ -33,8 +44,52 @@ class CustomerController extends Controller
             }
         }
 
-        $customers = $query->orderBy('created_at', 'desc')->get();
+        $customers = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('customer.index', compact('customers'));
+    }
+
+    // Export CSV of filtered customers
+    public function export(Request $request)
+    {
+        $q = $request->query('search');
+        $query = Customer::query();
+        if ($q) {
+            $query->where(function($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%")
+                    ->orWhere('address', 'like', "%{$q}%");
+            });
+        }
+        $items = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'customers_export_'.now()->format('Ymd_His').'.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function() use ($items) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['ID','Name','Phone','Email','Address','Product','Coverage','Assign To','Submitted At','Created At']);
+            foreach ($items as $i) {
+                fputcsv($out, [
+                    $i->id,
+                    $i->name,
+                    $i->phone,
+                    $i->email,
+                    $i->address,
+                    $i->product,
+                    $i->coverage,
+                    $i->assign_to,
+                    $i->submitted_at,
+                    $i->created_at,
+                ]);
+            }
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     // CREATE: Menampilkan form tambah customer

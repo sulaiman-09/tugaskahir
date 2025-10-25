@@ -1,24 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Career')
+@section('title', 'Create Career')
 
 @section('content')
     <div class="container py-4">
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
 
             {{-- Header --}}
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-semibold text-dark">Edit Career</h5>
-                <a href="{{ route('career.index') }}" class="btn btn-outline-secondary btn-sm rounded-3">
-                    <i class="bi bi-arrow-left me-1"></i> Kembali
-                </a>
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-semibold text-dark">Create Career</h5>
             </div>
 
             {{-- Body --}}
             <div class="card-body bg-light-subtle p-4">
-                <form action="{{ route('career.update', $career->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('career.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    @method('PUT')
 
                     @if ($errors->any())
                         <div class="alert alert-danger">
@@ -30,7 +26,7 @@
                         </div>
                     @endif
 
-                    {{-- Job Information --}}
+                    {{-- Informasi Utama --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Job Information</h6>
                         <div class="row g-3">
@@ -38,15 +34,15 @@
                                 <label class="form-label fw-semibold small">Job Title <span
                                         class="text-danger">*</span></label>
                                 <input type="text" name="title"
-                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    value="{{ old('title', $career->title) }}" required>
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Enter job title"
+                                    value="{{ old('title') }}" required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold small">Employment Type</label>
                                 <select name="type" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                     @foreach (['Fulltime', 'Contract', 'Internship'] as $type)
                                         <option value="{{ $type }}"
-                                            {{ old('type', $career->type) === $type ? 'selected' : '' }}>
+                                            {{ old('type', $career->type ?? 'Fulltime') === $type ? 'selected' : '' }}>
                                             {{ $type }}
                                         </option>
                                     @endforeach
@@ -72,20 +68,20 @@
                         </div>
                     </div>
 
-                    {{-- Location & Overview --}}
+                    {{-- Lokasi & Overview --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Location & Overview</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Location</label>
                                 <input type="text" name="location"
-                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    value="{{ old('location', $career->location) }}">
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Enter location"
+                                    value="{{ old('location') }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Job Overview</label>
                                 <textarea name="overview" rows="2" class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    placeholder="Enter job overview">{{ old('overview', $career->overview) }}</textarea>
+                                    placeholder="Enter job overview">{{ old('overview') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -94,40 +90,27 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Job Requirements</h6>
                         <div id="requirements-wrapper" class="d-flex flex-column gap-2">
-                            @php
-                                $requirements = $career->job_requirements ?? [];
-                            @endphp
-
-                            @forelse($requirements as $req)
-                                <div class="d-flex gap-2 requirement-item">
-                                    <input type="text" name="job_requirements[]"
-                                        class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                        value="{{ $req }}" placeholder="Enter requirement">
-                                    <button type="button"
-                                        class="btn btn-outline-danger btn-sm remove-requirement">Delete</button>
-                                </div>
-                            @empty
-                                <div class="d-flex gap-2 requirement-item">
-                                    <input type="text" name="job_requirements[]"
-                                        class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                        placeholder="Enter requirement">
-                                    <button type="button"
-                                        class="btn btn-outline-danger btn-sm remove-requirement">Delete</button>
-                                </div>
-                            @endforelse
-
+                            <div class="d-flex gap-2 requirement-item">
+                                <input type="text" name="job_requirements[]"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                    placeholder="Add a requirement">
+                                <button type="button"
+                                    class="btn btn-outline-danger btn-sm remove-requirement">Delete</button>
+                            </div>
                         </div>
-                        <button type="button" id="add-requirement" class="btn btn-outline-primary btn-sm mt-2">+ Add
-                            Requirement</button>
+                        <button type="button" id="add-requirement" class="btn btn-outline-primary btn-sm mt-2">
+                            + Add Requirement
+                        </button>
                     </div>
 
                     {{-- Job Description --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Job Description</h6>
-                        <textarea name="description" rows="4" class="form-control rounded-3 shadow-sm border-0 bg-white">{{ old('description', $career->description) }}</textarea>
+                        <textarea name="description" rows="4" class="form-control rounded-3 shadow-sm border-0 bg-white"
+                            placeholder="Enter job description">{{ old('description') }}</textarea>
                     </div>
 
-                    {{-- Cover Image & Status --}}
+                    {{-- Cover Image & Active --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Cover & Status</h6>
                         <div class="row g-3 align-items-center">
@@ -135,16 +118,10 @@
                                 <label class="form-label fw-semibold small">Cover Image</label>
                                 <input type="file" name="image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
-                                @if ($career->image)
-                                    <small class="text-muted d-block mt-1">Current image:</small>
-                                    <img src="{{ asset($career->image) }}" alt="Current Image"
-                                        class="img-thumbnail mt-2 rounded-3" width="150">
-                                @endif
                             </div>
-                            <div class="col-md-4 d-flex align-items-center gap-2">
-                                <input type="checkbox" class="form-check-input" name="is_active"
-                                    {{ $career->is_active ? 'checked' : '' }}>
-                                <label class="form-label fw-semibold small mb-0">Active</label>
+                            <div class="col-md-4 d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input me-2" name="is_active" checked>
+                                <label class="form-check-label small">Active</label>
                             </div>
                         </div>
                     </div>
@@ -155,9 +132,10 @@
                             Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Save Changes
+                            Create Career
                         </button>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -174,7 +152,7 @@
                     const div = document.createElement('div');
                     div.classList.add('d-flex', 'gap-2', 'requirement-item');
                     div.innerHTML = `
-            <input type="text" name="job_requirements[]" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Enter requirement">
+            <input type="text" name="job_requirements[]" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Add a requirement">
             <button type="button" class="btn btn-outline-danger btn-sm remove-requirement">Delete</button>
         `;
                     wrapper.appendChild(div);

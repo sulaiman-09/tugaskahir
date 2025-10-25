@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [CustomerController::class, 'index'])->name('index');
         Route::get('/create', [CustomerController::class, 'create'])->name('create');
         Route::post('/', [CustomerController::class, 'store'])->name('store');
+        Route::get('/export', [CustomerController::class, 'export'])->name('export');
         Route::get('/{id}/edit', [CustomerController::class, 'edit'])->name('edit');
         Route::put('/{id}', [CustomerController::class, 'update'])->name('update');
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
@@ -68,18 +69,32 @@ Route::middleware('auth')->group(function () {
         ->name('sudirmanpark.')
         ->middleware('role:admin,sudirman park')
         ->group(function () {
+            // Main CRUD
             Route::get('/', [SudirmanParkController::class, 'index'])->name('index');
             Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
             Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
-            Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
             Route::get('/export', [SudirmanParkController::class, 'export'])->name('export');
-            // Tambahan untuk edit/update/delete
             Route::get('/{id}/edit', [SudirmanParkController::class, 'edit'])->name('edit');
             Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
-            // toggle/update status (AJAX)
+
+            // Ajax status update for a customer
             Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
-            Route::patch('/sudirmanpark/{id}/status', [SudirmanParkController::class, 'updateStatus']);
+            // Remove KTP file
+            Route::delete('/{id}/ktp', [SudirmanParkController::class, 'removeKtp'])->name('removeKtp');
+            // Download KTP (secure via controller)
+            Route::get('/{id}/ktp/download', [SudirmanParkController::class, 'downloadKtp'])->name('downloadKtp');
+            // Preview KTP inline for modal
+            Route::get('/{id}/ktp/preview', [SudirmanParkController::class, 'previewKtp'])->name('previewKtp');
+
+            // Homepass (alamat tower) CRUD
+            Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
+            Route::get('/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('createHomepass');
+            Route::post('/homepass', [SudirmanParkController::class, 'storeHomepass'])->name('storeHomepass');
+            Route::get('/homepass/{id}/edit', [SudirmanParkController::class, 'editHomepass'])->name('editHomepass');
+            Route::put('/homepass/{id}', [SudirmanParkController::class, 'updateHomepass'])->name('updateHomepass');
+            Route::delete('/homepass/{id}', [SudirmanParkController::class, 'destroyHomepass'])->name('destroyHomepass');
+            Route::get('/homepass/export', [SudirmanParkController::class, 'exportHomepass'])->name('exportHomepass');
         });
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {
@@ -91,13 +106,19 @@ Route::middleware('auth')->group(function () {
         Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
     });
 
-    Route::resource('/banner', BannerController::class);
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('banner', App\Http\Controllers\BannerController::class)->except(['show']);
+        Route::get('/banner/export', [App\Http\Controllers\BannerController::class, 'export'])->name('banner.export');
+        Route::patch('/banner/{banner}/toggle-status', [App\Http\Controllers\BannerController::class, 'toggleStatus'])
+            ->name('banner.toggle-status');
+    });
 
     Route::middleware(['auth'])->group(function () {
-        Route::resource('division', App\Http\Controllers\DivisionController::class);
-
-        // Route khusus update status
+        // Letakkan di atas dulu
+        Route::get('/division/export', [App\Http\Controllers\DivisionController::class, 'export'])->name('division.export');
         Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
+        // Baru resource di bawah
+        Route::resource('division', App\Http\Controllers\DivisionController::class);
     });
 
     Route::middleware(['auth'])->group(function () {
@@ -105,16 +126,25 @@ Route::middleware('auth')->group(function () {
         Route::get('/career/{id}/edit', [CareerController::class, 'edit'])->name('career.edit');
         Route::put('/career/{id}', [CareerController::class, 'update'])->name('career.update');
         Route::delete('/career/{id}', [CareerController::class, 'destroy'])->name('career.destroy');
+        Route::get('career/export', [App\Http\Controllers\CareerController::class, 'export'])->name('career.export');
+        Route::get('/career/create', [CareerController::class, 'create'])->name('career.create');
+        Route::post('/career', [CareerController::class, 'store'])->name('career.store');
     });
 
     Route::middleware(['auth'])->group(function () {
         Route::resource('news', NewsController::class);
+        Route::get('news/export/csv', [NewsController::class, 'exportCsv'])->name('news.export.csv');
+        Route::get('news/export/xlsx', [NewsController::class, 'exportXlsx'])->name('news.export.xlsx');
     });
 
     Route::prefix('settings-content')->group(function () {
         Route::get('/', [SettingsContentController::class, 'index'])->name('settings-content.index');
+        Route::get('/create', [SettingsContentController::class, 'create'])->name('settings-content.create');
+        Route::post('/', [SettingsContentController::class, 'store'])->name('settings-content.store');
         Route::get('/{id}/edit', [SettingsContentController::class, 'edit'])->name('settings-content.edit');
         Route::put('/{id}', [SettingsContentController::class, 'update'])->name('settings-content.update');
+        Route::delete('/{id}', [SettingsContentController::class, 'destroy'])->name('settings-content.destroy');
+        Route::get('settings-content/export', [SettingsContentController::class, 'export'])->name('settings-content.export');
     });
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

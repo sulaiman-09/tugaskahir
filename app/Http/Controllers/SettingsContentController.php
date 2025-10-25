@@ -4,49 +4,162 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SettingsContent;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class SettingsContentController extends Controller
 {
-    // Tampilkan index
-    public function index()
-    {
-        $contents = SettingsContent::orderBy('order')->get();
-        return view('settingscontent.index', compact('contents'));
+    // INDEX
+public function index(Request $request)
+{
+    $query = SettingsContent::query();
+
+    // Search by title or name
+    if ($search = $request->input('search')) {
+        $query->where('title', 'like', "%{$search}%")
+              ->orWhere('name', 'like', "%{$search}%");
     }
 
-    // Tampilkan form edit
+    $contents = $query->orderBy('order')->paginate(10);
+
+    return view('settingscontent.index', compact('contents'));
+}
+
+    // CREATE FORM
+    public function create()
+    {
+        return view('settingscontent.create');
+    }
+
+    // STORE DATA
+    public function store(Request $request)
+    {
+        $request->validate([
+            'content_type_id' => 'required|integer',
+            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'order' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'icon' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $data = $request->only(['content_type_id', 'title', 'name', 'description', 'order']);
+        $data['is_active'] = $request->has('is_active') ? 1 : 0;
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('content/images', 'public');
+        }
+
+        if ($request->hasFile('icon')) {
+            $data['icon'] = $request->file('icon')->store('content/icons', 'public');
+        }
+
+        SettingsContent::create($data);
+
+        return redirect()->route('settings-content.index')->with('success', 'Content created successfully!');
+    }
+
+    // EDIT FORM
     public function edit($id)
     {
         $content = SettingsContent::findOrFail($id);
         return view('settingscontent.edit', compact('content'));
     }
 
-    // Proses update
+    // UPDATE
     public function update(Request $request, $id)
     {
         $request->validate([
+            'content_type_id' => 'required|integer',
             'title' => 'required|string|max:255',
             'name' => 'required|string|max:255',
-            'content_type_id' => 'nullable|integer',
-            'order' => 'nullable|integer',
-            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string',
+            'order' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'icon' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $content = SettingsContent::findOrFail($id);
-        $content->update([
-            'title' => $request->title,
-            'name' => $request->name,
-            'content_type_id' => $request->content_type_id,
-            'order' => $request->order,
-            'is_active' => $request->has('is_active') ? 1 : 0,
-        ]);
+        $data = $request->only(['content_type_id', 'title', 'name', 'description', 'order']);
+        $data['is_active'] = $request->has('is_active') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('content_sections', 'public');
-        $section->image_path = $path;
-    }
-    $content->save();
+            if ($content->image && Storage::disk('public')->exists($content->image)) {
+                Storage::disk('public')->delete($content->image);
+            }
+            $data['image'] = $request->file('image')->store('content/images', 'public');
+        }
+
+        if ($request->hasFile('icon')) {
+            if ($content->icon && Storage::disk('public')->exists($content->icon)) {
+                Storage::disk('public')->delete($content->icon);
+            }
+            $data['icon'] = $request->file('icon')->store('content/icons', 'public');
+        }
+
+        $content->update($data);
 
         return redirect()->route('settings-content.index')->with('success', 'Content updated successfully!');
     }
+
+    // DELETE
+    public function destroy($id)
+    {
+        $content = SettingsContent::findOrFail($id);
+
+        if ($content->image && Storage::disk('public')->exists($content->image)) {
+            Storage::disk('public')->delete($content->image);
+        }
+        if ($content->icon && Storage::disk('public')->exists($content->icon)) {
+            Storage::disk('public')->delete($content->icon);
+        }
+
+        $content->delete();
+        return redirect()->route('settings-content.index')->with('success', 'Content deleted successfully!');
+    }
+
+public function export(Request $request)
+{
+    $query = SettingsContent::query();
+
+    // Jika ada search, ikut filter
+    if ($search = $request->input('search')) {
+        $query->where('title', 'like', "%{$search}%")
+              ->orWhere('name', 'like', "%{$search}%");
+    }
+
+    $contents = $query->orderBy('order')->get();
+
+    $filename = 'settings_content_' . date('Ymd_His') . '.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename={$filename}",
+    ];
+
+    $columns = ['ID','Title','Name','Type ID','Order','Status','Image','Icon'];
+
+    $callback = function() use ($contents, $columns) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, $columns);
+
+        foreach ($contents as $c) {
+            fputcsv($file, [
+                $c->id,
+                $c->title,
+                $c->name,
+                $c->content_type_id,
+                $c->order,
+                $c->is_active ? 'Active' : 'Inactive',
+                $c->image ? asset('storage/'.$c->image) : '',
+                $c->icon ? asset('storage/'.$c->icon) : '',
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return Response::stream($callback, 200, $headers);
+}
 }

@@ -4,108 +4,116 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="card shadow-sm border-0 rounded-4">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
         {{-- Header --}}
-        <div class="card-header bg-primary text-white rounded-top-4">
-            <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Tambah Lead Baru</h4>
+        <div class="card-header bg-white border-bottom py-3">
+            <h5 class="mb-0 fw-semibold text-dark">Tambah Lead Baru</h5>
         </div>
 
-        <div class="card-body p-4">
+        {{-- Body --}}
+        <div class="card-body bg-light-subtle p-4">
             <form method="POST" action="{{ route('customer.store') }}">
                 @csrf
 
                 {{-- Data Utama --}}
-                <h5 class="fw-semibold text-secondary mb-3">🧍‍♂️ Data Utama</h5>
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Nama Pelanggan <span class="text-danger">*</span></label>
-                        <input type="text" name="name" class="form-control" placeholder="Masukkan nama pelanggan" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Nomor Telepon <span class="text-danger">*</span></label>
-                        <input type="text" name="phone" class="form-control" placeholder="Contoh: 08123456789" required>
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label fw-semibold">Alamat Lengkap <span class="text-danger">*</span></label>
-                        <textarea name="address" class="form-control" rows="2" placeholder="Masukkan alamat lengkap" required></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="email@example.com">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Kode Referral</label>
-                        <input type="text" name="referral_code" class="form-control" placeholder="Opsional">
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Utama</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Nama Pelanggan <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Masukkan nama pelanggan" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Nomor Telepon <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Contoh: 08123456789" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold small">Alamat Lengkap <span class="text-danger">*</span></label>
+                            <textarea name="address" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="2" placeholder="Masukkan alamat lengkap" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Email</label>
+                            <input type="email" name="email" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="email@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Kode Referral</label>
+                            <input type="text" name="referral_code" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Opsional">
+                        </div>
                     </div>
                 </div>
 
                 {{-- Data Wilayah --}}
-                <h5 class="fw-semibold text-secondary mb-3">📍 Data Wilayah</h5>
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Provinsi <span class="text-danger">*</span></label>
-                        <select id="province" name="province" class="form-select" required>
-                            <option value="">Pilih Provinsi</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Kota/Kabupaten</label>
-                        <select id="city" name="city" class="form-select" disabled>
-                            <option value="">Pilih Kota/Kabupaten</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Kecamatan</label>
-                        <select id="district" name="district" class="form-select" disabled>
-                            <option value="">Pilih Kecamatan</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Kelurahan/Desa</label>
-                        <select id="village" name="village" class="form-select" disabled>
-                            <option value="">Pilih Kelurahan/Desa</option>
-                        </select>
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Wilayah</h6>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">Provinsi <span class="text-danger">*</span></label>
+                            <select id="province" name="province" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
+                                <option value="">Pilih Provinsi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">Kota/Kabupaten</label>
+                            <select id="city" name="city" class="form-select rounded-3 shadow-sm border-0 bg-white" disabled>
+                                <option value="">Pilih Kota/Kabupaten</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">Kecamatan</label>
+                            <select id="district" name="district" class="form-select rounded-3 shadow-sm border-0 bg-white" disabled>
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">Kelurahan/Desa</label>
+                            <select id="village" name="village" class="form-select rounded-3 shadow-sm border-0 bg-white" disabled>
+                                <option value="">Pilih Kelurahan/Desa</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Data Tambahan --}}
-                <h5 class="fw-semibold text-secondary mb-3">📦 Data Tambahan</h5>
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Division</label>
-                        <select name="division" class="form-select">
-                            <option value="">Pilih Division</option>
-                            <option value="Marketing">Marketing</option>
-                            <option value="Sales Retail">Sales Retail</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Kategori Produk</label>
-                        <select name="product_category" class="form-select">
-                            <option value="">Pilih Kategori</option>
-                            <option value="Broadband Internet">Broadband Internet</option>
-                            <option value="Business Solutions">Business Solutions</option>
-                            <option value="Promo Spesial Jepara">Promo Spesial Jepara</option>
-                            <option value="Promo Spesial Sukoharjo">Promo Spesial Sukoharjo</option>
-                            <option value="Sudirman Park">Sudirman Park</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Coverage</label>
-                        <select name="coverage" class="form-select">
-                            <option value="">Pilih Coverage</option>
-                            <option value="Cover">Cover</option>
-                            <option value="Uncover">Uncover</option>
-                        </select>
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Tambahan</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Division</label>
+                            <select name="division" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                                <option value="">Pilih Division</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales Retail">Sales Retail</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Kategori Produk</label>
+                            <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                                <option value="">Pilih Kategori</option>
+                                <option value="Broadband Internet">Broadband Internet</option>
+                                <option value="Business Solutions">Business Solutions</option>
+                                <option value="Promo Spesial Jepara">Promo Spesial Jepara</option>
+                                <option value="Promo Spesial Sukoharjo">Promo Spesial Sukoharjo</option>
+                                <option value="Sudirman Park">Sudirman Park</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Coverage</label>
+                            <select name="coverage" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                                <option value="">Pilih Coverage</option>
+                                <option value="Cover">Cover</option>
+                                <option value="Uncover">Uncover</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Tombol Aksi --}}
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ route('customer.index') }}" class="btn btn-outline-secondary px-4">
+                <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+                    <a href="{{ route('customer.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i> Batal
                     </a>
-                    <button type="submit" class="btn btn-primary px-4">
+                    <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
                         <i class="bi bi-save2 me-1"></i> Simpan Customer
                     </button>
                 </div>
@@ -195,4 +203,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+{{-- Style Tambahan --}}
+<style>
+    body {
+        background-color: #f8fafc !important;
+    }
+
+    .card {
+        background: #ffffff;
+    }
+
+    h6 {
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #aacbff !important;
+        box-shadow: 0 0 5px rgba(99, 162, 255, 0.35) !important;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd !important;
+        border: none !important;
+        transition: 0.2s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0b5ed7 !important;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f1f3f5 !important;
+    }
+</style>
 @endsection

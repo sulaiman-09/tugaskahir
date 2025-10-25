@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Content')
+@section('title', 'Create Content')
 
 @section('content')
     <div class="container py-4">
@@ -8,42 +8,41 @@
 
             {{-- Header --}}
             <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-semibold text-dark">Edit Content</h5>
+                <h5 class="mb-0 fw-semibold text-dark">Create New Content</h5>
             </div>
 
             {{-- Body --}}
             <div class="card-body bg-light-subtle p-4">
-                <form action="{{ route('settings-content.update', $content->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('settings-content.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    @method('PUT')
 
                     {{-- Data Utama --}}
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Main Data</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Content Type <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small">Content Type <span
+                                        class="text-danger">*</span></label>
                                 <input type="number" name="content_type_id"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    value="{{ old('content_type_id', $content->content_type_id) }}" required>
+                                    placeholder="Enter content type ID" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Title <span class="text-danger">*</span></label>
                                 <input type="text" name="title"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    value="{{ old('title', $content->title) }}" required>
+                                    placeholder="Enter content title" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Name <span class="text-danger">*</span></label>
                                 <input type="text" name="name"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    value="{{ old('name', $content->name) }}" required>
+                                    placeholder="Enter content name" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Order</label>
                                 <input type="number" name="order"
-                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
-                                    value="{{ old('order', $content->order) }}">
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" value="0">
                             </div>
                         </div>
                     </div>
@@ -52,7 +51,7 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Description</h6>
                         <textarea name="description" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="4"
-                            placeholder="Enter description...">{{ old('description', $content->description) }}</textarea>
+                            placeholder="Enter description..."></textarea>
                     </div>
 
                     {{-- Media --}}
@@ -61,17 +60,13 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Image</label>
-                                <input type="file" name="image" class="form-control rounded-3 shadow-sm border-0 bg-white">
-                                @if ($content->image)
-                                    <small class="text-muted">Current: {{ $content->image }}</small>
-                                @endif
+                                <input type="file" name="image"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Icon</label>
-                                <input type="file" name="icon" class="form-control rounded-3 shadow-sm border-0 bg-white">
-                                @if ($content->icon)
-                                    <small class="text-muted">Current: {{ $content->icon }}</small>
-                                @endif
+                                <input type="file" name="icon"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
                         </div>
                     </div>
@@ -80,8 +75,7 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Status</h6>
                         <div class="form-check form-switch ms-3">
-                            <input type="checkbox" name="is_active" class="form-check-input"
-                                {{ old('is_active', $content->is_active) ? 'checked' : '' }}>
+                            <input type="checkbox" name="is_active" class="form-check-input" checked>
                             <label class="form-check-label fw-semibold small ms-2">Active</label>
                         </div>
                     </div>
@@ -93,7 +87,7 @@
                             Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Update Content
+                            Save Content
                         </button>
                     </div>
                 </form>

@@ -4,14 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PermissionMenu;
+use Illuminate\Support\Facades\Schema;
 
 class PermissionController extends Controller
 {
     // Menampilkan semua permission
-    public function index()
+    public function index(Request $request)
     {
         // Menghitung jumlah role yang memiliki permission ini
-        $permissions = PermissionMenu::withCount('roles')->get();
+        $query = PermissionMenu::withCount('roles');
+
+        if ($search = $request->query('search')) {
+            $table = (new PermissionMenu)->getTable();
+            $columns = Schema::getColumnListing($table);
+
+            $ignore = ['guard_name'];
+            $columns = array_filter($columns, fn($c) => !in_array($c, $ignore));
+
+            $query->where(function($qb) use ($columns, $search) {
+                foreach ($columns as $col) {
+                    if ($col === 'id' && is_numeric($search)) {
+                        $qb->orWhere($col, $search);
+                    } else {
+                        $qb->orWhere($col, 'like', "%{$search}%");
+                    }
+                }
+            });
+
+            $query->orWhereHas('roles', function($r) use ($search) {
+                $r->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        $permissions = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('permissions.index', compact('permissions'));
     }
 

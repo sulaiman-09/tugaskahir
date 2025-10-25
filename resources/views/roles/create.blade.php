@@ -1,71 +1,94 @@
 @extends('layouts.app')
 
-@section('title', 'Create New Role')
+@section('title', 'Create Role')
 
 @section('content')
-    <div class="container mt-4">
-        <h2 class="mb-4">Create New Role</h2>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-light fw-bold">
-                Role Information
-            </div>
-            <div class="card-body">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <form action="{{ route('roles.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Role Name <span class="text-danger">*</span></label>
-                        <input type="text" name="name" id="name" class="form-control"
-                            placeholder="Enter role name" required>
-                    </div>
+        {{-- Header --}}
+        <div class="card-header bg-white border-bottom py-3">
+            <h5 class="mb-0 fw-semibold text-dark">Create New Role</h5>
+        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Permissions <span class="text-danger">*</span></label>
-                        <p class="small text-muted">Select the permissions for this role</p>
+        {{-- Body --}}
+        <div class="card-body bg-light-subtle p-4">
+            <form action="{{ route('roles.store') }}" method="POST">
+                @csrf
 
-                        <div class="form-check mb-2">
-                            <input type="checkbox" id="selectAll" class="form-check-input">
-                            <label for="selectAll" class="form-check-label fw-semibold">Select All Permissions</label>
+                {{-- Role Info --}}
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Role Information</h6>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Role Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control rounded-3 shadow-sm border-0 bg-white" 
+                                   placeholder="Enter role name" required>
                         </div>
+                    </div>
+                </div>
 
+                {{-- Permissions --}}
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Permissions</h6>
+                    <p class="small text-muted ms-1">Select the permissions for this role</p>
+
+                    <div class="form-check mb-2 ms-2">
+                        <input type="checkbox" id="selectAll" class="form-check-input">
+                        <label for="selectAll" class="form-check-label fw-semibold small">Select All Permissions</label>
+                    </div>
+
+                    <div class="row ms-2">
                         @foreach ($permissions as $id => $permission)
                             <div class="col-md-3 mb-2">
                                 <div class="form-check">
-                                    <input type="checkbox" name="permissions[]" value="{{ $id }}"
-                                        id="perm_{{ $id }}" class="form-check-input permission-checkbox">
-                                    <label for="perm_{{ $id }}"
-                                        class="form-check-label">{{ $permission }}</label>
+                                    <input type="checkbox" name="permissions[]" value="{{ $id }}" id="perm_{{ $id }}" 
+                                           class="form-check-input permission-checkbox">
+                                    <label for="perm_{{ $id }}" class="form-check-label small">{{ $permission }}</label>
                                 </div>
                             </div>
                         @endforeach
-
                     </div>
+                </div>
 
-                    <div class="d-flex justify-content-end">
-                        <a href="{{ route('roles.index') }}" class="btn btn-secondary me-2">← Cancel</a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus-circle"></i> Create Role
-                        </button>
-                    </div>
-                </form>
-            </div>
+                {{-- Tombol Aksi --}}
+                <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+                    <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                        Save Role
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    {{-- Script Select All --}}
-    <script>
-        document.getElementById('selectAll').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.permission-checkbox');
-            checkboxes.forEach(cb => cb.checked = this.checked);
-        });
-    </script>
+{{-- SCRIPT --}}
+<script>
+    document.getElementById('selectAll').addEventListener('change', function() {
+        document.querySelectorAll('.permission-checkbox')
+            .forEach(cb => cb.checked = this.checked);
+    });
+</script>
+
+{{-- STYLE TAMBAHAN --}}
+<style>
+    body { background-color: #f8fafc !important; }
+    .card { background: #ffffff; }
+    .form-control:focus {
+        border-color: #aacbff !important;
+        box-shadow: 0 0 5px rgba(99,162,255,0.35) !important;
+    }
+    .btn-primary {
+        background-color: #0d6efd !important;
+        border: none !important;
+        transition: background-color 0.2s ease;
+    }
+    .btn-primary:hover { background-color: #0b5ed7 !important; }
+    .btn-outline-secondary:hover { background-color: #f1f3f5 !important; }
+    h6 { font-size: 0.95rem; }
+</style>
 @endsection

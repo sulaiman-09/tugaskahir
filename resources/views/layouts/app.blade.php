@@ -39,6 +39,7 @@
             position: fixed;
             top: 0;
             left: 250px;
+            /* tetap 250px */
             right: 0;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -73,6 +74,7 @@
             position: fixed;
             top: 0;
             left: 0;
+            /* tetap di kiri */
             bottom: 0;
             width: 250px;
             height: 100vh;
@@ -129,9 +131,15 @@
             font-size: 16px;
         }
 
+        .sidebar-menu a.active {
+            transform: none !important;
+            /* pastikan menu aktif tidak geser */
+        }
+
         /* --- KONTEN UTAMA --- */
         .main-content {
             margin-left: 250px;
+            /* tetap 250px agar sesuai sidebar */
             margin-top: 70px;
             padding: 30px;
             min-height: calc(100vh - 70px);
@@ -225,6 +233,7 @@
             }
         }
 
+        /* ===== Media Query ===== */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -402,15 +411,21 @@
     <script>
         document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', e => {
+                // Hanya fade out main content, jangan sentuh sidebar
                 const main = document.querySelector('.main-content');
+                main.style.transition = 'opacity 0.15s ease-in-out';
                 main.style.opacity = 0;
+
+                // Biarkan link normal tetap jalan setelah delay
                 setTimeout(() => {
-                    window.location = link.href;
+                    window.location.href = link.href;
                 }, 150);
+
                 e.preventDefault();
             });
         });
     </script>
+    <script src="{{ asset('js/admin-ui.js') }}"></script>
 </body>
 
 </html>
