@@ -62,7 +62,7 @@
                                 <tr>
                                     <td>{{ $permissions->firstItem() + $index }}</td>
                                     <td class="text-start ps-3">{{ $permission->name }}</td>
-                                    <td>{{ $permission->roles_count }}</td>
+                                    <td>{{ $permission->roles_count ?? 0 }}</td>
                                     <td>{{ $permission->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
@@ -91,6 +91,23 @@
                 </div>
             </div>
 
+            {{-- Show per page --}}
+            <div class="d-flex justify-content-start align-items-center mt-2 px-3">
+                <form method="GET" action="{{ route('permissions.index') }}" class="d-flex align-items-center gap-2">
+                    @if (request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    <label for="per_page" class="mb-0">Show</label>
+                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                        @foreach ([10, 25, 50, 100, 'All'] as $size)
+                            <option value="{{ $size }}" {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                                {{ $size }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+
             {{-- Pagination --}}
             <div class="d-flex justify-content-end mt-3 px-3 pb-3">
                 {{ $permissions->links() }}
@@ -108,7 +125,7 @@
                         const name = form.dataset.name || 'this permission';
                         if (confirm(
                                 `Are you sure you want to delete "${name}"? This action cannot be undone.`
-                                )) {
+                            )) {
                             form.submit();
                         }
                     });

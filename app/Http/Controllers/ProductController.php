@@ -9,25 +9,56 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    /* ======================================================
-       ===============  BAGIAN A : CATEGORY CRUD  ============
-       ====================================================== */
-
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $productSearch = $request->input('product_search');
+        $categorySearch = $request->input('category_search');
         $sort = $request->input('sort', 'desc');
+        $categoryPerPage = $request->get('category_per_page', 15);
+        $productPerPage = $request->get('product_per_page', 15);
+        $categoryQuery = ProductCategory::query();
 
-        // Produk
-        $products = Product::with('category')
-            ->when($search, fn($q) => $q->where('name', 'like', "%$search%"))
-            ->orderBy('id', $sort)
-            ->get();
+        // 🔹 Filter Category
+        if ($categorySearch) {
+            $categoryQuery->where('name', 'like', "%$categorySearch%")
+                ->orWhere('slug', 'like', "%$categorySearch%");
+        }
 
-        // Kategori
-        $categories = ProductCategory::orderBy('id', 'asc')->get();
+        if ($categoryPerPage === 'all') {
+            $categories = $categoryQuery->orderBy('id', 'asc')->get();
+        } else {
+            $categories = $categoryQuery
+                ->orderBy('id', 'asc')
+                ->paginate((int)$categoryPerPage)
+                ->withQueryString();
+        }
 
-        return view('product.index', compact('products', 'categories', 'sort', 'search'));
+        // 🔹 Filter Product
+        $productQuery = Product::with('category')
+            ->when($productSearch, function ($query) use ($productSearch) {
+                $query->where('name', 'like', "%$productSearch%")
+                    ->orWhere('speed', 'like', "%$productSearch%")
+                    ->orWhereHas('category', fn($q) => $q->where('name', 'like', "%$productSearch%"));
+            })
+            ->orderBy('id', $sort);
+
+        if ($productPerPage === 'all') {
+            $products = $productQuery->get();
+        } else {
+            $products = $productQuery
+                ->paginate((int)$productPerPage)
+                ->withQueryString();
+        }
+
+        return view('product.index', compact(
+            'products',
+            'categories',
+            'sort',
+            'productSearch',
+            'categorySearch',
+            'categoryPerPage',
+            'productPerPage'
+        ));
     }
 
     // ========== CATEGORY CREATE ==========
@@ -105,7 +136,7 @@ class ProductController extends Controller
 
     public function create_Category()
     {
-    return view('product.create_category');
+        return view('product.create_category');
     }
 
     // SIMPAN PRODUK BARU
@@ -195,5 +226,82 @@ class ProductController extends Controller
         $product->save();
 
         return redirect()->route('product.index')->with('success', 'Harga produk diperbarui.');
+    }
+
+    // EXPORT PRODUCT KE CSV
+    public function export(Request $request)
+    {
+        $search = $request->input('product_search');
+
+        $products = Product::with('category')
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%")
+                    ->orWhere('speed', 'like', "%$search%")
+                    ->orWhereHas('category', fn($q) => $q->where('name', 'like', "%$search%"));
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $filename = 'products_' . date('Y-m-d_H-i-s') . '.csv';
+        $columns = ['ID', 'Name', 'Category', 'Speed', 'Price', 'Description', 'Show Price'];
+
+        $callback = function () use ($products, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($products as $p) {
+                fputcsv($file, [
+                    $p->id,
+                    $p->name,
+                    optional($p->category)->name,
+                    $p->speed,
+                    $p->price,
+                    strip_tags($p->description),
+                    $p->show_price ? 'Yes' : 'No',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+        ]);
+    }
+
+    public function exportCategory(Request $request)
+    {
+        $search = $request->input('category_search');
+
+        $categories = ProductCategory::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%$search%")
+                ->orWhere('slug', 'like', "%$search%");
+        })
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $filename = 'product_categories_' . date('Y-m-d_H-i-s') . '.csv';
+        $columns = ['ID', 'Name', 'Slug', 'Short Description', 'Show Price'];
+
+        $callback = function () use ($categories, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($categories as $c) {
+                fputcsv($file, [
+                    $c->id,
+                    $c->name,
+                    $c->slug,
+                    strip_tags($c->short_description),
+                    $c->show_price ? 'Yes' : 'No',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+        ]);
     }
 }

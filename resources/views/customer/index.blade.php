@@ -173,27 +173,77 @@
             </div>
         </div>
 
-        {{-- Pagination --}}
-        <div class="d-flex justify-content-end mt-3">
-            {{ $customers->links() }}
-        </div>
-    </div>
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
 
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Konfirmasi hapus
-                document.querySelectorAll('.delete-form').forEach(form => {
-                    form.addEventListener('submit', e => {
-                        e.preventDefault();
-                        const name = form.dataset.name || 'record ini';
-                        if (confirm(
-                                `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
-                            form.submit();
-                        }
+            {{-- Records per page --}}
+            <div class="d-flex align-items-center">
+                <form method="GET" action="{{ route('customer.index') }}" id="perPageForm"
+                    class="d-flex align-items-center">
+                    <label for="per_page" class="mb-0">Show</label>
+                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                        @foreach ([10, 25, 50, 100, 'All'] as $size)
+                            <option value="{{ $size }}" {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                                {{ $size }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    {{-- Pertahankan search & filter --}}
+                    @foreach (request()->except('per_page', 'page') as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                </form>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="d-flex justify-content-end mt-3">
+                {{ $customers->links() }}
+            </div>
+        </div>
+
+        @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Konfirmasi hapus
+                    document.querySelectorAll('.delete-form').forEach(form => {
+                        form.addEventListener('submit', e => {
+                            e.preventDefault();
+                            const name = form.dataset.name || 'record ini';
+                            if (confirm(
+                                    `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
+                                form.submit();
+                            }
+                        });
                     });
                 });
-            });
-        </script>
+            </script>
+        @endpush
+    @endsection
+
+    @push('styles')
+        <style>
+            /* Biar dropdown ga ketutup dan ukurannya pas */
+            #per_page {
+                min-width: 80px;
+                border-radius: 8px;
+                padding: 5px 10px;
+                z-index: 10;
+                position: relative;
+                background-color: #fff;
+            }
+
+            #perPageForm {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .pagination {
+                margin-bottom: 0;
+            }
+
+            .d-flex.flex-wrap.gap-2 {
+                gap: 10px !important;
+            }
+        </style>
     @endpush
-@endsection

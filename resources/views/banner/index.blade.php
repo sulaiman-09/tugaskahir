@@ -13,13 +13,10 @@
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 {{-- Kiri: Export & Tambah --}}
                 <div class="d-flex align-items-center gap-2">
-                    {{-- Tombol Export --}}
                     <a href="{{ route('sudirmanpark.exportHomepass', request()->query()) }}"
                         class="btn btn-outline-secondary btn-sm d-flex align-items-center">
                         <i class="fa fa-print me-2"></i> Export CSV
                     </a>
-
-                    {{-- Tombol Add Banner --}}
                     <a href="{{ route('banner.create') }}" class="btn btn-primary btn-sm">
                         + Add Banner
                     </a>
@@ -70,13 +67,10 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            {{-- Edit --}}
                                             <a href="{{ route('banner.edit', $banner->id) }}" class="btn btn-warning btn-sm"
                                                 title="Edit">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-
-                                            {{-- Delete --}}
                                             <form action="{{ route('banner.destroy', $banner->id) }}" method="POST"
                                                 class="delete-form" data-name="{{ $banner->name }}">
                                                 @csrf
@@ -98,13 +92,47 @@
                 </div>
             </div>
 
-            {{-- Footer Pagination --}}
-            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3">
-                <small class="text-muted">
-                    Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }}
-                    of {{ $banners->total() }} Results
-                </small>
-                <div>{{ $banners->links() }}</div>
+            {{-- Footer Pagination + Records per page --}}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
+
+                {{-- Records per page --}}
+                <div class="d-flex align-items-center">
+                    <form method="GET" action="{{ route('banner.index') }}" id="perPageForm"
+                        class="d-flex align-items-center gap-2">
+                        <label for="per_page" class="mb-0">Show</label>
+                        <select name="per_page" id="per_page" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                            @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                <option value="{{ $size }}"
+                                    {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        {{-- Pertahankan search --}}
+                        @foreach (request()->except('per_page', 'page') as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endforeach
+                    </form>
+                </div>
+
+                {{-- Pagination --}}
+                <div>
+                    <small class="text-muted">
+                        @if ($banners instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }}
+                            of {{ $banners->total() }} Results
+                        @else
+                            Showing 1 to {{ $banners->count() }} of {{ $banners->count() }} Results
+                        @endif
+                    </small>
+                    <div>
+                        @if ($banners instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            {{ $banners->links() }}
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -112,7 +140,7 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Konfirmasi hapus (biar sama seperti customer)
+                // Konfirmasi hapus
                 document.querySelectorAll('.delete-form').forEach(form => {
                     form.addEventListener('submit', e => {
                         e.preventDefault();
@@ -123,9 +151,8 @@
                         }
                     });
                 });
-            });
 
-            document.addEventListener('DOMContentLoaded', function() {
+                // Toggle status
                 document.querySelectorAll('.toggle-status').forEach(checkbox => {
                     checkbox.addEventListener('change', function() {
                         const id = this.dataset.id;
@@ -145,58 +172,67 @@
                             .then(data => {
                                 if (!data.success) {
                                     alert('Gagal mengubah status.');
-                                    checkbox.checked = !checkbox.checked; // rollback UI
+                                    checkbox.checked = !checkbox.checked;
                                 }
                             })
                             .catch(() => {
                                 alert('Terjadi error koneksi.');
-                                checkbox.checked = !checkbox.checked; // rollback UI
+                                checkbox.checked = !checkbox.checked;
                             });
                     });
                 });
             });
         </script>
     @endpush
+
+    @push('styles')
+        <style>
+            .table thead th {
+                color: #000000;
+                font-weight: 600;
+            }
+
+            .table tbody tr:nth-child(even) {
+                background-color: #f8faff;
+            }
+
+            .table tbody tr:hover {
+                background-color: #e6f0ff;
+                transition: 0.2s;
+            }
+
+            .btn-primary {
+                background-color: #007bff;
+                border: none;
+            }
+
+            .btn-primary:hover {
+                background-color: #0069d9;
+            }
+
+            .btn-warning,
+            .btn-danger {
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .card-header {
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            #per_page {
+                min-width: 80px;
+                border-radius: 8px;
+                padding: 5px 10px;
+                z-index: 10;
+                position: relative;
+                background-color: #fff;
+            }
+
+            #perPageForm {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        </style>
+    @endpush
 @endsection
-
-@push('styles')
-    <style>
-        /* Seragam dengan halaman customer */
-        .table thead th {
-            color: #000000;
-            font-weight: 600;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #f8faff;
-        }
-
-        .table tbody tr:hover {
-            background-color: #e6f0ff;
-            transition: 0.2s;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #0069d9;
-        }
-
-        .btn-outline-success:hover {
-            background-color: #198754;
-            color: #fff;
-        }
-
-        .btn-warning,
-        .btn-danger {
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            border-bottom: 1px solid #dee2e6;
-        }
-    </style>
-@endpush

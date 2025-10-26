@@ -39,13 +39,16 @@ Route::middleware('auth')->group(function () {
     Route::put('/product/{id}', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
     Route::patch('/product/{id}/toggle-price', [ProductController::class, 'togglePrice'])->name('product.togglePrice');
-    
     // CATEGORY
     Route::get('/product/category/create', [ProductController::class, 'createCategory'])->name('product.category.create');
     Route::post('/product/category/store', [ProductController::class, 'storeCategory'])->name('product.category.store');
     Route::get('/product/category/{id}/edit', [ProductController::class, 'editCategory'])->name('product.category.edit');
     Route::put('/product/category/{id}', [ProductController::class, 'updateCategory'])->name('product.category.update');
     Route::delete('/product/category/{id}', [ProductController::class, 'destroyCategory'])->name('product.category.destroy');
+    // Product Categories
+    Route::get('/product/category/export', [App\Http\Controllers\ProductController::class, 'exportCategory'])->name('product.category.export');
+    // Product List
+    Route::get('/product/export', [App\Http\Controllers\ProductController::class, 'export'])->name('product.export');
 
     // Dashboard - Admin dan Report bisa akses
     Route::get('/dashboard', [DashboardController::class, 'index'])

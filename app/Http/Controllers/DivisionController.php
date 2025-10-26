@@ -11,13 +11,24 @@ class DivisionController extends Controller
     public function index(Request $request)
     {
         $query = Division::query();
+
+        // Search
         if ($q = $request->query('search')) {
             $query->where('name', 'like', "%{$q}%");
         }
 
-        $divisions = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
-        return view('division.index', compact('divisions'));
+        // Records per page
+        $perPage = $request->query('per_page', 15); // default 15
+        if ($perPage === 'all') {
+            $divisions = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $perPage = (int)$perPage;
+            $divisions = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        }
+
+        return view('division.index', compact('divisions', 'perPage'));
     }
+
 
     public function export(Request $request)
     {

@@ -12,9 +12,9 @@ class CustomerController extends Controller
     {
         $query = Customer::query();
 
-        // Search
+        // 🔍 Search
         if ($q = $request->query('search')) {
-            $query->where(function($sub) use ($q) {
+            $query->where(function ($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
                     ->orWhere('phone', 'like', "%{$q}%")
                     ->orWhere('email', 'like', "%{$q}%")
@@ -23,7 +23,7 @@ class CustomerController extends Controller
             });
         }
 
-        // Fitur filter tanggal (preserve existing behavior)
+        // 📅 Filter tanggal
         if ($request->has('filter')) {
             $today = date('Y-m-d');
             $yesterday = date('Y-m-d', strtotime('-1 day'));
@@ -44,9 +44,20 @@ class CustomerController extends Controller
             }
         }
 
-        $customers = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
-        return view('customer.index', compact('customers'));
+        // 🧾 Records per page (default 15)
+        $perPage = $request->get('per_page', 15);
+
+        if ($perPage === 'all') {
+            $customers = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $customers = $query->orderBy('created_at', 'desc')
+                ->paginate((int)$perPage)
+                ->withQueryString();
+        }
+
+        return view('customer.index', compact('customers', 'perPage'));
     }
+
 
     // Export CSV of filtered customers
     public function export(Request $request)
@@ -54,7 +65,7 @@ class CustomerController extends Controller
         $q = $request->query('search');
         $query = Customer::query();
         if ($q) {
-            $query->where(function($sub) use ($q) {
+            $query->where(function ($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
                     ->orWhere('phone', 'like', "%{$q}%")
                     ->orWhere('email', 'like', "%{$q}%")
@@ -63,15 +74,15 @@ class CustomerController extends Controller
         }
         $items = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'customers_export_'.now()->format('Ymd_His').'.csv';
+        $filename = 'customers_export_' . now()->format('Ymd_His') . '.csv';
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
-        $callback = function() use ($items) {
+        $callback = function () use ($items) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID','Name','Phone','Email','Address','Product','Coverage','Assign To','Submitted At','Created At']);
+            fputcsv($out, ['ID', 'Name', 'Phone', 'Email', 'Address', 'Product', 'Coverage', 'Assign To', 'Submitted At', 'Created At']);
             foreach ($items as $i) {
                 fputcsv($out, [
                     $i->id,

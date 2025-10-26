@@ -34,7 +34,13 @@ class SudirmanParkController extends Controller
             });
         }
 
-        $customers = $query->latest()->paginate(15)->withQueryString();
+        $perPage = request('per_page', 15);
+        if ($perPage == 'all') {
+            $customers = $query->latest()->get();
+        } else {
+            $customers = $query->latest()->paginate($perPage)->withQueryString();
+        }
+        $customers = $query->latest()->paginate($perPage)->withQueryString();
 
         return view('sudirmanpark.index', compact('customers', 'q', 'showAll'));
     }

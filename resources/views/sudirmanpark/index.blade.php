@@ -144,9 +144,28 @@
             </div>
         </div>
 
+        <div class="d-flex align-items-center">
+            <form method="GET" action="{{ route('sudirmanpark.index') }}" id="perPageForm"
+                class="d-flex align-items-center">
+                <label for="per_page" class="mb-0">Show</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    @foreach ([10, 25, 50, 100, 'All'] as $size)
+                        <option value="{{ $size }}" {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                            {{ $size }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- Pertahankan query lain (misal search/filter kalau ada) --}}
+                @foreach (request()->except('per_page', 'page') as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                @endforeach
+            </form>
+        </div>
+
         {{-- Pagination --}}
         <div class="d-flex justify-content-end mt-3">
-            {{ $customers->links() }}
+            {{ $customers->appends(request()->query())->links() }}
         </div>
     </div>
 @endsection

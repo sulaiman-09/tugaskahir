@@ -26,13 +26,16 @@
             </div>
 
             {{-- Kanan: Search --}}
-            <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
+            <div class="d-flex align-items-center mt-2 px-3" style="min-width: 260px; max-width: 400px;">
                 <form action="{{ route('settings-content.index') }}" method="GET" class="d-flex w-100">
                     <input type="text" name="search" class="form-control form-control-sm"
                         placeholder="Search title or name" value="{{ request('search') }}">
                     <button type="submit" class="btn btn-primary btn-sm ms-2">
                         <i class="fa fa-search"></i>
                     </button>
+
+                    {{-- Pertahankan per_page saat search --}}
+                    <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
                 </form>
             </div>
         </div>
@@ -120,11 +123,31 @@
             </div>
         </div>
 
-        {{-- Pagination --}}
-        <div class="d-flex justify-content-end mt-3 px-3 pb-3">
-            {{ $contents->links() }}
+        {{-- Records per page & Pagination --}}
+        <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
+            {{-- Records per page --}}
+            <form method="GET" action="{{ route('settings-content.index') }}" id="perPageForm"
+                class="d-flex align-items-center gap-2">
+                <label for="per_page" class="mb-0">Show</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    @foreach ([10, 25, 50, 100, 'All'] as $size)
+                        <option value="{{ $size }}" {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                            {{ $size }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- Pertahankan query search --}}
+                @foreach (request()->except('per_page', 'page') as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                @endforeach
+            </form>
+
+            {{-- Pagination --}}
+            <div>
+                {{ $contents->links() }}
+            </div>
         </div>
-    </div>
 
     </div>
 
@@ -137,7 +160,7 @@
                         const name = form.dataset.name || 'this record';
                         if (confirm(
                                 `Are you sure you want to delete "${name}"? This action cannot be undone.`
-                                )) {
+                            )) {
                             form.submit();
                         }
                     });

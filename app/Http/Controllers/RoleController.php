@@ -12,7 +12,8 @@ class RoleController extends Controller
     // Menampilkan daftar role
     public function index(Request $request)
     {
-        // Jika ada pencarian, coba dulu cari langsung pada kolom tabel roles
+        $perPage = $request->input('per_page', 15); // default 15
+
         if ($search = $request->query('search')) {
             $table = (new Role)->getTable();
             $columns = Schema::getColumnListing($table);
@@ -20,9 +21,8 @@ class RoleController extends Controller
             $ignore = ['password', 'remember_token'];
             $columns = array_filter($columns, fn($c) => !in_array($c, $ignore));
 
-            // Buat query yang mencari di kolom roles
             $colQuery = Role::query();
-            $colQuery->where(function($qb) use ($columns, $search) {
+            $colQuery->where(function ($qb) use ($columns, $search) {
                 foreach ($columns as $col) {
                     if ($col === 'id' && is_numeric($search)) {
                         $qb->orWhere($col, $search);
@@ -32,22 +32,20 @@ class RoleController extends Controller
                 }
             });
 
-            // Jika ada hasil langsung pada kolom roles, kembalikan hanya itu
             if ($colQuery->count() > 0) {
-                $roles = $colQuery->withCount('permissions')->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+                $roles = $colQuery->withCount('permissions')->orderBy('created_at', 'desc')
+                    ->paginate($perPage)->withQueryString();
                 return view('roles.index', compact('roles'));
             }
 
-            // Jika tidak ada hasil di kolom roles, fallback cari di nama permission terkait
-            $query = Role::withCount('permissions')->whereHas('permissions', function($p) use ($search) {
+            $query = Role::withCount('permissions')->whereHas('permissions', function ($p) use ($search) {
                 $p->where('name', 'like', "%{$search}%");
             });
         } else {
             $query = Role::withCount('permissions');
         }
 
-        // Kembalikan hasil default atau dari fallback permissions
-        $roles = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $roles = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
         return view('roles.index', compact('roles'));
     }
 

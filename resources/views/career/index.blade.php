@@ -10,6 +10,7 @@
 
         {{-- Card Utama --}}
         <div class="card border-0 shadow-sm rounded-3">
+
             {{-- Header Card --}}
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 {{-- Kiri: Export & Add --}}
@@ -100,11 +101,33 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        {{-- Pagination --}}
-        <div class="d-flex justify-content-end mt-3">
-            {{ $careers->links() }}
+
+            {{-- Footer: per page + pagination --}}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
+
+                {{-- Records per page --}}
+                <div class="d-flex align-items-center">
+                    <form method="GET" action="{{ route('career.index') }}" id="perPageForm"
+                        class="d-flex align-items-center gap-2">
+                        <label for="per_page" class="mb-0">Show</label>
+                        <select name="per_page" id="per_page" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                            @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                <option value="{{ $size }}"
+                                    {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        {{-- Pertahankan query search --}}
+                        @foreach (request()->except('per_page', 'page') as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endforeach
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

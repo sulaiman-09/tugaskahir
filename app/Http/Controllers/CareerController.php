@@ -12,21 +12,34 @@ class CareerController extends Controller
     {
         $query = Career::query();
 
+        // Search
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where('title', 'like', "%{$search}%")
-                ->orWhere('location', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%");
+            });
         }
 
-        $careers = $query->latest()->paginate(10);
+        // Records per page
+        $perPage = $request->query('per_page', 10); // default 10
+        if ($perPage === 'all') {
+            $careers = $query->latest()->get();
+        } else {
+            $perPage = (int)$perPage;
+            $careers = $query->latest()->paginate($perPage)->withQueryString();
+        }
 
+        // Tambahkan status string
         $careers->getCollection()->transform(function ($career) {
             $career->status = $career->is_active ? 'Active' : 'Inactive';
             return $career;
         });
 
-        return view('career.index', compact('careers'));
+        return view('career.index', compact('careers', 'perPage'));
     }
+
 
     public function create()
     {

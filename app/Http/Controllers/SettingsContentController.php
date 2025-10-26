@@ -10,20 +10,23 @@ use Illuminate\Support\Facades\Response;
 class SettingsContentController extends Controller
 {
     // INDEX
-public function index(Request $request)
-{
-    $query = SettingsContent::query();
+    public function index(Request $request)
+    {
+        $query = SettingsContent::query();
 
-    // Search by title or name
-    if ($search = $request->input('search')) {
-        $query->where('title', 'like', "%{$search}%")
-              ->orWhere('name', 'like', "%{$search}%");
+        // Search by title or name
+        if ($search = $request->input('search')) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%");
+        }
+
+        // Jumlah record per page (default 10)
+        $perPage = $request->input('per_page', 10);
+
+        $contents = $query->orderBy('order')->paginate($perPage)->withQueryString();
+
+        return view('settingscontent.index', compact('contents'));
     }
-
-    $contents = $query->orderBy('order')->paginate(10);
-
-    return view('settingscontent.index', compact('contents'));
-}
 
     // CREATE FORM
     public function create()
@@ -119,47 +122,47 @@ public function index(Request $request)
         return redirect()->route('settings-content.index')->with('success', 'Content deleted successfully!');
     }
 
-public function export(Request $request)
-{
-    $query = SettingsContent::query();
+    public function export(Request $request)
+    {
+        $query = SettingsContent::query();
 
-    // Jika ada search, ikut filter
-    if ($search = $request->input('search')) {
-        $query->where('title', 'like', "%{$search}%")
-              ->orWhere('name', 'like', "%{$search}%");
-    }
-
-    $contents = $query->orderBy('order')->get();
-
-    $filename = 'settings_content_' . date('Ymd_His') . '.csv';
-
-    $headers = [
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => "attachment; filename={$filename}",
-    ];
-
-    $columns = ['ID','Title','Name','Type ID','Order','Status','Image','Icon'];
-
-    $callback = function() use ($contents, $columns) {
-        $file = fopen('php://output', 'w');
-        fputcsv($file, $columns);
-
-        foreach ($contents as $c) {
-            fputcsv($file, [
-                $c->id,
-                $c->title,
-                $c->name,
-                $c->content_type_id,
-                $c->order,
-                $c->is_active ? 'Active' : 'Inactive',
-                $c->image ? asset('storage/'.$c->image) : '',
-                $c->icon ? asset('storage/'.$c->icon) : '',
-            ]);
+        // Jika ada search, ikut filter
+        if ($search = $request->input('search')) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%");
         }
 
-        fclose($file);
-    };
+        $contents = $query->orderBy('order')->get();
 
-    return Response::stream($callback, 200, $headers);
-}
+        $filename = 'settings_content_' . date('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ];
+
+        $columns = ['ID', 'Title', 'Name', 'Type ID', 'Order', 'Status', 'Image', 'Icon'];
+
+        $callback = function () use ($contents, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($contents as $c) {
+                fputcsv($file, [
+                    $c->id,
+                    $c->title,
+                    $c->name,
+                    $c->content_type_id,
+                    $c->order,
+                    $c->is_active ? 'Active' : 'Inactive',
+                    $c->image ? asset('storage/' . $c->image) : '',
+                    $c->icon ? asset('storage/' . $c->icon) : '',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
+    }
 }
