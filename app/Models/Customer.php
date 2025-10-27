@@ -9,11 +9,11 @@ class Customer extends Model
 {
     use HasFactory;
 
-    protected $table = 'customers';
+    protected $table = 'customer_leads';
 
     protected $fillable = [
-        'name',
-        'phone',
+        'customer_name',
+        'customer_phone',
         'email',
         'address',
         'referral_code',
@@ -21,9 +21,8 @@ class Customer extends Model
         'city',
         'district',
         'village',
-        'division',
-        'product_category',
-        'product',
+        'product_category_id',
+        'product_id',
         'latitude',
         'longitude',
         'coverage',
@@ -31,4 +30,16 @@ class Customer extends Model
         'submitted',
         'submitted_at',
     ];
+
+    // relasi ke tabel products
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    // relasi ke tabel product_categories (division)
+    public function productCategory()
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+    }
 }

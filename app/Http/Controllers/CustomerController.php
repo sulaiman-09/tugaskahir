@@ -7,192 +7,132 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    // INDEX: Menampilkan semua data customer
+    /**
+     * Tampilkan daftar lead/customer.
+     */
     public function index(Request $request)
-    {
-        $query = Customer::query();
+{
+    $query = Customer::with(['product', 'productCategory']);
 
-        // 🔍 Search
-        if ($q = $request->query('search')) {
-            $query->where(function ($sub) use ($q) {
-                $sub->where('name', 'like', "%{$q}%")
-                    ->orWhere('phone', 'like', "%{$q}%")
-                    ->orWhere('email', 'like', "%{$q}%")
-                    ->orWhere('address', 'like', "%{$q}%")
-                    ->orWhere('product', 'like', "%{$q}%");
-            });
-        }
-
-        // 📅 Filter tanggal
-        if ($request->has('filter')) {
-            $today     = date('Y-m-d');
-            $yesterday = date('Y-m-d', strtotime('-1 day'));
-
-            switch ($request->filter) {
-                case 'today':
-                    $query->whereDate('created_at', $today);
-                    break;
-                case 'yesterday':
-                    $query->whereDate('created_at', $yesterday);
-                    break;
-                case 'last_7_days':
-                    $query->whereDate('created_at', '>=', now()->subDays(7));
-                    break;
-                case 'last_30_days':
-                    $query->whereDate('created_at', '>=', now()->subDays(30));
-                    break;
-            }
-        }
-
-        // 🧾 Records per page
-        $perPage = $request->get('per_page', 15);
-
-        if (strtolower($perPage) === 'all') {
-            // Jika pilih 'All', ambil semua data
-            $customers = $query->orderBy('created_at', 'desc')->get();
-        } else {
-            // Pastikan di-cast ke integer agar pagination berjalan
-            $customers = $query->orderBy('created_at', 'desc')
-                ->paginate((int)$perPage)
-                ->withQueryString();
-        }
-
-        return view('customer.index', compact('customers', 'perPage'));
+    // Search
+    if ($q = $request->query('search')) {
+        $query->where(function ($sub) use ($q) {
+            $sub->where('customer_name', 'like', "%{$q}%")
+                ->orWhere('customer_phone', 'like', "%{$q}%")
+                ->orWhere('email', 'like', "%{$q}%")
+                ->orWhere('address', 'like', "%{$q}%");
+        });
     }
 
-    // Export CSV of filtered customers
-    public function export(Request $request)
-    {
-        $q = $request->query('search');
-        $query = Customer::query();
-        if ($q) {
-            $query->where(function ($sub) use ($q) {
-                $sub->where('name', 'like', "%{$q}%")
-                    ->orWhere('phone', 'like', "%{$q}%")
-                    ->orWhere('email', 'like', "%{$q}%")
-                    ->orWhere('address', 'like', "%{$q}%");
-            });
-        }
-        $items = $query->orderBy('created_at', 'desc')->get();
+    // Filter tanggal (opsional sama seperti sebelumnya)
 
-        $filename = 'customers_export_' . now()->format('Ymd_His') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function () use ($items) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID', 'Name', 'Phone', 'Email', 'Address', 'Product', 'Coverage', 'Assign To', 'Submitted At', 'Created At']);
-            foreach ($items as $i) {
-                fputcsv($out, [
-                    $i->id,
-                    $i->name,
-                    $i->phone,
-                    $i->email,
-                    $i->address,
-                    $i->product,
-                    $i->coverage,
-                    $i->assign_to,
-                    $i->submitted_at,
-                    $i->created_at,
-                ]);
-            }
-            fclose($out);
-        };
-
-        return response()->stream($callback, 200, $headers);
+    // Pagination
+    $perPage = $request->get('per_page', 10);
+    if (strtolower($perPage) === 'all') {
+        $customer_leads = $query->orderBy('created_at', 'desc')->get();
+    } else {
+        $customer_leads = $query->orderBy('created_at', 'desc')
+            ->paginate((int)$perPage)
+            ->withQueryString();
     }
 
-    // CREATE: Menampilkan form tambah customer
+    return view('customer.index', compact('customer_leads', 'perPage'));
+    }
+
+
+    /**
+     * Form tambah customer baru.
+     */
     public function create()
     {
-        return view('customer.create');
+         // ambil semua data dari tabel products & product_categories
+        $products = Product::all();
+        $categories = ProductCategory::all();
+
+        // kirim ke view
+        return view('customer.create', compact('products', 'categories'));
     }
 
-    // STORE: Menyimpan data baru ke database
+    /**
+     * Simpan customer baru.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255|unique:customers,email',
-            'address' => 'required|string',
-            'referral_code' => 'nullable|string|max:255',
-            'province' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'district' => 'nullable|string|max:255',
-            'village' => 'nullable|string|max:255',
-            'division' => 'nullable|string|max:255',
-            'product_category' => 'nullable|string|max:255',
-            'product' => 'nullable|string|max:255',
-            'latitude' => 'nullable|string|max:255',
-            'longitude' => 'nullable|string|max:255',
-            'coverage' => 'nullable|string|max:255',
-            'assign_to' => 'nullable|string|max:255',
-            'submitted' => 'nullable|string|max:255',
-            'submitted_at' => 'nullable|date',
+            'customer_name'     => 'required|string|max:255',
+            'customer_phone'    => 'required|string|max:20',
+            'email'             => 'nullable|email|max:255',
+            'address'           => 'required|string',
+            'referral_code'     => 'nullable|string|max:255',
+            'province'          => 'nullable|string|max:255',
+            'city'              => 'nullable|string|max:255',
+            'district'          => 'nullable|string|max:255',
+            'village'           => 'nullable|string|max:255',
+            'division'          => 'nullable|string|max:255',
+            'product_category'  => 'nullable|string|max:255',
+            'product'           => 'nullable|string|max:255',
+            'latitude'          => 'nullable|string|max:255',
+            'longitude'         => 'nullable|string|max:255',
+            'coverage'          => 'nullable|string|max:255',
         ]);
 
         Customer::create($validated);
 
         return redirect()->route('customer.index')
-            ->with('success', 'Customer berhasil ditambahkan dan tersimpan ke database.');
+                         ->with('success', 'Customer baru berhasil ditambahkan.');
     }
 
-
-    // EDIT: Menampilkan form edit data
+    /**
+     * Form edit customer.
+     */
     public function edit($id)
     {
         $customer = Customer::findOrFail($id);
-        return view('customer.edit', compact('customer'));
+        $products = Product::all();
+        $categories = ProductCategory::all();
+
+        return view('customer.edit', compact('customer', 'products', 'categories'));
     }
 
-    // UPDATE: Menyimpan perubahan data ke database
+    /**
+     * Update data customer.
+     */
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            // Data utama
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255|unique:customers,email,' . $id,
-            'address' => 'required|string',
-            'referral_code' => 'nullable|string|max:255',
-
-            // Data wilayah
-            'province' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'district' => 'nullable|string|max:255',
-            'village' => 'nullable|string|max:255',
-
-            // Data tambahan
-            'division' => 'nullable|string|max:255',
-            'product_category' => 'nullable|string|max:255',
-            'product' => 'nullable|string|max:255',
-            'coverage' => 'nullable|string|max:255',
-            'latitude' => 'nullable|string|max:255',
-            'longitude' => 'nullable|string|max:255',
-
-            // Metadata
-            'assign_to' => 'nullable|string|max:255',
-            'submitted' => 'nullable|string|max:255',
-            'submitted_at' => 'nullable|date',
+            'customer_name'     => 'required|string|max:255',
+            'customer_phone'    => 'required|string|max:20',
+            'email'             => 'nullable|email|max:255',
+            'address'           => 'required|string',
+            'referral_code'     => 'nullable|string|max:255',
+            'province'          => 'nullable|string|max:255',
+            'city'              => 'nullable|string|max:255',
+            'district'          => 'nullable|string|max:255',
+            'village'           => 'nullable|string|max:255',
+            'division'          => 'nullable|string|max:255',
+            'product_category'  => 'nullable|string|max:255',
+            'product'           => 'nullable|string|max:255',
+            'latitude'          => 'nullable|string|max:255',
+            'longitude'         => 'nullable|string|max:255',
+            'coverage'          => 'nullable|string|max:255',
         ]);
 
         $customer = Customer::findOrFail($id);
         $customer->update($validated);
 
         return redirect()->route('customer.index')
-            ->with('success', 'Data customer berhasil diperbarui di tabel customers.');
+                         ->with('success', 'Data customer berhasil diperbarui.');
     }
 
-    // DESTROY: Menghapus data dari database
+    /**
+     * Hapus data customer.
+     */
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
         $customer->delete();
 
         return redirect()->route('customer.index')
-            ->with('success', 'Customer berhasil dihapus dari tabel customers.');
+                         ->with('success', 'Data customer berhasil dihapus.');
     }
 }

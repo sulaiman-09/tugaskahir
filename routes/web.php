@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
     // Customer Management (Controller)
     // ================================
     Route::prefix('customer')->name('customer.')->group(function () {
+        Route::resource('customer', CustomerController::class);
         Route::get('/', [CustomerController::class, 'index'])->name('index');
         Route::get('/create', [CustomerController::class, 'create'])->name('create');
         Route::post('/', [CustomerController::class, 'store'])->name('store');

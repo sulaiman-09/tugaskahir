@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Customer')
+@section('title', 'Data Customers')
 
 @section('content')
     @php
@@ -21,7 +21,7 @@
     <div class="container py-4">
 
         {{-- Judul --}}
-        <h3 class="fw-bold mb-4">Data Customer</h3>
+        <h3 class="fw-bold mb-4">Data Customer Leads</h3>
 
         {{-- Filter --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
@@ -63,19 +63,19 @@
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                {{-- Kiri: Export & Tambah --}}
                 <div class="d-flex align-items-center gap-2">
                     <a href="{{ route('customer.export', request()->query()) }}"
                         class="btn btn-outline-secondary btn-sm d-flex align-items-center">
                         <i class="fa fa-print me-2"></i> Export CSV
                     </a>
-
                     <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm">
                         + Tambah Lead Baru
-                    </a>
+                    </a>{{-- 🔹 Tombol toggle latitude/longitude --}}
+        <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm ms-2">
+            Sembunyikan Koordinat
+        </button>
                 </div>
 
-                {{-- Kanan: Search --}}
                 <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
                     <form action="{{ route('customer.index') }}" method="GET" class="d-flex w-100">
                         <input type="text" name="search" class="form-control form-control-sm"
@@ -87,7 +87,6 @@
                 </div>
             </div>
 
-            {{-- Tabel --}}
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
@@ -102,56 +101,47 @@
                                 <th>Longitude</th>
                                 <th>Coverage</th>
                                 <th>Produk</th>
-                                <th>Assign To</th>
-                                <th>Submitted At</th>
-                                <th>Submitted</th>
+                                <th>Division</th>
+                                <th>Dibuat</th>
+                                <th>Updated</th>
                                 <th style="width: 110px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($customers as $index => $customer)
+                            @forelse($customer_leads as $index => $customer_lead)
                                 <tr>
-                                    <td>{{ $customers->firstItem() + $index }}</td>
-                                    <td class="text-start ps-3">{{ $customer->name }}</td>
-                                    <td>{{ $customer->phone }}</td>
-                                    <td>{{ $customer->email }}</td>
-                                    <td class="text-start">{{ $customer->address }}</td>
-                                    <td>{{ $customer->latitude }}</td>
-                                    <td>{{ $customer->longitude }}</td>
+                                    <td>{{ $customer_leads->firstItem() + $index }}</td>
+                                    <td class="text-start ps-3">{{ $customer_lead->customer_name }}</td>
+                                    <td>{{ $customer_lead->customer_phone }}</td>
+                                    <td>{{ $customer_lead->email }}</td>
+                                    <td class="text-start">{{ $customer_lead->customer_address }}</td>
+                                    <td>{{ $customer_lead->latitude }}</td>
+                                    <td>{{ $customer_lead->longitude }}</td>
                                     <td>
                                         <select class="form-select form-select-sm coverage-dropdown"
-                                            data-id="{{ $customer->id }}">
+                                            data-id="{{ $customer_lead->id }}">
                                             <option value="">Select Coverage</option>
-                                            <option value="covered"
-                                                {{ $customer->coverage == 'covered' ? 'selected' : '' }}>Covered</option>
-                                            <option value="uncovered"
-                                                {{ $customer->coverage == 'uncovered' ? 'selected' : '' }}>Uncovered
-                                            </option>
+                                            <option value="Cover" {{ $customer_lead->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
+                                            <option value="Uncover" {{ $customer_lead->coverage == 'Uncover' ? 'selected' : '' }}>Uncover</option>
                                         </select>
                                     </td>
-                                    <td class="text-start">{{ $customer->product }}</td> {{-- Pastikan produk text-start agar tidak numpuk --}}
+                                    <td class="text-start">
+                                        {{ $customer_lead->product ? $customer_lead->product->name : '-' }}
+                                    </td>
                                     <td>
-                                        <select class="form-select form-select-sm assign-dropdown"
-                                            data-id="{{ $customer->id }}">
-                                            <option value="">Select Division</option>
-                                            <option value="Marketing"
-                                                {{ $customer->assign_to == 'Marketing' ? 'selected' : '' }}>Marketing
-                                            </option>
-                                            <option value="Sales Retail"
-                                                {{ $customer->assign_to == 'Sales Retail' ? 'selected' : '' }}>Sales Retail
-                                            </option>
-                                        </select>
+                                        {{ $customer_lead->productCategory ? $customer_lead->productCategory->name : '-' }}
                                     </td>
-                                    <td>{{ $customer->submitted_at }}</td>
-                                    <td>{{ $customer->submitted }}</td>
+                                    <td>{{ $customer_lead->created_at ? $customer_lead->created_at->format('d M Y H:i') : '-' }}</td>
+                                    <td>{{ $customer_lead->updated_at ? $customer_lead->updated_at->format('d M Y H:i') : '-' }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('customer.edit', $customer->id) }}"
+                                            <a href="{{ route('customer.edit', $customer_lead->id) }}"
                                                 class="btn btn-warning btn-sm" title="Edit">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
-                                            <form action="{{ route('customer.destroy', $customer->id) }}" method="POST"
-                                                class="delete-form" data-name="{{ $customer->name }}">
+                                            <form action="{{ route('customer.destroy', $customer_lead->id) }}"
+                                                method="POST" class="delete-form"
+                                                data-name="{{ $customer_lead->customer_name }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="btn btn-danger btn-sm" title="Hapus">
@@ -167,15 +157,12 @@
                                 </tr>
                             @endforelse
                         </tbody>
-
                     </table>
                 </div>
             </div>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
-
-            {{-- Records per page --}}
             <div class="d-flex align-items-center">
                 <form method="GET" action="{{ route('customer.index') }}" id="perPageForm"
                     class="d-flex align-items-center">
@@ -196,9 +183,8 @@
                 </form>
             </div>
 
-            {{-- Pagination --}}
             <div class="d-flex justify-content-end mt-3">
-                {{ $customers->links() }}
+                {{ $customer_leads->links() }}
             </div>
         </div>
 
@@ -210,8 +196,7 @@
                         form.addEventListener('submit', e => {
                             e.preventDefault();
                             const name = form.dataset.name || 'record ini';
-                            if (confirm(
-                                    `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
+                            if (confirm(`Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
                                 form.submit();
                             }
                         });
@@ -219,11 +204,28 @@
                 });
             </script>
         @endpush
+        @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleButton = document.getElementById('toggle-coordinates');
+    const latitudeCols = document.querySelectorAll('td:nth-child(6), th:nth-child(6)');
+    const longitudeCols = document.querySelectorAll('td:nth-child(7), th:nth-child(7)');
+    let visible = true;
+
+    toggleButton.addEventListener('click', function () {
+        visible = !visible;
+        latitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
+        longitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
+        toggleButton.textContent = visible ? 'Sembunyikan Koordinat' : 'Tampilkan Koordinat';
+    });
+});
+</script>
+@endpush
+
     @endsection
 
     @push('styles')
         <style>
-            /* Biar dropdown ga ketutup dan ukurannya pas */
             #per_page {
                 min-width: 80px;
                 border-radius: 8px;
