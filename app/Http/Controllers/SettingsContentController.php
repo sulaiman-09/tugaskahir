@@ -12,20 +12,26 @@ class SettingsContentController extends Controller
     // INDEX
     public function index(Request $request)
     {
-        $query = SettingsContent::query();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+        $showAll = strtolower($perPage) === 'all';
 
-        // Search by title or name
-        if ($search = $request->input('search')) {
+        $query = SettingsContent::orderBy('order');
+
+        // 🔍 Search
+        if ($search) {
             $query->where('title', 'like', "%{$search}%")
                 ->orWhere('name', 'like', "%{$search}%");
         }
 
-        // Jumlah record per page (default 10)
-        $perPage = $request->input('per_page', 10);
+        // 🧾 Pagination / All
+        if ($showAll) {
+            $contents = $query->get();
+        } else {
+            $contents = $query->paginate((int)$perPage)->withQueryString();
+        }
 
-        $contents = $query->orderBy('order')->paginate($perPage)->withQueryString();
-
-        return view('settingscontent.index', compact('contents'));
+        return view('settingscontent.index', compact('contents', 'perPage', 'search', 'showAll'));
     }
 
     // CREATE FORM

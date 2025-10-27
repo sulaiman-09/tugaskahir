@@ -25,7 +25,7 @@ class CustomerController extends Controller
 
         // 📅 Filter tanggal
         if ($request->has('filter')) {
-            $today = date('Y-m-d');
+            $today     = date('Y-m-d');
             $yesterday = date('Y-m-d', strtotime('-1 day'));
 
             switch ($request->filter) {
@@ -44,12 +44,14 @@ class CustomerController extends Controller
             }
         }
 
-        // 🧾 Records per page (default 15)
+        // 🧾 Records per page
         $perPage = $request->get('per_page', 15);
 
-        if ($perPage === 'all') {
+        if (strtolower($perPage) === 'all') {
+            // Jika pilih 'All', ambil semua data
             $customers = $query->orderBy('created_at', 'desc')->get();
         } else {
+            // Pastikan di-cast ke integer agar pagination berjalan
             $customers = $query->orderBy('created_at', 'desc')
                 ->paginate((int)$perPage)
                 ->withQueryString();
@@ -57,7 +59,6 @@ class CustomerController extends Controller
 
         return view('customer.index', compact('customers', 'perPage'));
     }
-
 
     // Export CSV of filtered customers
     public function export(Request $request)

@@ -122,9 +122,9 @@
                 <div class="d-flex justify-content-start mt-3">
                     <form method="GET" action="{{ route('product.index') }}" id="categoryPerPageForm"
                         class="d-flex align-items-center">
-                        <label for="category_per_page" class="me-2 text-secondary small mb-0">Records per page</label>
+                        <label for="category_per_page" class="me-2 text-secondary small mb-0">Show</label>
                         <select name="category_per_page" id="category_per_page" class="form-select form-select-sm w-auto"
-                            onchange="document.getElementById('categoryPerPageForm').submit()">
+                            onchange="this.form.submit()">
                             @foreach ([10, 25, 50, 100, 'all'] as $size)
                                 <option value="{{ $size }}" {{ $categoryPerPage == $size ? 'selected' : '' }}>
                                     {{ is_numeric($size) ? $size : 'All' }}
@@ -132,12 +132,13 @@
                             @endforeach
                         </select>
 
-                        {{-- Pertahankan query lain --}}
-                        @foreach (request()->except('category_per_page', 'page') as $key => $value)
+                        {{-- Pertahankan query lain (search, product_per_page, dll) --}}
+                        @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                     </form>
                 </div>
+
             </div>
         </div>
 
@@ -260,19 +261,18 @@
                 <div class="d-flex justify-content-start mt-3">
                     <form method="GET" action="{{ route('product.index') }}" id="productPerPageForm"
                         class="d-flex align-items-center">
-                        <label for="per_page" class="mb-0">Show</label>
-                        <select name="per_page" id="per_page" class="form-select form-select-sm"
+                        <label for="product_per_page" class="mb-0 me-2">Show</label>
+                        <select name="product_per_page" id="product_per_page" class="form-select form-select-sm w-auto"
                             onchange="this.form.submit()">
-                            @foreach ([10, 25, 50, 100, 'All'] as $size)
-                                <option value="{{ $size }}"
-                                    {{ request('per_page', 15) == $size ? 'selected' : '' }}>
-                                    {{ $size }}
+                            @foreach ([10, 25, 50, 100, 'all'] as $size)
+                                <option value="{{ $size }}" {{ $productPerPage == $size ? 'selected' : '' }}>
+                                    {{ is_numeric($size) ? $size : 'All' }}
                                 </option>
                             @endforeach
                         </select>
 
-                        {{-- Pertahankan query lain --}}
-                        @foreach (request()->except('product_per_page', 'page') as $key => $value)
+                        {{-- Pertahankan query lain (search, category_per_page, dll) --}}
+                        @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                     </form>

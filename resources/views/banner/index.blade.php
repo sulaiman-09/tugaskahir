@@ -104,7 +104,7 @@
                             onchange="this.form.submit()">
                             @foreach ([10, 25, 50, 100, 'All'] as $size)
                                 <option value="{{ $size }}"
-                                    {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                                    {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
                                     {{ $size }}
                                 </option>
                             @endforeach

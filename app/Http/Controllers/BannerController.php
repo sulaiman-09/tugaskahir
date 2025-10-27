@@ -10,17 +10,19 @@ class BannerController extends Controller
     // Tampilkan semua banner (search + paginate)
     public function index(Request $request)
     {
+        $q = $request->query('search');
+        $perPage = $request->query('per_page', 15);
+        $showAll = strtolower($perPage) === 'all';
+
         $query = Banner::query();
 
         // 🔍 Search
-        if ($q = $request->query('search')) {
+        if ($q) {
             $query->where('name', 'like', "%{$q}%");
         }
 
-        // 🧾 Records per page (default 15)
-        $perPage = $request->get('per_page', 15);
-
-        if ($perPage === 'all') {
+        // 🧾 Pagination / All
+        if ($showAll) {
             $banners = $query->orderBy('created_at', 'desc')->get();
         } else {
             $banners = $query->orderBy('created_at', 'desc')
@@ -28,7 +30,7 @@ class BannerController extends Controller
                 ->withQueryString();
         }
 
-        return view('banner.index', compact('banners', 'perPage'));
+        return view('banner.index', compact('banners', 'perPage', 'q', 'showAll'));
     }
 
     // Tampilkan form tambah banner

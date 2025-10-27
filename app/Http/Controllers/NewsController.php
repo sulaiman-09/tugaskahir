@@ -17,21 +17,27 @@ class NewsController extends Controller
      */
     public function index(Request $request)
     {
-        // Query awal
+        $q = $request->query('search');
+        $perPage = $request->query('per_page', 10);
+        $showAll = strtolower($perPage) === 'all';
+
         $query = News::orderBy('news_created_date', 'desc');
 
-        // Filter search
-        if ($request->has('search') && $request->search != '') {
-            $query->where('news_title', 'like', '%' . $request->search . '%')
-                ->orWhere('news_content', 'like', '%' . $request->search . '%');
+        // 🔍 Search
+        if ($q) {
+            $query->where('news_title', 'like', "%{$q}%")
+                ->orWhere('news_content', 'like', "%{$q}%");
         }
 
-        // Pagination + withQueryString supaya search tetap di pagination
-        $news = $query->paginate(10)->withQueryString();
+        // 🧾 Pagination / All
+        if ($showAll) {
+            $news = $query->get();
+        } else {
+            $news = $query->paginate((int)$perPage)->withQueryString();
+        }
 
-        return view('news.index', compact('news'));
+        return view('news.index', compact('news', 'perPage', 'q', 'showAll'));
     }
-
 
     /**
      * Tampilkan form tambah berita.

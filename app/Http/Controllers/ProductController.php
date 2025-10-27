@@ -11,14 +11,19 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $productSearch = $request->input('product_search');
+        $productSearch  = $request->input('product_search');
         $categorySearch = $request->input('category_search');
-        $sort = $request->input('sort', 'desc');
+        $sort           = $request->input('sort', 'desc');
+
+        // Ambil nilai per-page dari form
         $categoryPerPage = $request->get('category_per_page', 15);
-        $productPerPage = $request->get('product_per_page', 15);
+        $productPerPage  = $request->get('product_per_page', 15); // HARUS sesuai name form
+
+        // =========================
+        // 🔹 CATEGORY QUERY
+        // =========================
         $categoryQuery = ProductCategory::query();
 
-        // 🔹 Filter Category
         if ($categorySearch) {
             $categoryQuery->where('name', 'like', "%$categorySearch%")
                 ->orWhere('slug', 'like', "%$categorySearch%");
@@ -27,13 +32,14 @@ class ProductController extends Controller
         if ($categoryPerPage === 'all') {
             $categories = $categoryQuery->orderBy('id', 'asc')->get();
         } else {
-            $categories = $categoryQuery
-                ->orderBy('id', 'asc')
+            $categories = $categoryQuery->orderBy('id', 'asc')
                 ->paginate((int)$categoryPerPage)
                 ->withQueryString();
         }
 
-        // 🔹 Filter Product
+        // =========================
+        // 🔹 PRODUCT QUERY
+        // =========================
         $productQuery = Product::with('category')
             ->when($productSearch, function ($query) use ($productSearch) {
                 $query->where('name', 'like', "%$productSearch%")
@@ -45,8 +51,7 @@ class ProductController extends Controller
         if ($productPerPage === 'all') {
             $products = $productQuery->get();
         } else {
-            $products = $productQuery
-                ->paginate((int)$productPerPage)
+            $products = $productQuery->paginate((int)$productPerPage)
                 ->withQueryString();
         }
 
@@ -60,6 +65,7 @@ class ProductController extends Controller
             'productPerPage'
         ));
     }
+
 
     // ========== CATEGORY CREATE ==========
     public function createCategory()

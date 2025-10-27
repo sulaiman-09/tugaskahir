@@ -13,18 +13,21 @@ use Illuminate\Support\Facades\Response;
 
 class SudirmanParkController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $q = request('q');
-        $showAll = request('show_all') == '1';
+        $q       = $request->query('q');
+        $perPage = $request->query('per_page', 15);
+        $showAll = strtolower($perPage) === 'all';
+        $showVisibleOnly = $request->query('show_all') != '1';
 
         $query = SudirmanPark::query();
-        $hasVisible = Schema::hasColumn('sudirman_parks', 'visible');
-        if (!$showAll && $hasVisible) {
-            // default only visible when column exists
+
+        // Cek kolom 'visible'
+        if (Schema::hasColumn('sudirman_parks', 'visible') && $showVisibleOnly) {
             $query->where('visible', true);
         }
 
+        // 🔍 Search
         if ($q) {
             $query->where(function ($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
@@ -34,17 +37,17 @@ class SudirmanParkController extends Controller
             });
         }
 
-        $perPage = request('per_page', 15);
-        if ($perPage == 'all') {
+        // 🧾 Pagination / All
+        if ($showAll) {
             $customers = $query->latest()->get();
         } else {
-            $customers = $query->latest()->paginate($perPage)->withQueryString();
+            $customers = $query->latest()
+                ->paginate((int)$perPage)
+                ->withQueryString();
         }
-        $customers = $query->latest()->paginate($perPage)->withQueryString();
 
-        return view('sudirmanpark.index', compact('customers', 'q', 'showAll'));
+        return view('sudirmanpark.index', compact('customers', 'q', 'perPage', 'showAll'));
     }
-
 
     public function create()
     {

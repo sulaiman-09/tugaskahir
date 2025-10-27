@@ -10,25 +10,30 @@ class DivisionController extends Controller
     // Menampilkan semua division
     public function index(Request $request)
     {
+        $q = $request->query('search');
+        $perPage = $request->query('per_page', 15);
+        $showAll = strtolower($perPage) === 'all';
+
         $query = Division::query();
 
-        // Search
-        if ($q = $request->query('search')) {
-            $query->where('name', 'like', "%{$q}%");
+        // 🔍 Search
+        if ($q) {
+            $query->where('name', 'like', "%{$q}%")
+                ->orWhere('description', 'like', "%{$q}%")
+                ->orWhere('status', 'like', "%{$q}%");
         }
 
-        // Records per page
-        $perPage = $request->query('per_page', 15); // default 15
-        if ($perPage === 'all') {
+        // 🧾 Pagination / All
+        if ($showAll) {
             $divisions = $query->orderBy('created_at', 'desc')->get();
         } else {
-            $perPage = (int)$perPage;
-            $divisions = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+            $divisions = $query->orderBy('created_at', 'desc')
+                ->paginate((int)$perPage)
+                ->withQueryString();
         }
 
-        return view('division.index', compact('divisions', 'perPage'));
+        return view('division.index', compact('divisions', 'perPage', 'q', 'showAll'));
     }
-
 
     public function export(Request $request)
     {

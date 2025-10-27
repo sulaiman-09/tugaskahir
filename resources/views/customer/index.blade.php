@@ -179,10 +179,11 @@
             <div class="d-flex align-items-center">
                 <form method="GET" action="{{ route('customer.index') }}" id="perPageForm"
                     class="d-flex align-items-center">
-                    <label for="per_page" class="mb-0">Show</label>
+                    <label for="per_page" class="mb-0 me-2">Show</label>
                     <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
                         @foreach ([10, 25, 50, 100, 'All'] as $size)
-                            <option value="{{ $size }}" {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                            <option value="{{ $size }}"
+                                {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
                                 {{ $size }}
                             </option>
                         @endforeach

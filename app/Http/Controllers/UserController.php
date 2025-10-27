@@ -10,21 +10,26 @@ class UserController extends Controller
     // Tampilkan semua user (search + paginate)
     public function index(Request $request)
     {
-        // Ambil nilai per_page dari request, default 15
+        $search = $request->input('search');
         $perPage = $request->input('per_page', 15);
+        $showAll = strtolower($perPage) === 'all';
 
-        $query = User::query();
+        $query = \App\Models\User::orderBy('created_at', 'desc');
 
-        if ($q = $request->query('search')) {
-            $query->where('name', 'like', "%{$q}%")
-                ->orWhere('email', 'like', "%{$q}%");
+        // 🔍 Search
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
         }
 
-        $users = $query->orderBy('created_at', 'desc')
-            ->paginate($perPage)
-            ->withQueryString(); // biar search & per_page tetap jalan di pagination
+        // 🧾 Pagination / All
+        if ($showAll) {
+            $users = $query->get();
+        } else {
+            $users = $query->paginate((int)$perPage)->withQueryString();
+        }
 
-        return view('user.index', compact('users'));
+        return view('user.index', compact('users', 'perPage', 'search', 'showAll'));
     }
 
     // export removed per request
