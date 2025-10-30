@@ -72,7 +72,7 @@
                         + Tambah Lead Baru
                     </a>{{-- 🔹 Tombol toggle latitude/longitude --}}
         <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm ms-2">
-            Sembunyikan Koordinat
+            Sembunyikan koordinat
         </button>
                 </div>
 
