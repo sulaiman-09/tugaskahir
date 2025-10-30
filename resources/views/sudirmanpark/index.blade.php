@@ -239,13 +239,13 @@
                     const id = this.dataset.id;
                     const status = this.value;
                     const row = this.closest('tr');
-                    const badgeCell = row.querySelector('td:nth-child(8) span');
 
                     fetch(`/sudirmanpark/${id}/status`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json'
                             },
                             body: JSON.stringify({
                                 status
@@ -254,13 +254,19 @@
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) {
-                                badgeCell.textContent = data.status;
+                                // Update status badge
+                                const badgeCell = row.querySelector('td:nth-child(8) span');
+                                badgeCell.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
                                 badgeCell.className = 'badge ' + (
                                     status === 'approved' ? 'bg-success' :
                                     status === 'processed' ? 'bg-warning' :
                                     status === 'registration' ? 'bg-info' :
                                     status === 'cancelled' ? 'bg-danger' : ''
                                 );
+
+                                // Update status change info cell
+                                const statusChangeCell = row.querySelector('td:nth-child(10)');
+                                statusChangeCell.textContent = data.status_change;
                             } else {
                                 alert('Gagal mengubah status.');
                             }
@@ -277,90 +283,78 @@
         // KTP preview modal logic
         document.addEventListener('DOMContentLoaded', function() {
             const modalHtml = `
-                        <div class="modal fade" id="ktpPreviewModal" tabindex="-1">
-                            <div class="modal-dialog modal-xl modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Preview KTP</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                                <div class="modal-body p-0">
-                                                    <div style="height:80vh; display:flex; align-items:center; justify-content:center;">
-                                                        <img id="ktpPreviewImage" src="" alt="KTP Preview" style="max-width:100%; max-height:100%; object-fit:contain; display:none;" />
-                                                        <iframe id="ktpPreviewFrame" src="" style="width:100%;height:100%;border:0;display:none;" frameborder="0"></iframe>
-                                                        <div id="ktpPreviewMessage" style="display:none;color:#fff;text-align:center;">Loading...</div>
-                                                    </div>
-                                                </div>
+                <div class="modal fade" id="ktpPreviewModal" tabindex="-1">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">ID Card Preview</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-0 d-flex align-items-center justify-content-center" style="height: 80vh; background-color: #f8f9fa;">
+                                <div id="ktpSpinner" class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <img id="ktpPreviewImage" alt="ID Card Preview" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
+                                <iframe id="ktpPreviewFrame" style="width: 100%; height: 100%; border: 0; display: none;" frameborder="0"></iframe>
+                                <div id="ktpPreviewError" class="text-center" style="display: none;">
+                                    <p class="mb-0">File not found or could not be displayed.</p>
+                                    <small>Please check if the file was uploaded correctly.</small>
                                 </div>
                             </div>
-                        </div>`;
+                        </div>
+                    </div>
+                </div>`;
 
             document.body.insertAdjacentHTML('beforeend', modalHtml);
+
             const ktpModalEl = document.getElementById('ktpPreviewModal');
             const ktpModal = new bootstrap.Modal(ktpModalEl);
+            const spinner = document.getElementById('ktpSpinner');
             const img = document.getElementById('ktpPreviewImage');
-
-            const baseStorageUrl = '{{ asset('storage/ktp') }}';
+            const frame = document.getElementById('ktpPreviewFrame');
+            const errorMsg = document.getElementById('ktpPreviewError');
 
             document.querySelectorAll('.ktp-preview-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // prefer public storage url when filename available
-                    const filename = this.dataset.ktp;
-                    const fallbackUrl = this.dataset.previewUrl; // controller preview url
-                    // prefer controller preview route (it handles streaming and various fallbacks)
-                    const url = fallbackUrl;
-                    // show loading
-                    document.getElementById('ktpPreviewMessage').style.display = 'block';
-                    img.style.display = 'none';
-                    document.getElementById('ktpPreviewFrame').style.display = 'none';
+                    const previewUrl = this.dataset.previewUrl;
+                    const filename = this.dataset.ktp.toLowerCase();
 
-                    // Determine by extension (simpler & compatible)
-                    // determine by filename extension if available, otherwise rely on URL
-                    const lower = (filename || url).toLowerCase();
-                    const isPdf = lower.endsWith('.pdf');
-                    const frame = document.getElementById('ktpPreviewFrame');
-                    if (isPdf) {
-                        frame.src = url;
-                        frame.style.display = 'block';
-                        document.getElementById('ktpPreviewMessage').style.display = 'none';
-                        ktpModal.show();
+                    // Reset state and show spinner
+                    img.style.display = 'none';
+                    frame.style.display = 'none';
+                    errorMsg.style.display = 'none';
+                    spinner.style.display = 'block';
+                    
+                    ktpModal.show();
+
+                    if (filename.endsWith('.pdf')) {
+                        frame.src = previewUrl;
+                        frame.onload = () => {
+                            spinner.style.display = 'none';
+                            frame.style.display = 'block';
+                        };
+                        // Note: iframe onerror is not reliable
                     } else {
-                        // load image and detect if it's a valid visible image
-                        img.onload = function() {
-                            // if very small image (1x1 placeholder), consider not available
-                            if (img.naturalWidth <= 2 && img.naturalHeight <= 2) {
-                                document.getElementById('ktpPreviewMessage').textContent =
-                                    'Preview tidak tersedia (gambar sangat kecil).';
-                                document.getElementById('ktpPreviewMessage').style.display =
-                                    'block';
-                                img.style.display = 'none';
-                            } else {
-                                img.style.display = 'block';
-                                document.getElementById('ktpPreviewMessage').style.display =
-                                    'none';
-                            }
+                        img.src = previewUrl;
+                        img.onload = () => {
+                            spinner.style.display = 'none';
+                            img.style.display = 'block';
                         };
-                        img.onerror = function() {
-                            document.getElementById('ktpPreviewMessage').textContent =
-                                'File tidak ditemukan atau tidak dapat ditampilkan.';
-                            document.getElementById('ktpPreviewMessage').style.display =
-                                'block';
-                            img.style.display = 'none';
+                        img.onerror = () => {
+                            spinner.style.display = 'none';
+                            errorMsg.style.display = 'block';
                         };
-                        img.src = url;
-                        ktpModal.show();
                     }
                 });
             });
 
-            // clear image/iframe on close
             ktpModalEl.addEventListener('hidden.bs.modal', function() {
                 img.src = '';
+                frame.src = 'about:blank';
                 img.style.display = 'none';
-                document.getElementById('ktpPreviewFrame').src = '';
-                document.getElementById('ktpPreviewFrame').style.display = 'none';
-                document.getElementById('ktpPreviewMessage').textContent = 'Loading...';
-                document.getElementById('ktpPreviewMessage').style.display = 'none';
+                frame.style.display = 'none';
+                errorMsg.style.display = 'none';
+                spinner.style.display = 'none';
             });
         });
     </script>

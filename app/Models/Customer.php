@@ -11,16 +11,22 @@ class Customer extends Model
 
     protected $table = 'customer_leads';
 
+    protected $attributes = [
+        'region_id' => null,
+    ];
+
     protected $fillable = [
         'customer_name',
         'customer_phone',
         'email',
         'address',
+        'customer_address',
         'referral_code',
         'province',
         'city',
         'district',
         'village',
+        'region_id',
         'product_category_id',
         'product_id',
         'latitude',

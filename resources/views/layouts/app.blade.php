@@ -16,6 +16,9 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         * {
             margin: 0;
@@ -395,7 +398,7 @@
     </nav>
 
     <main class="main-content">
-        @if (session('error'))
+        @if (session('error') && !session('success'))
             <div class="access-denied">{{ session('error') }}</div>
         @endif
         @yield('content')
@@ -407,8 +410,30 @@
     <!-- ✅ Tambahkan Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- ✅ Efek fade-out halus sebelum pindah halaman -->
+    <!-- ✅ SweetAlert2 & Script Efek fade-out -->
     <script>
+        // SweetAlert2 Notifications
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '{{ session('error') }}',
+                timer: 5000,
+                showConfirmButton: true
+            });
+        @endif
+
+        // Efek fade-out halus sebelum pindah halaman
         document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', e => {
                 // Hanya fade out main content, jangan sentuh sidebar

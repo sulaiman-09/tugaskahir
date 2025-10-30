@@ -3,9 +3,30 @@
 @section('title', 'Edit Customer Sudirman Park')
 
 @section('content')
-    <div class="page-header mb-4">
-        <h1 class="page-title">Edit Customer - Sudirman Park</h1>
-    </div>
+<div class="page-header mb-4">
+<h1 class="page-title">Edit Customer - Sudirman Park</h1>
+</div>
+
+{{-- Success Message --}}
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+<i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+{{-- Error Messages --}}
+@if ($errors->any())
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Terjadi kesalahan:</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <div class="card-body bg-light-subtle p-4">
         <form action="{{ route('sudirmanpark.update', $customer->id) }}" method="POST" enctype="multipart/form-data">
@@ -109,4 +130,21 @@
             </div>
         </form>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Konfirmasi hapus KTP
+            const removeKtpForm = document.querySelector('form[action*="/remove-ktp"]');
+            if (removeKtpForm) {
+                removeKtpForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (confirm('Yakin ingin menghapus file KTP? Aksi ini tidak dapat dibatalkan.')) {
+                        removeKtpForm.submit();
+                    }
+                });
+            }
+        });
+    </script>
+    @endpush
 @endsection

@@ -117,6 +117,27 @@
             </div>
         </div>
 
+        {{-- Per Page Dropdown --}}
+        <div class="d-flex align-items-center mt-3">
+            <form method="GET" action="{{ route('sudirmanpark.alamat') }}" id="perPageForm"
+                class="d-flex align-items-center">
+                <label for="per_page" class="mb-0 me-2">Show</label>
+                <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    @foreach ([10, 25, 50, 100, 'All'] as $size)
+                        <option value="{{ $size }}"
+                            {{ strtolower(request('per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
+                            {{ $size }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- Keep other query params --}}
+                @foreach (request()->except('per_page', 'page') as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                @endforeach
+            </form>
+        </div>
+
         {{-- Pagination --}}
         <div class="d-flex justify-content-end mt-3">
             {{ $addresses->links() }}

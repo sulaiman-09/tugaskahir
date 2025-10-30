@@ -16,8 +16,6 @@ class Banner extends Model
         'path',
         'path_apps',
         'is_active', // gunakan ini
-        'created_at',
-        'updated_at',
     ];
 
     protected $casts = [

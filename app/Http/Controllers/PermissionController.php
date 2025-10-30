@@ -39,18 +39,10 @@ class PermissionController extends Controller
 
         // Jika pilih All, ambil semua data
         if ($perPage === 'All') {
-            $permissions = $query->orderBy('created_at', 'desc')->get();
-            // wrap Collection agar bisa dipakai sama Blade dengan $permissions->links() dikondisikan
-            $permissions = new \Illuminate\Pagination\LengthAwarePaginator(
-                $permissions,
-                $permissions->count(),
-                $permissions->count(),
-                1,
-                ['path' => $request->url(), 'query' => $request->query()]
-            );
+            $permissions = $query->orderBy('created_at', 'desc')->paginate($query->count());
         } else {
             $permissions = $query->orderBy('created_at', 'desc')
-                ->paginate(intval($perPage))
+                ->paginate((int)$perPage)
                 ->withQueryString();
         }
 

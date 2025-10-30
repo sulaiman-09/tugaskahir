@@ -71,7 +71,6 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('sudirmanpark')
         ->name('sudirmanpark.')
-        ->middleware('role:admin,sudirman park')
         ->group(function () {
             // Main CRUD
             Route::get('/', [SudirmanParkController::class, 'index'])->name('index');

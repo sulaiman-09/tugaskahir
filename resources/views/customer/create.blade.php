@@ -16,17 +16,30 @@
             <form method="POST" action="{{ route('customer.store') }}">
                 @csrf
 
+                {{-- Display Validation Errors --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
+                        <h6 class="fw-semibold mb-2">Terdapat kesalahan:</h6>
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 {{-- Data Utama --}}
                 <div class="mb-4">
                     <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Utama</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small">Nama Pelanggan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Masukkan nama pelanggan" required>
+                            <input type="text" name="customer_name" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Masukkan nama pelanggan" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small">Nomor Telepon <span class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Contoh: 08123456789" required>
+                            <input type="text" name="customer_phone" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Contoh: 08123456789" required>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label fw-semibold small">Alamat Lengkap <span class="text-danger">*</span></label>

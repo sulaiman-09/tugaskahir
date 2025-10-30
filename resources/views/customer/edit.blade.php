@@ -22,24 +22,40 @@
                     <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Utama</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Nama Pelanggan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('name', $customer->name) }}" required>
+                        <label class="form-label fw-semibold small">Nama Pelanggan <span class="text-danger">*</span></label>
+                        <input type="text" name="customer_name" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('customer_name', $customer->customer_name) }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Nomor Telepon <span class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('phone', $customer->phone) }}" required>
+                        <label class="form-label fw-semibold small">Nomor Telepon <span class="text-danger">*</span></label>
+                        <input type="text" name="customer_phone" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('customer_phone', $customer->customer_phone) }}" required>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label fw-semibold small">Alamat Lengkap <span class="text-danger">*</span></label>
                             <textarea name="address" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="2" required>{{ old('address', $customer->address) }}</textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Email</label>
-                            <input type="email" name="email" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('email', $customer->email) }}">
+                        <label class="form-label fw-semibold small">Email</label>
+                        <input type="email" name="email" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('email', $customer->email) }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Kode Referral</label>
-                            <input type="text" name="referral_code" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('referral_code', $customer->referral_code) }}">
+                        <label class="form-label fw-semibold small">Kode Referral</label>
+                        <input type="text" name="referral_code" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('referral_code', $customer->referral_code) }}">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold small">Customer Address</label>
+                            <textarea name="customer_address" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="2">{{ old('customer_address', $customer->customer_address) }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Latitude</label>
+                            <input type="text" name="latitude" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('latitude', $customer->latitude) }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Longitude</label>
+                            <input type="text" name="longitude" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('longitude', $customer->longitude) }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Region ID</label>
+                            <input type="text" name="region_id" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('region_id', $customer->region_id) }}">
                         </div>
                     </div>
                 </div>
@@ -80,22 +96,31 @@
                     <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Tambahan</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Division</label>
-                            <select name="division" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Pilih Division</option>
-                                <option value="Marketing" {{ $customer->division == 'Marketing' ? 'selected' : '' }}>Marketing</option>
-                                <option value="Sales Retail" {{ $customer->division == 'Sales Retail' ? 'selected' : '' }}>Sales Retail</option>
-                            </select>
+                        <label class="form-label fw-semibold small">Division</label>
+                        <select name="division" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                        <option value="">Pilih Division</option>
+                        <option value="Marketing" {{ $customer->division == 'Marketing' ? 'selected' : '' }}>Marketing</option>
+                        <option value="Sales Retail" {{ $customer->division == 'Sales Retail' ? 'selected' : '' }}>Sales Retail</option>
+                        </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Kategori Produk</label>
-                            <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Pilih Kategori</option>
-                                <option value="Broadband Internet" {{ $customer->product_category == 'Broadband Internet' ? 'selected' : '' }}>Broadband Internet</option>
-                                <option value="Business Solutions" {{ $customer->product_category == 'Business Solutions' ? 'selected' : '' }}>Business Solutions</option>
-                                <option value="Promo Spesial Jepara" {{ $customer->product_category == 'Promo Spesial Jepara' ? 'selected' : '' }}>Promo Spesial Jepara</option>
-                                <option value="Promo Spesial Sukoharjo" {{ $customer->product_category == 'Promo Spesial Sukoharjo' ? 'selected' : '' }}>Promo Spesial Sukoharjo</option>
-                                <option value="Sudirman Park" {{ $customer->product_category == 'Sudirman Park' ? 'selected' : '' }}>Sudirman Park</option>
+                        <label class="form-label fw-semibold small">Kategori Produk</label>
+                        <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                        <option value="">Pilih Kategori</option>
+                        <option value="Broadband Internet" {{ $customer->product_category == 'Broadband Internet' ? 'selected' : '' }}>Broadband Internet</option>
+                        <option value="Business Solutions" {{ $customer->product_category == 'Business Solutions' ? 'selected' : '' }}>Business Solutions</option>
+                        <option value="Promo Spesial Jepara" {{ $customer->product_category == 'Promo Spesial Jepara' ? 'selected' : '' }}>Promo Spesial Jepara</option>
+                        <option value="Promo Spesial Sukoharjo" {{ $customer->product_category == 'Promo Spesial Sukoharjo' ? 'selected' : '' }}>Promo Spesial Sukoharjo</option>
+                        <option value="Sudirman Park" {{ $customer->product_category == 'Sudirman Park' ? 'selected' : '' }}>Sudirman Park</option>
+                        </select>
+                        </div>
+                        <div class="col-md-4">
+                        <label class="form-label fw-semibold small">Produk</label>
+                        <select name="product" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                        <option value="">Pilih Produk</option>
+                        @foreach($products as $prod)
+                            <option value="{{ $prod->id }}" {{ $customer->product_id == $prod->id ? 'selected' : '' }}>{{ $prod->name }}</option>
+                            @endforeach
                             </select>
                         </div>
                         <div class="col-md-4">

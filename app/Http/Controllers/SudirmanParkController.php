@@ -6,6 +6,7 @@ use App\Models\SudirmanPark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\SudirmanTowerAddress;
@@ -68,15 +69,14 @@ class SudirmanParkController extends Controller
         ]);
 
         if ($request->hasFile('ktp')) {
-            try {
+        try {
                 $file = $request->file('ktp');
                 $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('public/ktp', $filename);
-                // store only filename (or use Storage::url later in views)
+                Storage::disk('public')->putFileAs('ktp', $file, $filename);
                 $validated['ktp'] = $filename;
-                \Log::info('KTP uploaded for new customer: ' . $filename . ' stored at ' . $path);
+                \Log::info('KTP uploaded for new customer: ' . $filename);
             } catch (\Exception $e) {
-                \Log::error('KTP upload failed: ' . $e->getMessage());
+            \Log::error('KTP upload failed: ' . $e->getMessage());
                 return back()->withErrors(['ktp' => 'Gagal menyimpan file KTP. Silakan cek permission/storage link.']);
             }
         }
@@ -100,8 +100,10 @@ class SudirmanParkController extends Controller
 
     public function update(Request $request, $id)
     {
+        Log::info('SudirmanPark update START for id: ' . $id);
+        Log::info('Request method: ' . $request->method() . ', data: ' . json_encode($request->all()));
         $customer = SudirmanPark::findOrFail($id);
-
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
@@ -114,14 +116,14 @@ class SudirmanParkController extends Controller
         ]);
 
         if ($request->hasFile('ktp')) {
-            // delete old file if exists
-            if ($customer->ktp) {
-                Storage::delete('public/ktp/' . $customer->ktp);
+        // delete old file if exists
+        if ($customer->ktp) {
+                Storage::disk('public')->delete('ktp/' . $customer->ktp);
             }
             try {
                 $file = $request->file('ktp');
                 $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/ktp', $filename);
+                Storage::disk('public')->putFileAs('ktp', $file, $filename);
                 $validated['ktp'] = $filename;
                 \Log::info('KTP uploaded for customer update: ' . $filename);
             } catch (\Exception $e) {
@@ -136,7 +138,9 @@ class SudirmanParkController extends Controller
         }
 
         try {
+        \Log::info('Updating SudirmanPark id ' . $customer->id . ' with data: ' . json_encode($validated));
             $customer->update($validated);
+        \Log::info('SudirmanPark updated successfully for id ' . $customer->id);
         } catch (\Throwable $e) {
             \Log::error('SudirmanPark update failed for id ' . $customer->id . ': ' . $e->getMessage());
             return back()->withErrors(['error' => 'Gagal memperbarui customer. Silakan cek log.']);
@@ -179,69 +183,24 @@ class SudirmanParkController extends Controller
     public function downloadKtp($id)
     {
         $customer = SudirmanPark::findOrFail($id);
-        // prefer using the public disk explicitly and check existence
+        if (!$customer->ktp) {
+            abort(404, 'Customer tidak memiliki file KTP.');
+        }
+
         $disk = Storage::disk('public');
-        $original = $customer->ktp;
-        $candidates = [];
-        if ($original) {
-            $candidates[] = $original;
-            $candidates[] = urldecode($original);
-            $candidates[] = basename($original);
-        }
+        $path = 'ktp/' . $customer->ktp;
 
-        // also try empty candidate (will be skipped)
-        $found = false;
-        $checked = [];
-        foreach (array_unique($candidates) as $c) {
-            if (!$c) continue;
-            $path = 'ktp/' . $c;
-            // check via Storage disk
-            $existsDisk = $disk->exists($path);
-            $fsPath = storage_path('app/public/ktp/' . $c);
-            $pubPath = public_path('storage/ktp/' . $c);
-            $checked[$c] = [
-                'disk_exists' => $existsDisk,
-                'fs_exists' => is_file($fsPath) && is_readable($fsPath),
-                'pub_exists' => is_file($pubPath) && is_readable($pubPath),
-                'disk_path' => $path,
-                'fs_path' => $fsPath,
-                'pub_path' => $pubPath,
-            ];
-
-            if ($existsDisk) {
-                try {
-                    return $disk->download($path);
-                } catch (\Throwable $e) {
-                    \Log::error('KTP download failed for ' . $path . ': ' . $e->getMessage());
-                    try {
-                        $stream = $disk->readStream($path);
-                        if ($stream) {
-                            return response()->stream(function () use ($stream) {
-                                fpassthru($stream);
-                            }, 200, [
-                                'Content-Type' => $disk->mimeType($path) ?? 'application/octet-stream',
-                                'Content-Disposition' => 'attachment; filename="' . basename($path) . '"',
-                            ]);
-                        }
-                    } catch (\Throwable $e2) {
-                        \Log::error('KTP fallback stream failed for ' . $path . ': ' . $e2->getMessage());
-                    }
-                }
-            }
-
-            // check direct filesystem path (storage/app/public/ktp)
-            // check direct filesystem path (storage/app/public/ktp)
-            if (is_file($fsPath) && is_readable($fsPath)) {
-                return response()->download($fsPath, basename($fsPath));
-            }
-
-            // check public path (public/storage/ktp)
-            if (is_file($pubPath) && is_readable($pubPath)) {
-                return response()->download($pubPath, basename($pubPath));
+        if ($disk->exists($path)) {
+            try {
+                return $disk->download($path);
+            } catch (\Throwable $e) {
+                \Log::error("KTP download failed for path: {$path}. Error: " . $e->getMessage());
+                abort(500, 'Gagal mengunduh file.');
             }
         }
-        \Log::warning("KTP download requested but none of candidate filenames found for customer id: {$customer->id}", ['candidates' => $candidates, 'checked' => $checked, 'db_value' => $original]);
-        abort(404, 'File KTP tidak ditemukan.');
+
+        \Log::warning("KTP download requested but file not found for customer id: {$customer->id}. Path: {$path}");
+        abort(404, 'File KTP tidak ditemukan di storage.');
     }
 
     /**
@@ -250,74 +209,40 @@ class SudirmanParkController extends Controller
     public function previewKtp($id)
     {
         $customer = SudirmanPark::findOrFail($id);
+        if (!$customer->ktp) {
+            abort(404, 'File KTP tidak ditemukan.');
+        }
+
         $disk = Storage::disk('public');
-        $original = $customer->ktp;
-        $candidates = [];
-        if ($original) {
-            $candidates[] = $original;
-            $candidates[] = urldecode($original);
-            $candidates[] = basename($original);
-        }
-        $checked = [];
-        foreach (array_unique($candidates) as $c) {
-            if (!$c) continue;
-            $path = 'ktp/' . $c;
+        $path = 'ktp/' . $customer->ktp;
 
-            $existsDisk = $disk->exists($path);
-            $fsPath = storage_path('app/public/ktp/' . $c);
-            $pubPath = public_path('storage/ktp/' . $c);
-
-            $checked[$c] = [
-                'disk_exists' => $existsDisk,
-                'fs_exists' => is_file($fsPath) && is_readable($fsPath),
-                'pub_exists' => is_file($pubPath) && is_readable($pubPath),
-                'disk_path' => $path,
-                'fs_path' => $fsPath,
-                'pub_path' => $pubPath,
-            ];
-
-            // Storage disk check
-            if ($existsDisk) {
-                try {
-                    if (method_exists($disk, 'path')) {
-                        $local = $disk->path($path);
-                        return response()->file($local, ['Content-Disposition' => 'inline; filename="' . basename($path) . '"']);
-                    }
-
-                    $stream = $disk->readStream($path);
-                    if ($stream) {
-                        return response()->stream(function () use ($stream) {
-                            fpassthru($stream);
-                        }, 200, [
-                            'Content-Type' => $disk->mimeType($path) ?? 'application/octet-stream',
-                            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
-                        ]);
-                    }
-                } catch (\Throwable $e) {
-                    \Log::error('KTP preview failed for ' . $path . ': ' . $e->getMessage());
-                }
-            }
-
-            // direct filesystem checks
-            if (is_file($fsPath) && is_readable($fsPath)) {
-                return response()->file($fsPath, ['Content-Disposition' => 'inline; filename="' . basename($fsPath) . '"']);
-            }
-
-            if (is_file($pubPath) && is_readable($pubPath)) {
-                return response()->file($pubPath, ['Content-Disposition' => 'inline; filename="' . basename($pubPath) . '"']);
-            }
+        if (!$disk->exists($path)) {
+            \Log::warning("KTP preview requested but file not found on disk for customer id: {$customer->id}. Path: {$path}");
+            abort(404, 'File KTP tidak ditemukan di storage.');
         }
 
-        \Log::warning("KTP preview requested but none of candidate filenames found for customer id: {$customer->id}", ['candidates' => $candidates, 'checked' => $checked, 'db_value' => $original]);
-        abort(404, 'File KTP tidak ditemukan.');
+        try {
+            // Dapatkan path absolut dari storage
+            $absolutePath = $disk->path($path);
+
+            // Gunakan response()->file() untuk mengirim file.
+            // Ini secara otomatis menangani header seperti Content-Type dan Content-Length.
+            return response()->file($absolutePath);
+
+        } catch (\Throwable $e) {
+            \Log::error("KTP preview failed for path: {$path}. Error: " . $e->getMessage());
+            abort(500, 'Gagal menampilkan file karena kesalahan server.');
+        }
     }
 
     public function toggleStatus(Request $request, $id)
     {
         $customer = SudirmanPark::findOrFail($id);
         $customer->status = $request->input('status', $customer->status == 'approved' ? 'registration' : 'approved');
+        $customer->status_change = 'Updated by ' . auth()->user()->name . ' on ' . now()->toDateTimeString();
         $customer->save();
-        return response()->json(['status' => $customer->status]);
+
+        return response()->json(['status' => $customer->status, 'status_change' => $customer->status_change]);
     }
 
     public function export(Request $request): StreamedResponse
@@ -378,15 +303,27 @@ class SudirmanParkController extends Controller
 
         // Fitur search
         if ($q) {
-            $query->where('tower', 'like', "%{$q}%")
-                ->orWhere('floor', 'like', "%{$q}%")
-                ->orWhere('unit', 'like', "%{$q}%")
-                ->orWhere('full_address', 'like', "%{$q}%");
+            $query->where(function ($sub) use ($q) {
+                $sub->where('tower', 'like', '%' . $q . '%')
+                    ->orWhere('floor', 'like', '%' . $q . '%')
+                    ->orWhere('unit', 'like', '%' . $q . '%')
+                    ->orWhere('full_address', 'like', '%' . $q . '%');
+            });
         }
 
-        $addresses = $query->latest()->paginate(10)->withQueryString();
 
-        return view('sudirmanpark.alamat', compact('addresses', 'q', 'showAll'));
+        $perPage = $request->query('per_page', 10);
+        $showAll = strtolower($perPage) === 'all';
+
+        if ($showAll) {
+            $addresses = $query->latest()->get();
+        } else {
+            $addresses = $query->latest()
+                ->paginate((int)$perPage)
+                ->withQueryString();
+        }
+
+        return view('sudirmanpark.alamat', compact('addresses', 'q', 'perPage', 'showAll'));
     }
 
 
@@ -394,9 +331,10 @@ class SudirmanParkController extends Controller
     {
         $customer = SudirmanPark::findOrFail($id);
         $customer->status = $request->status;
+        $customer->status_change = 'Updated by ' . auth()->user()->name . ' on ' . now()->toDateTimeString();
         $customer->save();
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'status' => $customer->status, 'status_change' => $customer->status_change]);
     }
 
     public function createHomepass()
@@ -471,7 +409,7 @@ class SudirmanParkController extends Controller
             $address->update($data);
         } catch (\Throwable $e) {
             \Log::error('updateHomepass failed: ' . $e->getMessage());
-            if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+            if ($request->ajax() || $request->wentsJson() || $request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => 'Gagal memperbarui homepass: ' . $e->getMessage()], 500);
             }
             return back()->withErrors(['error' => 'Gagal memperbarui homepass. Silakan cek log.']);
@@ -547,3 +485,4 @@ class SudirmanParkController extends Controller
         ]);
     }
 }
+

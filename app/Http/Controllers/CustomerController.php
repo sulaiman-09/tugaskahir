@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -17,10 +19,10 @@ class CustomerController extends Controller
     // Search
     if ($q = $request->query('search')) {
         $query->where(function ($sub) use ($q) {
-            $sub->where('customer_name', 'like', "%{$q}%")
-                ->orWhere('customer_phone', 'like', "%{$q}%")
-                ->orWhere('email', 'like', "%{$q}%")
-                ->orWhere('address', 'like', "%{$q}%");
+            $sub->where('customer_name', 'like', '%' . $q . '%')
+                ->orWhere('customer_phone', 'like', '%' . $q . '%')
+                ->orWhere('email', 'like', '%' . $q . '%')
+                ->orWhere('address', 'like', '%' . $q . '%');
         });
     }
 
@@ -63,18 +65,29 @@ class CustomerController extends Controller
             'customer_phone'    => 'required|string|max:20',
             'email'             => 'nullable|email|max:255',
             'address'           => 'required|string',
+            'customer_address'  => 'nullable|string|max:255',
             'referral_code'     => 'nullable|string|max:255',
             'province'          => 'nullable|string|max:255',
             'city'              => 'nullable|string|max:255',
             'district'          => 'nullable|string|max:255',
             'village'           => 'nullable|string|max:255',
+            'region_id'         => 'nullable|string',
             'division'          => 'nullable|string|max:255',
             'product_category'  => 'nullable|string|max:255',
-            'product'           => 'nullable|string|max:255',
+            'product'           => 'nullable|numeric',
             'latitude'          => 'nullable|string|max:255',
             'longitude'         => 'nullable|string|max:255',
             'coverage'          => 'nullable|string|max:255',
         ]);
+
+        // Ensure region_id is set to null if not provided
+        $validated['region_id'] = $validated['region_id'] ?? null;
+
+        // Map product to product_id if it's numeric
+        if (isset($validated['product']) && is_numeric($validated['product'])) {
+            $validated['product_id'] = $validated['product'];
+            unset($validated['product']);
+        }
 
         Customer::create($validated);
 
@@ -104,18 +117,29 @@ class CustomerController extends Controller
             'customer_phone'    => 'required|string|max:20',
             'email'             => 'nullable|email|max:255',
             'address'           => 'required|string',
+            'customer_address'  => 'nullable|string|max:255',
             'referral_code'     => 'nullable|string|max:255',
             'province'          => 'nullable|string|max:255',
             'city'              => 'nullable|string|max:255',
             'district'          => 'nullable|string|max:255',
             'village'           => 'nullable|string|max:255',
+            'region_id'         => 'nullable|string',
             'division'          => 'nullable|string|max:255',
             'product_category'  => 'nullable|string|max:255',
-            'product'           => 'nullable|string|max:255',
+            'product'           => 'nullable|numeric',
             'latitude'          => 'nullable|string|max:255',
             'longitude'         => 'nullable|string|max:255',
             'coverage'          => 'nullable|string|max:255',
         ]);
+
+        // Ensure region_id is set to null if not provided
+        $validated['region_id'] = $validated['region_id'] ?? null;
+
+        // Map product to product_id if it's numeric
+        if (isset($validated['product']) && is_numeric($validated['product'])) {
+            $validated['product_id'] = $validated['product'];
+            unset($validated['product']);
+        }
 
         $customer = Customer::findOrFail($id);
         $customer->update($validated);

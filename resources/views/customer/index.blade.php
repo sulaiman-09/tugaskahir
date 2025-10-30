@@ -20,6 +20,14 @@
 
     <div class="container py-4">
 
+        {{-- Alert --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         {{-- Judul --}}
         <h3 class="fw-bold mb-4">Data Customer Leads</h3>
 

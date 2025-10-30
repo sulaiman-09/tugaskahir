@@ -51,23 +51,29 @@ class DashboardController extends Controller
 
         // Weekly series (last 4 full weeks)
         $weeklyData = collect(range(0, 3))->map(function ($i) {
-            $start = now()->startOfWeek()->subWeeks($i+1);
-            $end = now()->startOfWeek()->subWeeks($i);
-            return DB::table('users')->whereBetween('created_at', [$start, $end])->count();
+            $start = now()->startOfWeek()->subWeeks($i + 1);
+            $end = now()->endOfWeek()->subWeeks($i + 1);
+            return [
+                'count' => DB::table('users')->whereBetween('created_at', [$start, $end])->count(),
+                'label' => 'Week ' . (4 - $i),
+                'dates' => $start->format('M d') . ' - ' . $end->format('M d'),
+            ];
         })->reverse()->values();
         $weekly = [
-            'series' => [['name' => 'New Customers', 'data' => $weeklyData]],
-            'categories' => ['Week 1','Week 2','Week 3','Week 4'],
+            'series' => [['name' => 'New Customers', 'data' => $weeklyData->pluck('count')]],
+            'categories' => $weeklyData->pluck('label'),
+            'x_axis_labels' => $weeklyData->pluck('dates'),
         ];
 
         // Daily series (Mon-Sun of current week)
-        $weekDays = collect(range(0,6))->map(fn($d) => now()->startOfWeek()->addDays($d));
+        $weekDays = collect(range(0, 6))->map(fn ($d) => now()->startOfWeek()->addDays($d));
         $dailyCounts = $weekDays->map(function ($day) {
             return DB::table('users')->whereDate('created_at', $day->toDateString())->count();
         });
         $daily = [
             'series' => [['name' => 'New Customers', 'data' => $dailyCounts->values()]],
-            'categories' => ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            'categories' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            'x_axis_labels' => $weekDays->map(fn ($d) => $d->format('Y-m-d')),
         ];
 
         // Hourly submissions (today by hour)
@@ -112,28 +118,55 @@ class DashboardController extends Controller
             'coverage' => $coverage,
         ];
 
-        // Customers table (simple last 5 users)
-        $customers = DB::table('users')
-            ->orderByDesc('created_at')
-            ->limit(5)
+        // Top Subdistricts table (from customer_leads)
+        $validLimits = [10, 15, 25, 50, 100];
+        $limit = request('limit', 10);
+        if (!in_array($limit, $validLimits)) {
+            $limit = 10;
+        }
+
+        $topSubdistricts = DB::table('customer_leads')
+            ->select('customer_address as subdistrict', DB::raw('COUNT(*) as total_registration'),
+                     DB::raw('SUM(CASE WHEN coverage IS NOT NULL AND coverage != "" THEN 1 ELSE 0 END) as covered'),
+                     DB::raw('SUM(CASE WHEN coverage IS NULL OR coverage = "" THEN 1 ELSE 0 END) as uncovered'))
+            ->whereNotNull('customer_address')
+            ->where('customer_address', '!=', '')
+            ->groupBy('customer_address')
+            ->orderByDesc('total_registration')
+            ->limit($limit)
             ->get()
-            ->map(function ($u) {
-                $statusIdx = $u->id % 3; // pseudo status
-                $status = ['Active','Pending','Inactive'][$statusIdx];
-                $class = ['status-active','status-pending','status-inactive'][$statusIdx];
+            ->map(function ($item) {
+                $coverageRate = $item->total_registration > 0 ? round(($item->covered / $item->total_registration) * 100, 2) : 0;
+
+                // Extract subdistrict name from address
+                $address = $item->subdistrict;
+                $subdistrictName = $address;
+
+                // Try to match kecamatan or kec
+                if (preg_match('/kecamatan\s+([^,]+)/i', $address, $matches)) {
+                    $subdistrictName = ucwords(strtolower($matches[1]));
+                } elseif (preg_match('/kec\s+([^,]+)/i', $address, $matches)) {
+                    $subdistrictName = ucwords(strtolower($matches[1]));
+                } else {
+                    // Fallback: take first part before comma or space
+                    $parts = explode(',', $address);
+                    $subdistrictName = ucwords(strtolower(trim($parts[0])));
+                }
+
                 return [
-                    'name' => $u->name,
-                    'email' => $u->email,
-                    'join_date' => optional($u->created_at)->format('Y-m-d'),
-                    'status' => $status,
-                    'status_class' => $class,
+                    'subdistrict' => $subdistrictName,
+                    'total_registration' => $item->total_registration,
+                    'covered' => $item->covered,
+                    'uncovered' => $item->uncovered,
+                    'coverage_rate' => $coverageRate,
                 ];
             })->toArray();
 
         return view('dashboard.index', [
             'metrics' => $metrics,
             'charts' => $charts,
-            'customers' => $customers,
+            'topSubdistricts' => $topSubdistricts,
+            'currentLimit' => $limit,
         ]);
     }
 

@@ -117,52 +117,47 @@
     </div>
 </div>
 
-    <!-- Customers Table -->
+    <!-- Top Subdistricts Table -->
     <div class="mt-8 bg-white p-6 rounded-xl shadow-md">
         <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-700">Customer Database</h3>
-            <a href="#" class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm">+ Add Customer</a>
+            <h3 class="text-lg font-semibold text-gray-700">Top Subdistrict</h3>
+            <div class="flex items-center gap-2">
+                <label for="limit-select" class="text-sm font-medium text-gray-700">Show:</label>
+                <select id="limit-select" onchange="changeLimit(this.value)" class="border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500 text-sm">
+                    <option value="10" {{ $currentLimit == 10 ? 'selected' : '' }}>10</option>
+                    <option value="15" {{ $currentLimit == 15 ? 'selected' : '' }}>15</option>
+                    <option value="25" {{ $currentLimit == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ $currentLimit == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ $currentLimit == 100 ? 'selected' : '' }}>100</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Filter Panel (static UI only) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <input type="text" placeholder="Search by name or email..." class="w-full border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500">
-            <select class="w-full border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500">
-                <option>All Locations</option>
-            </select>
-            <select class="w-full border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500">
-                <option>All Products</option>
-            </select>
-            <select class="w-full border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500">
-                <option>All Status</option>
-            </select>
-    </div>
-    
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-500">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3">Customer Name</th>
-                        <th scope="col" class="px-6 py-3">Email</th>
-                        <th scope="col" class="px-6 py-3">Join Date</th>
-                        <th scope="col" class="px-6 py-3">Status</th>
-                        <th scope="col" class="px-6 py-3">Action</th>
+                        <th scope="col" class="px-6 py-3">No</th>
+                        <th scope="col" class="px-6 py-3">Subdistrict</th>
+                        <th scope="col" class="px-6 py-3">Total Registration</th>
+                        <th scope="col" class="px-6 py-3">Covered</th>
+                        <th scope="col" class="px-6 py-3">Uncovered</th>
+                        <th scope="col" class="px-6 py-3">Coverage Rate (%)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($customers as $c)
+                    @forelse($topSubdistricts as $index => $subdistrict)
                     <tr class="bg-white border-b hover:bg-gray-50">
-                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ $c['name'] }}</td>
-                        <td class="px-6 py-4">{{ $c['email'] }}</td>
-                        <td class="px-6 py-4">{{ $c['join_date'] }}</td>
-                        <td class="px-6 py-4">
-                            <span class="status-badge {{ $c['status_class'] }}">{{ $c['status'] }}</span>
-                        </td>
-                        <td class="px-6 py-4"><a href="#" class="font-medium text-red-600 hover:underline">Edit</a></td>
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ $index + 1 }}</td>
+                        <td class="px-6 py-4">{{ $subdistrict['subdistrict'] }}</td>
+                        <td class="px-6 py-4">{{ $subdistrict['total_registration'] }}</td>
+                        <td class="px-6 py-4">{{ $subdistrict['covered'] }}</td>
+                        <td class="px-6 py-4">{{ $subdistrict['uncovered'] }}</td>
+                        <td class="px-6 py-4">{{ $subdistrict['coverage_rate'] }}%</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-6 text-center text-gray-500">No data</td>
+                        <td colspan="6" class="px-6 py-6 text-center text-gray-500">No data</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -172,6 +167,12 @@
 </section>
 
 <script>
+function changeLimit(value) {
+    const url = new URL(window.location);
+    url.searchParams.set('limit', value);
+    window.location.href = url.toString();
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const brandColors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#6B7280'];
 
@@ -180,11 +181,35 @@ document.addEventListener("DOMContentLoaded", function() {
     const weeklyData = @json($charts['weekly']);
     const dailyData = @json($charts['daily']);
 
+    // Create fallbacks for the detailed date labels where not provided by controller
+    monthlyData.x_axis_labels = monthlyData.categories;
+    yearlyData.x_axis_labels = yearlyData.categories;
+
+    let currentXAxisLabels = monthlyData.x_axis_labels;
+
     var growthOptions = {
         series: monthlyData.series,
-        chart: { height: 350, type: 'area', toolbar: { show: false }, zoom: { enabled: false } },
-        dataLabels: { enabled: false }, stroke: { curve: 'smooth' },
-        xaxis: { categories: monthlyData.categories }, tooltip: { x: { format: 'MMM' } },
+        chart: { 
+            height: 350, 
+            type: 'area', 
+            toolbar: { show: false }, 
+            zoom: { enabled: false } 
+        },
+        dataLabels: { enabled: false }, 
+        stroke: { curve: 'smooth', width: 2 },
+        xaxis: { categories: monthlyData.categories }, 
+        tooltip: {
+            custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                const dateLabel = currentXAxisLabels[dataPointIndex];
+                const value = series[seriesIndex][dataPointIndex];
+                return `
+                    <div class="px-3 py-2 bg-white rounded-md shadow-lg border border-gray-200">
+                        <div class="font-bold text-gray-800">${value} New Customers</div>
+                        <div class="text-xs text-gray-500 mt-1">${dateLabel}</div>
+                    </div>
+                `;
+            }
+        },
         colors: [brandColors[0]]
     };
     var growthChart = new ApexCharts(document.querySelector("#customer-growth-chart"), growthOptions);
@@ -198,12 +223,27 @@ document.addEventListener("DOMContentLoaded", function() {
             const period = button.dataset.period;
             let newData = {};
             switch (period) {
-                case 'yearly': newData = yearlyData; break;
-                case 'monthly': newData = monthlyData; break;
-                case 'weekly': newData = weeklyData; break;
-                case 'daily': newData = dailyData; break;
+                case 'yearly': 
+                    newData = yearlyData;
+                    currentXAxisLabels = yearlyData.x_axis_labels;
+                    break;
+                case 'monthly': 
+                    newData = monthlyData; 
+                    currentXAxisLabels = monthlyData.x_axis_labels;
+                    break;
+                case 'weekly': 
+                    newData = weeklyData; 
+                    currentXAxisLabels = weeklyData.x_axis_labels;
+                    break;
+                case 'daily': 
+                    newData = dailyData; 
+                    currentXAxisLabels = dailyData.x_axis_labels;
+                    break;
             }
-            growthChart.updateOptions({ series: newData.series, xaxis: { categories: newData.categories } });
+            growthChart.updateOptions({
+                series: newData.series, 
+                xaxis: { categories: newData.categories }
+            });
         });
     });
 
@@ -237,5 +277,4 @@ document.addEventListener("DOMContentLoaded", function() {
     var coverageChart = new ApexCharts(document.querySelector("#coverage-chart"), coverageOptions);
     coverageChart.render();
 });
-</script>
-@endsection
+</script>@endsection
