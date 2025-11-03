@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+
+/* Prevent Bootstrap from overriding Tailwind typography */
+.tw-prose * {
+    all: revert;
+}
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';

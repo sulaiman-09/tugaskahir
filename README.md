@@ -60,3 +60,11 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Konvensi Framework CSS:
+- Tailwind hanya digunakan dengan prefix `tw-`
+- Bootstrap digunakan tanpa prefix (kelas default)
+- Dilarang mencampur kelas Bootstrap & Tailwind dalam 1 elemen tanpa alasan
+- Jika butuh kombinasi, utamakan Bootstrap sebagai struktur, Tailwind sebagai finer style
+
