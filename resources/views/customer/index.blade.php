@@ -41,7 +41,7 @@
                             {{ $label }}
                         </a>
                     @endforeach
-                    <button type="button" class="btn btn-outline-dark btn-sm ms-1" data-bs-toggle="collapse"
+                    <button type="button" class="btn btn-outline-primary btn-sm ms-1" data-bs-toggle="collapse"
                         data-bs-target="#customRange">
                         Custom Range
                     </button>
