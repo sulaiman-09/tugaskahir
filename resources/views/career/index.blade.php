@@ -60,8 +60,15 @@
                                 <tr>
                                     <td>{{ $career->id }}</td>
                                     <td>
-                                        <img src="{{ $career->image }}" alt="Career Image" width="60"
-                                            class="rounded shadow-sm border">
+                                        @if ($career->image_path)
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-secondary career-preview-btn"
+                                                data-preview-url="{{ asset($career->image_path) }}">
+                                                View
+                                            </button>
+                                        @else
+                                            <span class="text-muted">No File</span>
+                                        @endif
                                     </td>
                                     <td class="text-start ps-3 fw-semibold">{{ $career->title }}</td>
                                     <td>{{ $career->type }}</td>
@@ -130,6 +137,71 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal HTML
+            const modalHtml = `
+                <div class="modal fade" id="careerPreviewModal" tabindex="-1">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Career Image Preview</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-0 d-flex align-items-center justify-content-center" style="height: 80vh; background-color: #f8f9fa;">
+                                <div id="careerSpinner" class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <img id="careerPreviewImage" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
+                                <div id="careerPreviewError" class="text-center" style="display: none;">
+                                    <p class="mb-0">File not found or could not be displayed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            const careerModalEl = document.getElementById('careerPreviewModal');
+            const careerModal = new bootstrap.Modal(careerModalEl);
+            const spinner = document.getElementById('careerSpinner');
+            const img = document.getElementById('careerPreviewImage');
+            const errorMsg = document.getElementById('careerPreviewError');
+
+            // Button preview logic
+            document.querySelectorAll('.career-preview-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const previewUrl = this.dataset.previewUrl;
+
+                    img.style.display = 'none';
+                    errorMsg.style.display = 'none';
+                    spinner.style.display = 'block';
+
+                    careerModal.show();
+
+                    img.src = previewUrl;
+                    img.onload = () => {
+                        spinner.style.display = 'none';
+                        img.style.display = 'block';
+                    };
+                    img.onerror = () => {
+                        spinner.style.display = 'none';
+                        errorMsg.style.display = 'block';
+                    };
+                });
+            });
+
+            // Reset modal ketika ditutup
+            careerModalEl.addEventListener('hidden.bs.modal', function() {
+                img.src = '';
+                img.style.display = 'none';
+                errorMsg.style.display = 'none';
+                spinner.style.display = 'none';
+            });
+        });
+    </script>
 
     @push('styles')
         <style>

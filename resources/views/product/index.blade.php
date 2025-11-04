@@ -70,11 +70,16 @@
                                                 value="{{ $cat->short_description }}">
                                             <input type="hidden" name="long_description"
                                                 value="{{ $cat->long_description }}">
-                                            <div class="form-check form-switch d-flex justify-content-center">
-                                                <input type="checkbox" class="form-check-input toggle-switch"
-                                                    name="show_price" id="show_price_{{ $cat->id }}"
-                                                    onchange="this.form.submit()" {{ $cat->show_price ? 'checked' : '' }}>
-                                            </div>
+                                            <form action="{{ route('product.category.togglePrice', $cat->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="form-check form-switch d-flex justify-content-center">
+                                                    <input type="checkbox" class="form-check-input" name="show_price"
+                                                        id="show_price_{{ $cat->id }}" onchange="this.form.submit()"
+                                                        {{ $cat->show_price ? 'checked' : '' }}>
+                                                </div>
+                                            </form>
                                         </form>
                                     </td>
                                     <td class="text-start">

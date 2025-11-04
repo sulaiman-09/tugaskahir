@@ -224,6 +224,15 @@ class ProductController extends Controller
         return redirect()->route('product.index')->with('success', 'Product deleted successfully!');
     }
 
+    public function toggleCategoryPrice($id)
+    {
+        $category = ProductCategory::findOrFail($id);
+        $category->show_price = !$category->show_price;
+        $category->save();
+
+        return redirect()->route('product.index')->with('success', 'Status Show Price berhasil diperbarui.');
+    }
+
     // HIDE/SHOW HARGA PRODUK
     public function togglePrice($id)
     {

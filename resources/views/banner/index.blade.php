@@ -52,12 +52,26 @@
                                 <tr>
                                     <td class="fw-semibold">{{ $banner['name'] }}</td>
                                     <td>
-                                        <img src="{{ $banner['web_image'] }}" alt="Web Image" width="120"
-                                            class="rounded shadow-sm border border-light">
+                                        @if ($banner->path)
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-secondary banner-preview-btn"
+                                                data-preview-url="{{ asset('storage/' . $banner->path) }}">
+                                                View
+                                            </button>
+                                        @else
+                                            <span class="text-muted">No File</span>
+                                        @endif
                                     </td>
                                     <td>
-                                        <img src="{{ $banner['mobile_image'] }}" alt="Mobile Image" width="100"
-                                            class="rounded shadow-sm border border-light">
+                                        @if ($banner->path_apps)
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-secondary banner-preview-btn"
+                                                data-preview-url="{{ asset('storage/' . $banner->path_apps) }}">
+                                                View
+                                            </button>
+                                        @else
+                                            <span class="text-muted">No File</span>
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="form-check form-switch d-flex justify-content-center">
@@ -146,13 +160,13 @@
                         e.preventDefault();
                         const name = form.dataset.name || 'banner ini';
                         if (confirm(
-                                `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
+                            `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
                             form.submit();
                         }
                     });
                 });
 
-                // Toggle status
+                // Toggle status aktif/nonaktif
                 document.querySelectorAll('.toggle-status').forEach(checkbox => {
                     checkbox.addEventListener('change', function() {
                         const id = this.dataset.id;
@@ -181,9 +195,85 @@
                             });
                     });
                 });
+
+                // ===== Modal Preview Banner =====
+                const modalHtml = `
+        <div class="modal fade" id="bannerPreviewModal" tabindex="-1">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Banner Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-0 d-flex align-items-center justify-content-center"
+                         style="height: 80vh; background-color: #f8f9fa;">
+                        <div id="bannerSpinner" class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <img id="bannerPreviewImage"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
+                        <iframe id="bannerPreviewFrame"
+                                style="width: 100%; height: 100%; border: 0; display: none;"></iframe>
+                        <div id="bannerPreviewError" class="text-center" style="display: none;">
+                            <p class="mb-0">File not found or could not be displayed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                const bannerModalEl = document.getElementById('bannerPreviewModal');
+                const bannerModal = new bootstrap.Modal(bannerModalEl);
+                const spinner = document.getElementById('bannerSpinner');
+                const img = document.getElementById('bannerPreviewImage');
+                const frame = document.getElementById('bannerPreviewFrame');
+                const errorMsg = document.getElementById('bannerPreviewError');
+
+                document.querySelectorAll('.banner-preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const previewUrl = this.dataset.previewUrl;
+
+                        img.style.display = 'none';
+                        frame.style.display = 'none';
+                        errorMsg.style.display = 'none';
+                        spinner.style.display = 'block';
+
+                        bannerModal.show();
+
+                        if (previewUrl.toLowerCase().endsWith('.pdf')) {
+                            frame.src = previewUrl;
+                            frame.onload = () => {
+                                spinner.style.display = 'none';
+                                frame.style.display = 'block';
+                            };
+                        } else {
+                            img.src = previewUrl;
+                            img.onload = () => {
+                                spinner.style.display = 'none';
+                                img.style.display = 'block';
+                            };
+                            img.onerror = () => {
+                                spinner.style.display = 'none';
+                                errorMsg.style.display = 'block';
+                            };
+                        }
+                    });
+                });
+
+                bannerModalEl.addEventListener('hidden.bs.modal', function() {
+                    img.src = '';
+                    frame.src = 'about:blank';
+                    img.style.display = 'none';
+                    frame.style.display = 'none';
+                    errorMsg.style.display = 'none';
+                    spinner.style.display = 'none';
+                });
             });
         </script>
     @endpush
+
 
     @push('styles')
         <style>
@@ -235,4 +325,6 @@
             }
         </style>
     @endpush
+
+
 @endsection
