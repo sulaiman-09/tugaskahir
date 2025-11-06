@@ -101,12 +101,26 @@ Route::middleware('auth')->group(function () {
         });
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {
+        // ===== Product Routes =====
         Route::get('/product', [ProductController::class, 'index'])->name('product.index');
         Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/product', [ProductController::class, 'store'])->name('product.store');
         Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('product.edit');
         Route::put('/product/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+
+        // ===== Product Category Routes =====
+        Route::get('/product/category/create', [ProductController::class, 'createCategory'])->name('product.category.create');
+        Route::post('/product/category', [ProductController::class, 'storeCategory'])->name('product.category.store');
+        Route::get('/product/category/{id}/edit', [ProductController::class, 'editCategory'])->name('product.category.edit');
+        Route::put('/product/category/{id}', [ProductController::class, 'updateCategory'])->name('product.category.update');
+        Route::delete('/product/category/{id}', [ProductController::class, 'destroyCategory'])->name('product.category.destroy');
+
+        // Export Category
+        Route::get('/product/category/export', [ProductController::class, 'exportCategory'])->name('product.category.export');
+
+        Route::put('/product/category/{id}/toggle-price', [ProductController::class, 'toggleCategoryPrice'])
+            ->name('product.category.togglePrice');
     });
 
     Route::middleware(['auth'])->group(function () {

@@ -55,18 +55,23 @@
                                     <td>{{ \Illuminate\Support\Str::limit($item->news_content, 50) }}</td>
                                     <td>
                                         @if ($item->news_image)
-                                            <img src="{{ asset($item->news_image) }}" alt="Web Image" width="70"
-                                                class="rounded border shadow-sm">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary news-preview-btn"
+                                                data-preview-url="{{ asset($item->news_image) }}">
+                                                View
+                                            </button>
                                         @else
-                                            <span class="text-muted">-</span>
+                                            <span class="text-muted">No File</span>
                                         @endif
                                     </td>
+
                                     <td>
                                         @if ($item->news_image_app)
-                                            <img src="{{ asset($item->news_image_app) }}" alt="App Image" width="70"
-                                                class="rounded border shadow-sm">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary news-preview-btn"
+                                                data-preview-url="{{ asset($item->news_image_app) }}">
+                                                View
+                                            </button>
                                         @else
-                                            <span class="text-muted">-</span>
+                                            <span class="text-muted">No File</span>
                                         @endif
                                     </td>
                                     <td>{{ $item->news_image_caption ?? '-' }}</td>
@@ -141,6 +146,71 @@
                             form.submit();
                         }
                     });
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Modal HTML
+                const modalHtml = `
+                    <div class="modal fade" id="newsPreviewModal" tabindex="-1">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">News Image Preview</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body p-0 d-flex align-items-center justify-content-center" style="height: 80vh; background-color: #f8f9fa;">
+                                    <div id="newsSpinner" class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <img id="newsPreviewImage" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
+                                    <div id="newsPreviewError" class="text-center" style="display: none;">
+                                        <p class="mb-0">File not found or could not be displayed.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                const newsModalEl = document.getElementById('newsPreviewModal');
+                const newsModal = new bootstrap.Modal(newsModalEl);
+                const spinner = document.getElementById('newsSpinner');
+                const img = document.getElementById('newsPreviewImage');
+                const errorMsg = document.getElementById('newsPreviewError');
+
+                // Button preview logic
+                document.querySelectorAll('.news-preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const previewUrl = this.dataset.previewUrl;
+
+                        img.style.display = 'none';
+                        errorMsg.style.display = 'none';
+                        spinner.style.display = 'block';
+
+                        newsModal.show();
+
+                        img.src = previewUrl;
+                        img.onload = () => {
+                            spinner.style.display = 'none';
+                            img.style.display = 'block';
+                        };
+                        img.onerror = () => {
+                            spinner.style.display = 'none';
+                            errorMsg.style.display = 'block';
+                        };
+                    });
+                });
+
+                // Reset modal ketika ditutup
+                newsModalEl.addEventListener('hidden.bs.modal', function() {
+                    img.src = '';
+                    img.style.display = 'none';
+                    errorMsg.style.display = 'none';
+                    spinner.style.display = 'none';
                 });
             });
         </script>
