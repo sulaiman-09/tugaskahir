@@ -118,10 +118,10 @@
                                     <td>{{ $customer->created_at->format('d-m-Y') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('sudirmanpark.edit', $customer->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm btn-edit-ajax"
+                                                title="Edit" data-id="{{ $customer->id }}">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('sudirmanpark.destroy', $customer->id) }}"
                                                 method="POST" class="delete-form" data-name="{{ $customer->name }}">
                                                 @csrf
@@ -215,6 +215,8 @@
             min-width: 1200px;
             /* sesuaikan total kolom agar scroll muncul */
         }
+
+        
     </style>
 @endpush
 
@@ -256,7 +258,8 @@
                             if (data.success) {
                                 // Update status badge
                                 const badgeCell = row.querySelector('td:nth-child(8) span');
-                                badgeCell.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                                badgeCell.textContent = data.status.charAt(0).toUpperCase() +
+                                    data.status.slice(1);
                                 badgeCell.className = 'badge ' + (
                                     status === 'approved' ? 'bg-success' :
                                     status === 'processed' ? 'bg-warning' :
@@ -278,6 +281,294 @@
     </script>
 @endpush
 
+{{-- Edit modal untuk Sudirman Park (AJAX) --}}
+<div class="modal fade" id="sudirmanEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Customer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="sudirmanEditForm" enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nama</label>
+                            <input type="text" name="name" id="edit-name" class="form-control form-control-sm"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Telepon</label>
+                            <input type="text" name="phone" id="edit-phone"
+                                class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" id="edit-email"
+                                class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tower</label>
+                            <input type="text" name="tower" id="edit-tower"
+                                class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Paket</label>
+                            <select name="package" id="edit-package" class="form-select form-select-sm" required>
+                                <option value="">Pilih Paket</option>
+                                <option value="Test Package - Rp 500.000">Test Package - Rp 500.000</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status</label>
+                            <select name="status" id="edit-status" class="form-select form-select-sm" required>
+                                <option value="registration">Registration</option>
+                                <option value="processed">Processed</option>
+                                <option value="approved">Approved</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Catatan</label>
+                            <textarea name="note" id="edit-note" class="form-control form-control-sm" rows="2"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Foto KTP</label>
+                            <div id="current-ktp-area" class="mb-2"></div>
+                            <input type="file" name="ktp" id="edit-ktp" class="form-control form-control-sm"
+                                accept="image/*,.pdf">
+                            <div id="edit-ktp-preview" class="mt-2"></div>
+                        </div>
+                        @if (\Illuminate\Support\Facades\Schema::hasColumn('sudirman_parks', 'visible'))
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit-visible"
+                                        name="visible">
+                                    <label class="form-check-label fw-semibold small" for="edit-visible">Tampilkan di
+                                        daftar</label>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function init() {
+                // tunggu bootstrap modal tersedia
+                if (typeof bootstrap === 'undefined' || !document.getElementById('sudirmanEditModal')) {
+                    return setTimeout(init, 100);
+                }
+
+                const editModalEl = document.getElementById('sudirmanEditModal');
+                const editModal = new bootstrap.Modal(editModalEl);
+                const form = document.getElementById('sudirmanEditForm');
+                let currentId = null;
+
+                // buka modal saat tombol edit diklik
+                document.querySelectorAll('.btn-edit-ajax').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        currentId = id;
+                        fetch(`/sudirmanpark/${id}/edit`, {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(r => r.json())
+                            .then(data => {
+                                document.getElementById('edit-name').value = data.name || '';
+                                document.getElementById('edit-phone').value = data.phone || '';
+                                document.getElementById('edit-email').value = data.email || '';
+                                document.getElementById('edit-tower').value = data.tower || '';
+                                // set package select if exists
+                                const pkg = document.getElementById('edit-package');
+                                if (pkg) {
+                                    pkg.value = data.package || '';
+                                }
+                                const statusEl = document.getElementById('edit-status');
+                                if (statusEl) {
+                                    statusEl.value = data.status || 'registration';
+                                }
+                                document.getElementById('edit-note').value = data.note || '';
+
+                                const preview = document.getElementById('edit-ktp-preview');
+                                preview.innerHTML = '';
+                                const currentArea = document.getElementById('current-ktp-area');
+                                currentArea.innerHTML = '';
+                                if (data.ktp) {
+                                    const lower = data.ktp.toLowerCase();
+                                    const link = document.createElement('a');
+                                    link.href = `/storage/ktp/${data.ktp}`;
+                                    link.target = '_blank';
+                                    link.textContent = 'Lihat KTP saat ini';
+                                    link.className = 'me-2';
+                                    currentArea.appendChild(link);
+
+                                    // Hapus KTP button (AJAX)
+                                    const delBtn = document.createElement('button');
+                                    delBtn.type = 'button';
+                                    delBtn.className = 'btn btn-sm btn-outline-danger';
+                                    delBtn.textContent = 'Hapus KTP';
+                                    delBtn.addEventListener('click', function() {
+                                        if (!confirm('Yakin ingin menghapus file KTP?'))
+                                            return;
+                                        fetch(`/sudirmanpark/${id}/ktp`, {
+                                                method: 'DELETE',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document
+                                                        .querySelector(
+                                                            'meta[name="csrf-token"]'
+                                                            ).getAttribute(
+                                                            'content'),
+                                                    'X-Requested-With': 'XMLHttpRequest'
+                                                }
+                                            })
+                                            .then(r => r.json())
+                                            .then(j => {
+                                                if (j.success) {
+                                                    currentArea.innerHTML =
+                                                        '<span class="text-muted">No File</span>';
+                                                    preview.innerHTML = '';
+                                                    Swal.fire('Berhasil',
+                                                        'File KTP dihapus',
+                                                        'success');
+                                                } else {
+                                                    Swal.fire('Gagal',
+                                                        'Tidak dapat menghapus file',
+                                                        'error');
+                                                }
+                                            })
+                                            .catch(() => Swal.fire('Error',
+                                                'Terjadi kesalahan', 'error'));
+                                    });
+                                    currentArea.appendChild(delBtn);
+
+                                    if (lower.endsWith('.pdf')) {
+                                        const iframe = document.createElement('iframe');
+                                        iframe.src = `/sudirmanpark/${id}/ktp/preview`;
+                                        iframe.style.width = '100%';
+                                        iframe.style.height = '400px';
+                                        preview.appendChild(iframe);
+                                    } else {
+                                        const img = document.createElement('img');
+                                        img.src = `/storage/ktp/${data.ktp}`;
+                                        img.style.maxWidth = '220px';
+                                        img.style.display = 'block';
+                                        preview.appendChild(img);
+                                    }
+                                } else {
+                                    currentArea.innerHTML =
+                                        '<span class="text-muted">No File</span>';
+                                }
+
+                                // visible checkbox
+                                const vis = document.getElementById('edit-visible');
+                                if (vis) {
+                                    vis.checked = !!data.visible;
+                                }
+
+                                editModal.show();
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                Swal.fire('Error', 'Gagal mengambil data. Cek console.',
+                                    'error');
+                            });
+                    });
+                });
+
+                // preview saat pilih file baru
+                const ktpInput = document.getElementById('edit-ktp');
+                if (ktpInput) {
+                    ktpInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        const preview = document.getElementById('edit-ktp-preview');
+                        preview.innerHTML = '';
+                        if (!file) return;
+                        if (file.type === 'application/pdf') {
+                            const iframe = document.createElement('iframe');
+                            iframe.style.width = '100%';
+                            iframe.style.height = '400px';
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                iframe.src = ev.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                            preview.appendChild(iframe);
+                        } else {
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                const img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.style.maxWidth = '220px';
+                                preview.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+
+                // submit form via AJAX (FormData)
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        if (!currentId) return Swal.fire('Error', 'ID tidak ditemukan', 'error');
+
+                        const fd = new FormData(form);
+                        fd.append('_method', 'PUT');
+
+                        fetch(`/sudirmanpark/${currentId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                },
+                                body: fd
+                            })
+                            .then(async r => {
+                                const json = await r.json().catch(() => ({
+                                    success: false,
+                                    message: 'Invalid JSON'
+                                }));
+                                if (r.ok && json.success) {
+                                    editModal.hide();
+                                    Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil',
+                                            text: json.message || 'Perubahan tersimpan'
+                                        })
+                                        .then(() => window.location.href =
+                                            '{{ route('sudirmanpark.index') }}');
+                                } else {
+                                    const msg = json.message || 'Gagal menyimpan. Cek input.';
+                                    Swal.fire('Gagal', msg, 'error');
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                            });
+                    });
+                }
+            }
+
+            init();
+        });
+    </script>
+@endpush
 @push('scripts')
     <script>
         // KTP preview modal logic
@@ -324,7 +615,7 @@
                     frame.style.display = 'none';
                     errorMsg.style.display = 'none';
                     spinner.style.display = 'block';
-                    
+
                     ktpModal.show();
 
                     if (filename.endsWith('.pdf')) {
