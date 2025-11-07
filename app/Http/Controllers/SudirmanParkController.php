@@ -95,6 +95,11 @@ class SudirmanParkController extends Controller
     public function edit($id)
     {
         $customer = SudirmanPark::findOrFail($id);
+        // Jika request AJAX, kembalikan JSON untuk modal edit
+        if (request()->ajax() || request()->wantsJson() || request()->expectsJson()) {
+            return response()->json($customer);
+        }
+
         return view('sudirmanpark.edit', compact('customer'));
     }
 
@@ -138,12 +143,20 @@ class SudirmanParkController extends Controller
         }
 
         try {
-        \Log::info('Updating SudirmanPark id ' . $customer->id . ' with data: ' . json_encode($validated));
+            \Log::info('Updating SudirmanPark id ' . $customer->id . ' with data: ' . json_encode($validated));
             $customer->update($validated);
-        \Log::info('SudirmanPark updated successfully for id ' . $customer->id);
+            \Log::info('SudirmanPark updated successfully for id ' . $customer->id);
         } catch (\Throwable $e) {
             \Log::error('SudirmanPark update failed for id ' . $customer->id . ': ' . $e->getMessage());
+            if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Gagal memperbarui customer. Silakan cek log.'], 500);
+            }
             return back()->withErrors(['error' => 'Gagal memperbarui customer. Silakan cek log.']);
+        }
+
+        // Jika AJAX, kembalikan response JSON supaya frontend modal dapat menutup dan reload
+        if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Customer berhasil diperbarui.']);
         }
 
         return redirect()->route('sudirmanpark.index')->with('success', 'Customer berhasil diperbarui.');

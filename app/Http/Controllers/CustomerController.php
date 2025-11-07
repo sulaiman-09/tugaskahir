@@ -38,7 +38,11 @@ class CustomerController extends Controller
             ->withQueryString();
     }
 
-    return view('customer.index', compact('customer_leads', 'perPage'));
+    // juga kirim products dan categories agar modal edit bisa memakai opsi yang sama
+    $products = Product::all();
+    $categories = ProductCategory::all();
+
+    return view('customer.index', compact('customer_leads', 'perPage', 'products', 'categories'));
     }
 
 
@@ -104,6 +108,15 @@ class CustomerController extends Controller
         $products = Product::all();
         $categories = ProductCategory::all();
 
+        // jika request AJAX, kembalikan JSON agar modal dapat mengisi field
+        if (request()->ajax() || request()->wantsJson() || request()->expectsJson()) {
+            return response()->json([
+                'customer' => $customer,
+                'products' => $products,
+                'categories' => $categories,
+            ]);
+        }
+
         return view('customer.edit', compact('customer', 'products', 'categories'));
     }
 
@@ -143,6 +156,10 @@ class CustomerController extends Controller
 
         $customer = Customer::findOrFail($id);
         $customer->update($validated);
+
+        if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Data customer berhasil diperbarui.']);
+        }
 
         return redirect()->route('customer.index')
                          ->with('success', 'Data customer berhasil diperbarui.');
