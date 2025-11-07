@@ -14,6 +14,7 @@ class ProductController extends Controller
         $productSearch  = $request->input('product_search');
         $categorySearch = $request->input('category_search');
         $sort           = $request->input('sort', 'desc');
+        $categoryQuery = ProductCategory::with('benefits');
 
         // Ambil nilai per-page dari form
         $categoryPerPage = $request->get('category_per_page', 15);
@@ -22,7 +23,6 @@ class ProductController extends Controller
         // =========================
         // 🔹 CATEGORY QUERY
         // =========================
-        $categoryQuery = ProductCategory::query();
 
         if ($categorySearch) {
             $categoryQuery->where('name', 'like', "%$categorySearch%")
@@ -75,23 +75,41 @@ class ProductController extends Controller
 
     // ========== CATEGORY STORE ==========
     public function storeCategory(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:product_categories',
-            'short_description' => 'nullable|string',
-            'show_price' => 'nullable|boolean',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'slug' => 'required|string|max:255|unique:product_categories',
+        'short_description' => 'nullable|string',
+        'benefit' => 'nullable|string',
+        'show_price' => 'nullable|boolean',
+    ]);
 
-        ProductCategory::create([
-            'name' => $request->name,
-            'slug' => $request->slug,
-            'short_description' => $request->short_description,
-            'show_price' => $request->has('show_price') ? 1 : 0,
-        ]);
+    // Simpan kategori dulu
+    $category = ProductCategory::create([
+        'name' => $request->name,
+        'slug' => $request->slug,
+        'short_description' => $request->short_description,
+        'show_price' => $request->has('show_price') ? 1 : 0,
+    ]);
 
-        return redirect()->route('product.index')->with('success', 'Category created successfully!');
+    // Kalau ada benefit, simpan ke tabel product_benefits
+    if ($request->filled('benefit')) {
+        $benefitLines = preg_split('/\r\n|\r|\n/', $request->benefit);
+
+        foreach ($benefitLines as $line) {
+            if (trim($line) !== '') {
+                \App\Models\ProductBenefit::create([
+                    'product_category_id' => $category->id,
+                    'description' => trim($line),
+                    'icon' => '',
+                ]);
+            }
+        }
     }
+
+    return redirect()->route('product.index')->with('success', 'Category created successfully with benefits!');
+}
+
 
     // ========== CATEGORY EDIT ==========
     public function editCategory($id)
@@ -109,6 +127,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:product_categories,slug,' . $category->id,
             'short_description' => 'nullable|string',
+            'benefit' => 'nullable|string',
             'show_price' => 'nullable|boolean',
         ]);
 
@@ -116,6 +135,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'short_description' => $request->short_description,
+            'benefit' => $request->benefit,
             'show_price' => $request->has('show_price') ? 1 : 0,
         ]);
 
@@ -128,6 +148,9 @@ class ProductController extends Controller
         ProductCategory::findOrFail($id)->delete();
         return redirect()->route('product.index')->with('success', 'Category deleted successfully!');
     }
+
+    
+
 
     /* ======================================================
        ===============  BAGIAN B : PRODUCT CRUD  =============

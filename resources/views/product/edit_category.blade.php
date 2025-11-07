@@ -81,8 +81,10 @@
                         {{-- Show Price --}}
                         <div class="col-md-12">
                             <div class="form-check mt-3 ps-1">
-                                <input class="form-check-input" type="checkbox" name="show_price" id="show_price"
-                                       {{ $category->show_price ? 'checked' : '' }}>
+                                <input type="hidden" name="show_price" value="0">
+<input type="checkbox" name="show_price" class="form-check-input" id="showPrice"
+       value="1" {{ old('show_price', $category->show_price ?? 1) ? 'checked' : '' }}>
+
                                 <label class="form-check-label fw-semibold small text-secondary" for="show_price">
                                     Show Price by Default
                                 </label>

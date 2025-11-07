@@ -56,13 +56,28 @@
                         </div>
 
                         <div class="col-md-12">
-                            <div class="form-check mt-2 ps-1">
-                                <input type="checkbox" name="show_price" class="form-check-input" id="showPrice" checked>
-                                <label for="showPrice" class="form-check-label fw-semibold small text-secondary">
-                                    Show Price by Default
-                                </label>
-                            </div>
-                        </div>
+    <label class="form-label text-primary fw-semibold small">
+        Benefit
+    </label>
+    <textarea name="benefit" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="3"
+              placeholder="Tuliskan manfaat atau keunggulan kategori">{{ old('benefit') }}</textarea>
+</div>
+
+
+                        {{-- Show price --}}
+<div class="col-md-12">
+    <div class="form-check form-switch mt-2 ps-1">
+        {{-- selalu kirim nilai 0 jika checkbox tidak dicentang --}}
+        <input type="hidden" name="show_price" value="0">
+        {{-- checkbox yang mengirim 1 jika dicentang --}}
+        <input type="checkbox" name="show_price" class="form-check-input" id="showPrice"
+               value="1" {{ old('show_price', 1) ? 'checked' : '' }}>
+        <label for="showPrice" class="form-check-label fw-semibold small text-secondary">
+            Show Price by Default
+        </label>
+    </div>
+</div>
+
                     </div>
                 </div>
 

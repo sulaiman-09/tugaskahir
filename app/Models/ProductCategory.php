@@ -15,6 +15,7 @@ class ProductCategory extends Model
         'name',
         'slug',
         'short_description',
+        'benefit',
         'show_price',
     ];
 
@@ -25,4 +26,10 @@ class ProductCategory extends Model
     {
         return $this->hasMany(Product::class, 'product_category_id');
     }
+
+    public function benefits()
+{
+    return $this->hasMany(ProductBenefit::class, 'product_category_id');
+}
+
 }
