@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\SudirmanTowerAddress;
+use App\Models\Product;
 use Illuminate\Support\Facades\Response;
 
 class SudirmanParkController extends Controller
@@ -52,7 +53,15 @@ class SudirmanParkController extends Controller
 
     public function create()
     {
-        return view('sudirmanpark.create');
+        // Ambil daftar paket (product) dan daftar tower untuk dropdown
+        $products = Product::orderBy('name')->get();
+
+        // Ambil alamat tower yang aktif, urut berdasarkan full_address
+        $addresses = SudirmanTowerAddress::where('is_active', 1)
+            ->orderBy('full_address', 'asc')
+            ->pluck('full_address', 'id');
+
+        return view('sudirmanpark.create', compact('products', 'addresses'));
     }
 
     public function store(Request $request)
@@ -65,6 +74,7 @@ class SudirmanParkController extends Controller
             'package' => 'required|string|max:255',
             'status' => 'required|string|max:50',
             'ktp' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120',
+            'payment_proof' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120',
             'note' => 'nullable|string',
         ]);
 
@@ -78,6 +88,20 @@ class SudirmanParkController extends Controller
             } catch (\Exception $e) {
                 \Log::error('KTP upload failed: ' . $e->getMessage());
                 return back()->withErrors(['ktp' => 'Gagal menyimpan file KTP. Silakan cek permission/storage link.']);
+            }
+        }
+
+        // Simpan file bukti pembayaran (jika ada) ke disk publik, tapi jangan simpan nama file ke DB
+        if ($request->hasFile('payment_proof')) {
+            try {
+                $file = $request->file('payment_proof');
+                $paymentFilename = time() . '_payment_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->putFileAs('payments', $file, $paymentFilename);
+                \Log::info('Bukti pembayaran di-upload: ' . $paymentFilename);
+                // Jika nanti ingin menyimpan nama file di DB, tambahkan kolom dan simpan di validated
+            } catch (\Exception $e) {
+                \Log::error('Upload bukti pembayaran gagal: ' . $e->getMessage());
+                return back()->withErrors(['payment_proof' => 'Gagal menyimpan file bukti pembayaran.']);
             }
         }
 

@@ -235,8 +235,8 @@
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const toggleButton = document.getElementById('toggle-coordinates');
-                    const latitudeCols = document.querySelectorAll('td:nth-child(6), th:nth-child(6)');
-                    const longitudeCols = document.querySelectorAll('td:nth-child(7), th:nth-child(7)');
+                    const latitudeCols = document.querySelectorAll('td:nth-child(7), th:nth-child(7)');
+                    const longitudeCols = document.querySelectorAll('td:nth-child(8), th:nth-child(8)');
                     // default: coordinates hidden
                     let visible = false;
                     latitudeCols.forEach(col => col.style.display = 'none');
