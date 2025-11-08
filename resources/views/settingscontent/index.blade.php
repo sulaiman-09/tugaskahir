@@ -20,6 +20,9 @@
                     <a href="{{ route('settings-content.create') }}" class="btn btn-primary btn-sm">
                         + Add Content
                     </a>
+                    <button type="button" id="deleteSelectedContents" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
                 </div>
 
                 {{-- Kanan: Search --}}
@@ -51,6 +54,7 @@
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; font-weight: 700;">
                             <tr class="text-dark">
+                                <th><input type="checkbox" id="selectAllContents"></th> {{-- Checkbox select all --}}
                                 <th>No</th>
                                 <th>Title</th>
                                 <th>Name</th>
@@ -65,6 +69,7 @@
                         <tbody>
                             @forelse($contents as $index => $content)
                                 <tr>
+                                    <td><input type="checkbox" class="content-checkbox" value="{{ $content->id }}"></td>
                                     <td>{{ $contents->firstItem() + $index }}</td>
                                     <td class="text-start ps-3">{{ $content->title }}</td>
                                     <td>{{ $content->name }}</td>
@@ -112,7 +117,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted py-4">No data found.</td>
+                                    <td colspan="10" class="text-center text-muted py-4">No data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -168,10 +173,46 @@
                         const name = form.dataset.name || 'this record';
                         if (confirm(
                                 `Are you sure you want to delete "${name}"? This action cannot be undone.`
-                                )) {
+                            )) {
                             form.submit();
                         }
                     });
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Select all checkbox
+                document.getElementById('selectAllContents').addEventListener('change', function() {
+                    document.querySelectorAll('.content-checkbox').forEach(cb => cb.checked = this.checked);
+                });
+
+                // Bulk delete
+                document.getElementById('deleteSelectedContents').addEventListener('click', () => {
+                    const selected = Array.from(document.querySelectorAll('.content-checkbox:checked')).map(
+                        cb => cb.value);
+                    if (selected.length === 0) return alert('Pilih minimal satu content untuk dihapus.');
+                    if (!confirm(`Yakin ingin menghapus ${selected.length} content terpilih?`)) return;
+
+                    fetch("{{ route('settings-content.bulkDelete') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                ids: selected
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else alert(data.message);
+                        })
+                        .catch(() => alert('Terjadi kesalahan.'));
                 });
             });
         </script>

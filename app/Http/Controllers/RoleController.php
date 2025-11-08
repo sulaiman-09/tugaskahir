@@ -107,4 +107,16 @@ class RoleController extends Controller
 
         return redirect()->route('roles.index')->with('success', 'Role berhasil dihapus!');
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids ?? [];
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No roles selected']);
+        }
+
+        Role::whereIn('id', $ids)->delete(); // langsung hapus permanen
+
+        return response()->json(['success' => true, 'message' => count($ids) . ' roles deleted']);
+    }
 }

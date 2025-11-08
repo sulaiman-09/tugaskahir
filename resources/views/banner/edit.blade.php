@@ -7,11 +7,8 @@
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
 
             {{-- Header --}}
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <div class="card-header bg-white border-bottom py-3">
                 <h5 class="mb-0 fw-semibold text-dark">Edit Banner</h5>
-                <a href="{{ route('banner.index') }}" class="btn btn-outline-secondary rounded-3 fw-semibold">
-                    Back
-                </a>
             </div>
 
             {{-- Body --}}
@@ -27,8 +24,10 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Banner Name <span
                                         class="text-danger">*</span></label>
-                                <input type="text" name="name" value="{{ $banner->name }}"
-                                    class="form-control rounded-3 shadow-sm border-0 bg-white" required>
+                                <input type="text" name="name"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                    placeholder="Enter banner name"
+                                    value="{{ old('name', $banner->name) }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Status <span
@@ -45,20 +44,27 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Banner Images</h6>
                         <div class="row g-3">
+                            {{-- Web Image --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Web Image</label><br>
-                                @if ($banner->web_image)
-                                    <img src="{{ asset('storage/' . $banner->web_image) }}" class="rounded shadow-sm mb-2"
-                                        width="140">
+                                @if ($banner->path)
+                                    <img src="{{ asset('storage/' . $banner->path) }}" alt="Web Image"
+                                        class="rounded shadow-sm mb-2 d-block" width="200">
+                                @else
+                                    <p class="text-muted">No image uploaded.</p>
                                 @endif
                                 <input type="file" name="web_image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
+
+                            {{-- Mobile Image --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Mobile Image</label><br>
-                                @if ($banner->mobile_image)
-                                    <img src="{{ asset('storage/' . $banner->mobile_image) }}" class="rounded shadow-sm mb-2"
-                                        width="100">
+                                @if ($banner->path_apps)
+                                    <img src="{{ asset('storage/' . $banner->path_apps) }}" alt="Mobile Image"
+                                        class="rounded shadow-sm mb-2 d-block" width="200">
+                                @else
+                                    <p class="text-muted">No image uploaded.</p>
                                 @endif
                                 <input type="file" name="mobile_image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">

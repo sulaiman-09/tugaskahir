@@ -13,36 +13,36 @@ class CustomerController extends Controller
      * Tampilkan daftar lead/customer.
      */
     public function index(Request $request)
-{
-    $query = Customer::with(['product', 'productCategory']);
+    {
+        $query = Customer::with(['product', 'productCategory']);
 
-    // Search
-    if ($q = $request->query('search')) {
-        $query->where(function ($sub) use ($q) {
-            $sub->where('customer_name', 'like', '%' . $q . '%')
-                ->orWhere('customer_phone', 'like', '%' . $q . '%')
-                ->orWhere('email', 'like', '%' . $q . '%')
-                ->orWhere('address', 'like', '%' . $q . '%');
-        });
-    }
+        // Search
+        if ($q = $request->query('search')) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('customer_name', 'like', '%' . $q . '%')
+                    ->orWhere('customer_phone', 'like', '%' . $q . '%')
+                    ->orWhere('email', 'like', '%' . $q . '%')
+                    ->orWhere('address', 'like', '%' . $q . '%');
+            });
+        }
 
-    // Filter tanggal (opsional sama seperti sebelumnya)
+        // Filter tanggal (opsional sama seperti sebelumnya)
 
-    // Pagination
-    $perPage = $request->get('per_page', 10);
-    if (strtolower($perPage) === 'all') {
-        $customer_leads = $query->orderBy('created_at', 'desc')->get();
-    } else {
-        $customer_leads = $query->orderBy('created_at', 'desc')
-            ->paginate((int)$perPage)
-            ->withQueryString();
-    }
+        // Pagination
+        $perPage = $request->get('per_page', 10);
+        if (strtolower($perPage) === 'all') {
+            $customer_leads = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $customer_leads = $query->orderBy('created_at', 'desc')
+                ->paginate((int)$perPage)
+                ->withQueryString();
+        }
 
-    // juga kirim products dan categories agar modal edit bisa memakai opsi yang sama
-    $products = Product::all();
-    $categories = ProductCategory::all();
+        // juga kirim products dan categories agar modal edit bisa memakai opsi yang sama
+        $products = Product::all();
+        $categories = ProductCategory::all();
 
-    return view('customer.index', compact('customer_leads', 'perPage', 'products', 'categories'));
+        return view('customer.index', compact('customer_leads', 'perPage', 'products', 'categories'));
     }
 
 
@@ -51,7 +51,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-         // ambil semua data dari tabel products & product_categories
+        // ambil semua data dari tabel products & product_categories
         $products = Product::all();
         $categories = ProductCategory::all();
 
@@ -96,7 +96,7 @@ class CustomerController extends Controller
         Customer::create($validated);
 
         return redirect()->route('customer.index')
-                         ->with('success', 'Customer baru berhasil ditambahkan.');
+            ->with('success', 'Customer baru berhasil ditambahkan.');
     }
 
     /**
@@ -162,7 +162,7 @@ class CustomerController extends Controller
         }
 
         return redirect()->route('customer.index')
-                         ->with('success', 'Data customer berhasil diperbarui.');
+            ->with('success', 'Data customer berhasil diperbarui.');
     }
 
     /**
@@ -174,6 +174,31 @@ class CustomerController extends Controller
         $customer->delete();
 
         return redirect()->route('customer.index')
-                         ->with('success', 'Data customer berhasil dihapus.');
+            ->with('success', 'Data customer berhasil dihapus.');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids; // array of customer IDs
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada data yang dipilih.'
+            ]);
+        }
+
+        try {
+            \App\Models\Customer::whereIn('id', $ids)->delete(); // Hapus data
+            return response()->json([
+                'success' => true,
+                'message' => count($ids) . ' data customer berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ]);
+        }
     }
 }

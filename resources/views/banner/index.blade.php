@@ -10,8 +10,8 @@
 
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
+            {{-- Header Card --}}
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                {{-- Kiri: Export & Tambah --}}
                 <div class="d-flex align-items-center gap-2">
                     <a href="{{ route('sudirmanpark.exportHomepass', request()->query()) }}"
                         class="btn btn-outline-secondary btn-sm d-flex align-items-center">
@@ -20,9 +20,11 @@
                     <a href="{{ route('banner.create') }}" class="btn btn-primary btn-sm">
                         + Add Banner
                     </a>
+                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm ms-2">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
                 </div>
 
-                {{-- Kanan: Search --}}
                 <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
                     <form action="{{ route('banner.index') }}" method="GET" class="d-flex w-100">
                         <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name"
@@ -40,6 +42,7 @@
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; font-weight: 700;">
                             <tr class="text-dark">
+                                <th><input type="checkbox" id="selectAll"></th>
                                 <th>Name</th>
                                 <th>Web Image</th>
                                 <th>Mobile Image</th>
@@ -50,7 +53,10 @@
                         <tbody>
                             @forelse ($banners as $banner)
                                 <tr>
-                                    <td class="fw-semibold">{{ $banner['name'] }}</td>
+                                    <td>
+                                        <input type="checkbox" class="banner-checkbox" value="{{ $banner->id }}">
+                                    </td>
+                                    <td class="fw-semibold">{{ $banner->name }}</td>
                                     <td>
                                         @if ($banner->path)
                                             <button type="button"
@@ -81,8 +87,8 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('banner.edit', $banner->id) }}" class="btn btn-warning btn-sm"
-                                                title="Edit">
+                                            <a href="{{ route('banner.edit', $banner->id) }}"
+                                                class="btn btn-warning btn-sm" title="Edit">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <form action="{{ route('banner.destroy', $banner->id) }}" method="POST"
@@ -98,7 +104,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-muted text-center py-4">Tidak ada data banner.</td>
+                                    <td colspan="6" class="text-muted text-center py-4">Tidak ada data banner.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -106,9 +112,8 @@
                 </div>
             </div>
 
-            {{-- Footer Pagination + Records per page --}}
+            {{-- Footer --}}
             <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
-
                 {{-- Records per page --}}
                 <div class="d-flex align-items-center">
                     <form method="GET" action="{{ route('banner.index') }}" id="perPageForm"
@@ -123,8 +128,6 @@
                                 </option>
                             @endforeach
                         </select>
-
-                        {{-- Pertahankan search --}}
                         @foreach (request()->except('per_page', 'page') as $key => $value)
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
@@ -151,10 +154,93 @@
         </div>
     </div>
 
+    {{-- Toast notifikasi --}}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="successToastMessage">
+                    Data berhasil dihapus!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Konfirmasi hapus
+            document.addEventListener('DOMContentLoaded', () => {
+                // Modal preview
+                const bannerModalEl = document.getElementById('bannerPreviewModal');
+                const bannerModal = new bootstrap.Modal(bannerModalEl);
+                const spinner = document.getElementById('bannerSpinner');
+                const img = document.getElementById('bannerPreviewImage');
+                const errorMsg = document.getElementById('bannerPreviewError');
+
+                document.querySelectorAll('.banner-preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const previewUrl = this.dataset.previewUrl;
+                        spinner.style.display = 'block';
+                        img.style.display = 'none';
+                        errorMsg.style.display = 'none';
+                        img.src = previewUrl;
+                        bannerModal.show();
+                        img.onload = () => {
+                            spinner.style.display = 'none';
+                            img.style.display = 'block';
+                        };
+                        img.onerror = () => {
+                            spinner.style.display = 'none';
+                            errorMsg.style.display = 'block';
+                        };
+                    });
+                });
+
+                bannerModalEl.addEventListener('hidden.bs.modal', () => {
+                    img.src = '';
+                    img.style.display = 'none';
+                    spinner.style.display = 'none';
+                    errorMsg.style.display = 'none';
+                });
+
+                // Checkbox select all
+                document.getElementById('selectAll').addEventListener('change', function() {
+                    document.querySelectorAll('.banner-checkbox').forEach(cb => cb.checked = this.checked);
+                });
+
+                // Delete selected banners
+                document.getElementById('deleteSelected').addEventListener('click', function() {
+                    const selected = Array.from(document.querySelectorAll('.banner-checkbox:checked')).map(cb =>
+                        cb.value);
+                    if (selected.length === 0) return alert('Pilih minimal satu data untuk dihapus.');
+                    if (!confirm(`Yakin ingin menghapus ${selected.length} banner terpilih?`)) return;
+
+                    fetch("{{ route('banner.bulkDelete') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                ids: selected
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('successToastMessage').textContent = data.message;
+                                const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                                toast.show();
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                alert('Gagal menghapus data!');
+                            }
+                        })
+                        .catch(err => alert('Terjadi kesalahan.'));
+                });
+
+                // Konfirmasi hapus per row
                 document.querySelectorAll('.delete-form').forEach(form => {
                     form.addEventListener('submit', e => {
                         e.preventDefault();
@@ -171,7 +257,6 @@
                     checkbox.addEventListener('change', function() {
                         const id = this.dataset.id;
                         const is_active = this.checked ? 1 : 0;
-
                         fetch(`/banner/${id}/toggle-status`, {
                                 method: 'PATCH',
                                 headers: {
@@ -195,9 +280,10 @@
                             });
                     });
                 });
+            });
+        </script>
 
-                // ===== Modal Preview Banner =====
-                const modalHtml = `
+        {{-- Modal Preview Banner --}}
         <div class="modal fade" id="bannerPreviewModal" tabindex="-1">
             <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content">
@@ -206,79 +292,25 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body p-0 d-flex align-items-center justify-content-center"
-                         style="height: 80vh; background-color: #f8f9fa;">
+                        style="height: 80vh; background-color: #f8f9fa;">
                         <div id="bannerSpinner" class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                         <img id="bannerPreviewImage"
-                             style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
-                        <iframe id="bannerPreviewFrame"
-                                style="width: 100%; height: 100%; border: 0; display: none;"></iframe>
-                        <div id="bannerPreviewError" class="text-center" style="display: none;">
+                            style="max-width:100%; max-height:100%; object-fit:contain; display:none;" />
+                        <div id="bannerPreviewError" class="text-center" style="display:none;">
                             <p class="mb-0">File not found or could not be displayed.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    `;
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-                const bannerModalEl = document.getElementById('bannerPreviewModal');
-                const bannerModal = new bootstrap.Modal(bannerModalEl);
-                const spinner = document.getElementById('bannerSpinner');
-                const img = document.getElementById('bannerPreviewImage');
-                const frame = document.getElementById('bannerPreviewFrame');
-                const errorMsg = document.getElementById('bannerPreviewError');
-
-                document.querySelectorAll('.banner-preview-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const previewUrl = this.dataset.previewUrl;
-
-                        img.style.display = 'none';
-                        frame.style.display = 'none';
-                        errorMsg.style.display = 'none';
-                        spinner.style.display = 'block';
-
-                        bannerModal.show();
-
-                        if (previewUrl.toLowerCase().endsWith('.pdf')) {
-                            frame.src = previewUrl;
-                            frame.onload = () => {
-                                spinner.style.display = 'none';
-                                frame.style.display = 'block';
-                            };
-                        } else {
-                            img.src = previewUrl;
-                            img.onload = () => {
-                                spinner.style.display = 'none';
-                                img.style.display = 'block';
-                            };
-                            img.onerror = () => {
-                                spinner.style.display = 'none';
-                                errorMsg.style.display = 'block';
-                            };
-                        }
-                    });
-                });
-
-                bannerModalEl.addEventListener('hidden.bs.modal', function() {
-                    img.src = '';
-                    frame.src = 'about:blank';
-                    img.style.display = 'none';
-                    frame.style.display = 'none';
-                    errorMsg.style.display = 'none';
-                    spinner.style.display = 'none';
-                });
-            });
-        </script>
     @endpush
-
 
     @push('styles')
         <style>
             .table thead th {
-                color: #000000;
+                color: #000;
                 font-weight: 600;
             }
 
@@ -325,6 +357,5 @@
             }
         </style>
     @endpush
-
 
 @endsection

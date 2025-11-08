@@ -213,4 +213,20 @@ class NewsController extends Controller
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids; // array of IDs from checkbox
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No items selected.']);
+        }
+
+        try {
+            \App\Models\News::whereIn('news_id', $ids)->delete();
+            return response()->json(['success' => true, 'message' => 'Selected news deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete selected news.']);
+        }
+    }
 }

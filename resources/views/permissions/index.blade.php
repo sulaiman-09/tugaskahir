@@ -5,21 +5,22 @@
 @section('content')
     <div class="container py-4">
 
-        {{-- Judul --}}
         <h3 class="fw-bold mb-4">Permission Management</h3>
 
-        {{-- Card Utama --}}
         <div class="card border-0 shadow-sm rounded-3">
+
             {{-- Header --}}
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                {{-- Kiri: Add --}}
                 <div class="d-flex align-items-center gap-2">
                     <a href="{{ route('permissions.create') }}" class="btn btn-primary btn-sm">
                         <i class="bi bi-plus-circle me-1"></i> Add Permission
                     </a>
+                    <button type="button" id="deleteSelectedPermissions" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
                 </div>
 
-                {{-- Kanan: Search --}}
+                {{-- Search --}}
                 <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
                     <form action="{{ route('permissions.index') }}" method="GET" class="d-flex w-100">
                         <input type="text" name="search" class="form-control form-control-sm"
@@ -36,30 +37,36 @@
                 </div>
             </div>
 
-            {{-- Alert sukses --}}
+            {{-- Alert --}}
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-3 mt-3 mb-0" role="alert">
+                <div class="alert alert-success alert-dismissible fade show mx-3 mt-3 mb-0">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
 
-            {{-- Tabel --}}
+            {{-- Table --}}
             <div class="card-body p-0 mt-2">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
-                        <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <thead style="background-color:#f8f9fa; border-bottom:2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
-                                <th style="width: 60px;">No</th>
+                                <th>
+                                    <input type="checkbox" id="selectAllPermissions">
+                                </th>
+                                <th style="width:60px;">No</th>
                                 <th>Name</th>
                                 <th>Assigned Roles</th>
                                 <th>Created At</th>
-                                <th style="width: 130px;">Action</th>
+                                <th style="width:130px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($permissions as $index => $permission)
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="select-permission" value="{{ $permission->id }}">
+                                    </td>
                                     <td>{{ $permissions->firstItem() + $index }}</td>
                                     <td class="text-start ps-3">{{ $permission->name }}</td>
                                     <td>{{ $permission->roles_count ?? 0 }}</td>
@@ -83,29 +90,12 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted py-4">No permissions found.</td>
+                                    <td colspan="6" class="text-center text-muted py-4">No permissions found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            {{-- Show per page --}}
-            <div class="d-flex justify-content-start align-items-center mt-2 px-3">
-                <form method="GET" action="{{ route('permissions.index') }}" class="d-flex align-items-center gap-2">
-                    @if (request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
-                    <label for="per_page" class="mb-0">Show</label>
-                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
-                        @foreach ([10, 25, 50, 100, 'All'] as $size)
-                            <option value="{{ $size }}" {{ request('per_page', 15) == $size ? 'selected' : '' }}>
-                                {{ $size }}
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
             </div>
 
             {{-- Pagination --}}
@@ -115,20 +105,62 @@
         </div>
     </div>
 
-    {{-- Konfirmasi Hapus --}}
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                document.querySelectorAll('.delete-form').forEach(function(form) {
-                    form.addEventListener('submit', function(e) {
+                // Konfirmasi hapus per row
+                document.querySelectorAll('.delete-form').forEach(form => {
+                    form.addEventListener('submit', e => {
                         e.preventDefault();
                         const name = form.dataset.name || 'this permission';
                         if (confirm(
                                 `Are you sure you want to delete "${name}"? This action cannot be undone.`
-                            )) {
+                                )) {
                             form.submit();
                         }
                     });
+                });
+
+                // Select All checkbox
+                const selectAll = document.getElementById('selectAllPermissions');
+                const checkboxes = document.querySelectorAll('.select-permission');
+
+                selectAll.addEventListener('change', function() {
+                    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                });
+
+                // Bulk Delete
+                const deleteBtn = document.getElementById('deleteSelectedPermissions');
+                deleteBtn.addEventListener('click', function() {
+                    const selectedIds = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    if (selectedIds.length === 0) {
+                        alert('No permissions selected.');
+                        return;
+                    }
+                    if (!confirm(
+                            `Are you sure you want to delete ${selectedIds.length} selected permissions? This cannot be undone.`
+                            )) return;
+
+                    fetch("{{ route('permissions.bulkDelete') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                ids: selectedIds
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(() => alert('Error, please try again.'));
                 });
             });
         </script>

@@ -75,40 +75,40 @@ class ProductController extends Controller
 
     // ========== CATEGORY STORE ==========
     public function storeCategory(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'slug' => 'required|string|max:255|unique:product_categories',
-        'short_description' => 'nullable|string',
-        'benefit' => 'nullable|string',
-        'show_price' => 'nullable|boolean',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:product_categories',
+            'short_description' => 'nullable|string',
+            'benefit' => 'nullable|string',
+            'show_price' => 'nullable|boolean',
+        ]);
 
-    // Simpan kategori dulu
-    $category = ProductCategory::create([
-        'name' => $request->name,
-        'slug' => $request->slug,
-        'short_description' => $request->short_description,
-        'show_price' => $request->has('show_price') ? 1 : 0,
-    ]);
+        // Simpan kategori dulu
+        $category = ProductCategory::create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'short_description' => $request->short_description,
+            'show_price' => $request->has('show_price') ? 1 : 0,
+        ]);
 
-    // Kalau ada benefit, simpan ke tabel product_benefits
-    if ($request->filled('benefit')) {
-        $benefitLines = preg_split('/\r\n|\r|\n/', $request->benefit);
+        // Kalau ada benefit, simpan ke tabel product_benefits
+        if ($request->filled('benefit')) {
+            $benefitLines = preg_split('/\r\n|\r|\n/', $request->benefit);
 
-        foreach ($benefitLines as $line) {
-            if (trim($line) !== '') {
-                \App\Models\ProductBenefit::create([
-                    'product_category_id' => $category->id,
-                    'description' => trim($line),
-                    'icon' => '',
-                ]);
+            foreach ($benefitLines as $line) {
+                if (trim($line) !== '') {
+                    \App\Models\ProductBenefit::create([
+                        'product_category_id' => $category->id,
+                        'description' => trim($line),
+                        'icon' => '',
+                    ]);
+                }
             }
         }
-    }
 
-    return redirect()->route('product.index')->with('success', 'Category created successfully with benefits!');
-}
+        return redirect()->route('product.index')->with('success', 'Category created successfully with benefits!');
+    }
 
 
     // ========== CATEGORY EDIT ==========
@@ -149,7 +149,7 @@ class ProductController extends Controller
         return redirect()->route('product.index')->with('success', 'Category deleted successfully!');
     }
 
-    
+
 
 
     /* ======================================================
@@ -341,5 +341,33 @@ class ProductController extends Controller
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=$filename",
         ]);
+    }
+
+    // Bulk delete Product
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids ?? [];
+        if (empty($ids)) return response()->json(['success' => false, 'message' => 'No products selected.']);
+
+        try {
+            \App\Models\Product::whereIn('id', $ids)->delete();
+            return response()->json(['success' => true, 'message' => count($ids) . ' products deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete products.']);
+        }
+    }
+
+    // Bulk delete Category
+    public function bulkDeleteCategory(Request $request)
+    {
+        $ids = $request->ids ?? [];
+        if (empty($ids)) return response()->json(['success' => false, 'message' => 'No categories selected.']);
+
+        try {
+            \App\Models\ProductCategory::whereIn('id', $ids)->delete();
+            return response()->json(['success' => true, 'message' => count($ids) . ' categories deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete categories.']);
+        }
     }
 }

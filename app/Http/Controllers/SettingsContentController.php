@@ -171,4 +171,19 @@ class SettingsContentController extends Controller
 
         return Response::stream($callback, 200, $headers);
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids) {
+            return response()->json(['success' => false, 'message' => 'No selected contents.']);
+        }
+
+        SettingsContent::whereIn('id', $ids)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => count($ids) . ' contents deleted successfully.'
+        ]);
+    }
 }

@@ -21,6 +21,9 @@
                     <a href="{{ route('division.create') }}" class="btn btn-primary btn-sm">
                         + Add Division
                     </a>
+                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
                 </div>
 
                 {{-- Search --}}
@@ -40,7 +43,10 @@
                 <div class="table-responsive">
                     <table class="table align-middle mb-0 text-center table-striped table-hover">
                         <thead style="background-color: #e7f0ff; color: #003366; border-bottom: 2px solid #dee2e6;">
-                            <tr class="fw-semibold">
+                            <tr class="fw-semibold text-center">
+                                <th>
+                                    <input type="checkbox" id="selectAll">
+                                </th>
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Description</th>
@@ -53,12 +59,17 @@
                         <tbody>
                             @forelse ($divisions as $division)
                                 <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="select-item" value="{{ $division->id }}">
+                                    </td>
                                     <td>{{ $division->id }}</td>
                                     <td class="text-start ps-3">{{ $division->name }}</td>
                                     <td class="text-start">{{ $division->description }}</td>
                                     <td>
-                                        <input type="checkbox" class="status-toggle" data-id="{{ $division->id }}"
-                                            {{ $division->status ? 'checked' : '' }}>
+                                        <div class="form-check form-switch d-flex justify-content-center">
+                                            <input class="form-check-input status-toggle" type="checkbox"
+                                                data-id="{{ $division->id }}" {{ $division->status ? 'checked' : '' }}>
+                                        </div>
                                     </td>
                                     <td>{{ $division->customer_leads ?? 0 }}</td>
                                     <td>{{ $division->created_at->format('d-m-Y H:i:s') }}</td>
@@ -81,10 +92,11 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-muted text-center py-4">No data found.</td>
+                                    <td colspan="8" class="text-muted text-center py-4">No data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
             </div>
@@ -166,6 +178,45 @@
                 });
             });
         });
+
+        // Select / deselect all
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.select-item');
+
+        selectAll?.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Delete selected
+        document.getElementById('deleteSelected')?.addEventListener('click', function() {
+            const selectedIds = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            if (selectedIds.length === 0) {
+                alert('Please select at least one division to delete.');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} selected division(s)?`)) return;
+
+            fetch('{{ route('division.bulkDelete') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                    else alert(data.message || 'Failed to delete.');
+                })
+                .catch(() => alert('Error connecting to server.'));
+        });
     </script>
 @endpush
 
@@ -204,6 +255,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        /* Toggle switch ukuran normal */
+        .form-switch .form-check-input {
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: #0d6efd;
+            /* Biru */
         }
     </style>
 @endpush

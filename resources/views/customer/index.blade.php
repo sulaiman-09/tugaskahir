@@ -21,7 +21,7 @@
     <div class="container py-4">
 
         {{-- Alert --}}
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -78,12 +78,15 @@
                     </a>
                     <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm">
                         + Tambah Lead Baru
-                    </a>{{-- 🔹 Tombol toggle latitude/longitude --}}
-        <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm ms-2">
-            Tampilkan Koordinat
-        </button>
+                    </a>
+                    {{-- 🔹 Tombol toggle latitude/longitude --}}
+                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
+                    <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm">
+                        Tampilkan Koordinat
+                    </button>
                 </div>
-
                 <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
                     <form action="{{ route('customer.index') }}" method="GET" class="d-flex w-100">
                         <input type="text" name="search" class="form-control form-control-sm"
@@ -100,6 +103,7 @@
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
+                                <th><input type="checkbox" id="selectAll"></th> <!-- Tambahan checkbox select all -->
                                 <th style="width: 40px;">No</th>
                                 <th>Nama Pelanggan</th>
                                 <th>Nomor Telepon</th>
@@ -118,6 +122,9 @@
                         <tbody>
                             @forelse($customer_leads as $index => $customer_lead)
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="customer-checkbox" value="{{ $customer_lead->id }}">
+                                    </td>
                                     <td>{{ $customer_leads->firstItem() + $index }}</td>
                                     <td class="text-start ps-3">{{ $customer_lead->customer_name }}</td>
                                     <td>{{ $customer_lead->customer_phone }}</td>
@@ -129,17 +136,19 @@
                                         <select class="form-select form-select-sm coverage-dropdown"
                                             data-id="{{ $customer_lead->id }}">
                                             <option value="">Select Coverage</option>
-                                            <option value="Cover" {{ $customer_lead->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
-                                            <option value="Uncover" {{ $customer_lead->coverage == 'Uncover' ? 'selected' : '' }}>Uncover</option>
+                                            <option value="Cover"
+                                                {{ $customer_lead->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
+                                            <option value="Uncover"
+                                                {{ $customer_lead->coverage == 'Uncover' ? 'selected' : '' }}>Uncover
+                                            </option>
                                         </select>
                                     </td>
                                     <td class="text-start">
-                                        {{ $customer_lead->product ? $customer_lead->product->name : '-' }}
+                                        {{ $customer_lead->product ? $customer_lead->product->name : '-' }}</td>
+                                    <td>{{ $customer_lead->productCategory ? $customer_lead->productCategory->name : '-' }}
                                     </td>
-                                    <td>
-                                        {{ $customer_lead->productCategory ? $customer_lead->productCategory->name : '-' }}
+                                    <td>{{ $customer_lead->created_at ? $customer_lead->created_at->format('d M Y H:i') : '-' }}
                                     </td>
-                                    <td>{{ $customer_lead->created_at ? $customer_lead->created_at->format('d M Y H:i') : '-' }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-info btn-detail-map"
                                             data-lat="{{ $customer_lead->latitude }}"
@@ -150,10 +159,10 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                                <button type="button" class="btn btn-warning btn-sm btn-edit-customer" title="Edit"
-                                                    data-id="{{ $customer_lead->id }}">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </button>
+                                            <button type="button" class="btn btn-warning btn-sm btn-edit-customer"
+                                                title="Edit" data-id="{{ $customer_lead->id }}">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
                                             <form action="{{ route('customer.destroy', $customer_lead->id) }}"
                                                 method="POST" class="delete-form"
                                                 data-name="{{ $customer_lead->customer_name }}">
@@ -168,10 +177,11 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="13" class="text-muted text-center py-4">Belum ada data customer</td>
+                                    <td colspan="14" class="text-muted text-center py-4">Belum ada data customer</td>
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
             </div>
@@ -182,7 +192,8 @@
                 <form method="GET" action="{{ route('customer.index') }}" id="perPageForm"
                     class="d-flex align-items-center">
                     <label for="per_page" class="mb-0 me-2">Show</label>
-                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <select name="per_page" id="per_page" class="form-select form-select-sm"
+                        onchange="this.form.submit()">
                         @foreach ([10, 25, 50, 100, 'All'] as $size)
                             <option value="{{ $size }}"
                                 {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
@@ -211,7 +222,8 @@
                         form.addEventListener('submit', e => {
                             e.preventDefault();
                             const name = form.dataset.name || 'record ini';
-                            if (confirm(`Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
+                            if (confirm(
+                                    `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
                                 form.submit();
                             }
                         });
@@ -220,26 +232,26 @@
             </script>
         @endpush
         @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggleButton = document.getElementById('toggle-coordinates');
-    const latitudeCols = document.querySelectorAll('td:nth-child(6), th:nth-child(6)');
-    const longitudeCols = document.querySelectorAll('td:nth-child(7), th:nth-child(7)');
-    // default: coordinates hidden
-    let visible = false;
-    latitudeCols.forEach(col => col.style.display = 'none');
-    longitudeCols.forEach(col => col.style.display = 'none');
-    toggleButton.textContent = 'Tampilkan Koordinat';
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const toggleButton = document.getElementById('toggle-coordinates');
+                    const latitudeCols = document.querySelectorAll('td:nth-child(6), th:nth-child(6)');
+                    const longitudeCols = document.querySelectorAll('td:nth-child(7), th:nth-child(7)');
+                    // default: coordinates hidden
+                    let visible = false;
+                    latitudeCols.forEach(col => col.style.display = 'none');
+                    longitudeCols.forEach(col => col.style.display = 'none');
+                    toggleButton.textContent = 'Tampilkan Koordinat';
 
-    toggleButton.addEventListener('click', function () {
-        visible = !visible;
-        latitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
-        longitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
-        toggleButton.textContent = visible ? 'Sembunyikan Koordinat' : 'Tampilkan Koordinat';
-    });
-});
-</script>
-@endpush
+                    toggleButton.addEventListener('click', function() {
+                        visible = !visible;
+                        latitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
+                        longitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
+                        toggleButton.textContent = visible ? 'Sembunyikan Koordinat' : 'Tampilkan Koordinat';
+                    });
+                });
+            </script>
+        @endpush
 
     @endsection
 
@@ -286,11 +298,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Nama Pelanggan</label>
-                                    <input type="text" name="customer_name" id="cust-name" class="form-control rounded-3" required>
+                                    <input type="text" name="customer_name" id="cust-name"
+                                        class="form-control rounded-3" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Nomor Telepon</label>
-                                    <input type="text" name="customer_phone" id="cust-phone" class="form-control rounded-3" required>
+                                    <input type="text" name="customer_phone" id="cust-phone"
+                                        class="form-control rounded-3" required>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-semibold small">Alamat Lengkap</label>
@@ -298,11 +312,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Email</label>
-                                    <input type="email" name="email" id="cust-email" class="form-control rounded-3">
+                                    <input type="email" name="email" id="cust-email"
+                                        class="form-control rounded-3">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Kode Referral</label>
-                                    <input type="text" name="referral_code" id="cust-referral" class="form-control rounded-3">
+                                    <input type="text" name="referral_code" id="cust-referral"
+                                        class="form-control rounded-3">
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-semibold small">Customer Address</label>
@@ -310,11 +326,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Latitude</label>
-                                    <input type="text" name="latitude" id="cust-latitude" class="form-control rounded-3">
+                                    <input type="text" name="latitude" id="cust-latitude"
+                                        class="form-control rounded-3">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold small">Longitude</label>
-                                    <input type="text" name="longitude" id="cust-longitude" class="form-control rounded-3">
+                                    <input type="text" name="longitude" id="cust-longitude"
+                                        class="form-control rounded-3">
                                 </div>
                             </div>
                         </div>
@@ -323,7 +341,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold small">Provinsi</label>
-                                    <select id="cust-province" name="province" class="form-select rounded-3" required></select>
+                                    <select id="cust-province" name="province" class="form-select rounded-3"
+                                        required></select>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold small">Kota/Kabupaten</label>
@@ -331,7 +350,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold small">Kecamatan</label>
-                                    <select id="cust-district" name="district" class="form-select rounded-3"></select>
+                                    <select id="cust-district" name="district"
+                                        class="form-select rounded-3"></select>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold small">Kelurahan/Desa</label>
@@ -352,9 +372,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold small">Kategori Produk</label>
-                                    <select name="product_category" id="cust-product_category" class="form-select rounded-3">
+                                    <select name="product_category" id="cust-product_category"
+                                        class="form-select rounded-3">
                                         <option value="">Pilih Kategori</option>
-                                        @foreach($categories as $cat)
+                                        @foreach ($categories as $cat)
                                             <option value="{{ $cat->name }}">{{ $cat->name }}</option>
                                         @endforeach
                                     </select>
@@ -363,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <label class="form-label fw-semibold small">Produk</label>
                                     <select name="product" id="cust-product" class="form-select rounded-3">
                                         <option value="">Pilih Produk</option>
-                                        @foreach($products as $prod)
+                                        @foreach ($products as $prod)
                                             <option value="{{ $prod->id }}">{{ $prod->name }}</option>
                                         @endforeach
                                     </select>
@@ -380,7 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
                     </div>
                 </form>
@@ -425,7 +447,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 });
 
                                 if (customer.province) {
-                                    const sel = Array.from(provinceSelect.options).find(o => o.value === customer.province);
+                                    const sel = Array.from(provinceSelect.options).find(o => o.value === customer
+                                        .province);
                                     if (sel && sel.dataset.id) {
                                         loadCities(sel.dataset.id, customer.city);
                                     }
@@ -446,8 +469,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                         citySelect.appendChild(opt);
                                     });
                                     if (selectedCity) {
-                                        const selCity = Array.from(citySelect.options).find(o => o.value === selectedCity);
-                                        if (selCity && selCity.dataset.id) loadDistricts(selCity.dataset.id, customer.district);
+                                        const selCity = Array.from(citySelect.options).find(o => o.value ===
+                                            selectedCity);
+                                        if (selCity && selCity.dataset.id) loadDistricts(selCity.dataset.id,
+                                            customer.district);
                                     }
                                 });
                         }
@@ -466,8 +491,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                         districtSelect.appendChild(opt);
                                     });
                                     if (selectedDistrict) {
-                                        const selDist = Array.from(districtSelect.options).find(o => o.value === selectedDistrict);
-                                        if (selDist && selDist.dataset.id) loadVillages(selDist.dataset.id, customer.village);
+                                        const selDist = Array.from(districtSelect.options).find(o => o.value ===
+                                            selectedDistrict);
+                                        if (selDist && selDist.dataset.id) loadVillages(selDist.dataset.id, customer
+                                            .village);
                                     }
                                 });
                         }
@@ -510,57 +537,87 @@ document.addEventListener('DOMContentLoaded', function () {
                         btn.addEventListener('click', function() {
                             const id = this.dataset.id;
                             currentId = id;
-                            fetch(`/customer/${id}/edit`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            fetch(`/customer/${id}/edit`, {
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                })
                                 .then(r => r.json())
                                 .then(payload => {
                                     const customer = payload.customer || payload;
-                                    document.getElementById('cust-name').value = customer.customer_name || '';
-                                    document.getElementById('cust-phone').value = customer.customer_phone || '';
-                                    document.getElementById('cust-address').value = customer.address || '';
-                                    document.getElementById('cust-email').value = customer.email || '';
-                                    document.getElementById('cust-referral').value = customer.referral_code || '';
-                                    document.getElementById('cust-customer_address').value = customer.customer_address || '';
-                                    document.getElementById('cust-latitude').value = customer.latitude || '';
-                                    document.getElementById('cust-longitude').value = customer.longitude || '';
-                                    document.getElementById('cust-division').value = customer.division || '';
-                                    document.getElementById('cust-product_category').value = customer.product_category || '';
-                                    document.getElementById('cust-product').value = customer.product_id || '';
-                                    document.getElementById('cust-coverage').value = customer.coverage || '';
+                                    document.getElementById('cust-name').value = customer
+                                        .customer_name || '';
+                                    document.getElementById('cust-phone').value = customer
+                                        .customer_phone || '';
+                                    document.getElementById('cust-address').value = customer
+                                        .address || '';
+                                    document.getElementById('cust-email').value = customer.email ||
+                                        '';
+                                    document.getElementById('cust-referral').value = customer
+                                        .referral_code || '';
+                                    document.getElementById('cust-customer_address').value =
+                                        customer.customer_address || '';
+                                    document.getElementById('cust-latitude').value = customer
+                                        .latitude || '';
+                                    document.getElementById('cust-longitude').value = customer
+                                        .longitude || '';
+                                    document.getElementById('cust-division').value = customer
+                                        .division || '';
+                                    document.getElementById('cust-product_category').value =
+                                        customer.product_category || '';
+                                    document.getElementById('cust-product').value = customer
+                                        .product_id || '';
+                                    document.getElementById('cust-coverage').value = customer
+                                        .coverage || '';
 
                                     populateRegionSelects(customer);
 
                                     modal.show();
                                 }).catch(err => {
                                     console.error(err);
-                                    Swal.fire('Error','Gagal mengambil data customer','error');
+                                    Swal.fire('Error', 'Gagal mengambil data customer', 'error');
                                 });
                         });
                     });
 
                     form.addEventListener('submit', function(e) {
                         e.preventDefault();
-                        if (!currentId) return Swal.fire('Error','ID tidak tersedia','error');
+                        if (!currentId) return Swal.fire('Error', 'ID tidak tersedia', 'error');
 
                         const fd = new FormData(form);
-                        fd.append('_method','PUT');
+                        fd.append('_method', 'PUT');
 
                         fetch(`/customer/${currentId}`, {
-                            method: 'POST',
-                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
-                            body: fd
-                        })
-                        .then(async r => {
-                            const json = await r.json().catch(()=>({success:false,message:'Invalid JSON'}));
-                            if (r.ok && json.success) {
-                                modal.hide();
-                                Swal.fire({ icon: 'success', title: 'Berhasil', text: json.message || 'Perubahan disimpan' })
-                                    .then(()=> window.location.reload());
-                            } else {
-                                const msg = json.message || 'Gagal menyimpan. Cek input.';
-                                Swal.fire('Gagal', msg, 'error');
-                            }
-                        })
-                        .catch(err => { console.error(err); Swal.fire('Error','Terjadi kesalahan server','error'); });
+                                method: 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                },
+                                body: fd
+                            })
+                            .then(async r => {
+                                const json = await r.json().catch(() => ({
+                                    success: false,
+                                    message: 'Invalid JSON'
+                                }));
+                                if (r.ok && json.success) {
+                                    modal.hide();
+                                    Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil',
+                                            text: json.message || 'Perubahan disimpan'
+                                        })
+                                        .then(() => window.location.reload());
+                                } else {
+                                    const msg = json.message || 'Gagal menyimpan. Cek input.';
+                                    Swal.fire('Gagal', msg, 'error');
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                            });
                     });
                 }
 
@@ -602,45 +659,91 @@ document.addEventListener('DOMContentLoaded', function () {
                     const mapModal = new bootstrap.Modal(mapModalEl);
 
                     function openMap(lat, lng, address) {
-                    const container = document.getElementById('mapContainer');
-                    // clear previous map if any
-                    if (map) {
-                        try { map.remove(); } catch(e) { /* ignore */ }
-                        map = null;
-                    }
+                        const container = document.getElementById('mapContainer');
+                        // clear previous map if any
+                        if (map) {
+                            try {
+                                map.remove();
+                            } catch (e) {
+                                /* ignore */
+                            }
+                            map = null;
+                        }
 
-                    if (!lat || !lng) {
-                        document.getElementById('mapAddress').textContent = 'Koordinat tidak tersedia untuk alamat ini.';
-                        container.innerHTML = '<div class="text-center text-muted py-5">Koordinat tidak tersedia.</div>';
+                        if (!lat || !lng) {
+                            document.getElementById('mapAddress').textContent =
+                                'Koordinat tidak tersedia untuk alamat ini.';
+                            container.innerHTML =
+                                '<div class="text-center text-muted py-5">Koordinat tidak tersedia.</div>';
+                            mapModal.show();
+                            return;
+                        }
+
+                        map = L.map('mapContainer').setView([parseFloat(lat), parseFloat(lng)], 16);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '© OpenStreetMap'
+                        }).addTo(map);
+
+                        L.marker([parseFloat(lat), parseFloat(lng)]).addTo(map)
+                            .bindPopup(address || 'Lokasi pelanggan').openPopup();
+
+                        document.getElementById('mapAddress').textContent = address || '';
                         mapModal.show();
-                        return;
+                        setTimeout(() => {
+                            map.invalidateSize();
+                        }, 200);
                     }
 
-                    map = L.map('mapContainer').setView([parseFloat(lat), parseFloat(lng)], 16);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '© OpenStreetMap'
-                    }).addTo(map);
-
-                    L.marker([parseFloat(lat), parseFloat(lng)]).addTo(map)
-                        .bindPopup(address || 'Lokasi pelanggan').openPopup();
-
-                    document.getElementById('mapAddress').textContent = address || '';
-                    mapModal.show();
-                    setTimeout(() => { map.invalidateSize(); }, 200);
+                    document.querySelectorAll('.btn-detail-map').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const lat = this.dataset.lat;
+                            const lng = this.dataset.lng;
+                            const addr = this.dataset.address;
+                            openMap(lat, lng, addr);
+                        });
+                    });
                 }
 
-                document.querySelectorAll('.btn-detail-map').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const lat = this.dataset.lat;
-                        const lng = this.dataset.lng;
-                        const addr = this.dataset.address;
-                        openMap(lat, lng, addr);
-                    });
-                });
-            }
+                initMapHandlers();
+            });
+        </script>
 
-            initMapHandlers();
-        });
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Select All
+                document.getElementById('selectAll').addEventListener('change', function() {
+                    document.querySelectorAll('.customer-checkbox').forEach(cb => cb.checked = this.checked);
+                });
+
+                // Delete Selected
+                document.getElementById('deleteSelected').addEventListener('click', function() {
+                    const selected = Array.from(document.querySelectorAll('.customer-checkbox:checked')).map(
+                        cb => cb.value);
+                    if (selected.length === 0) return alert('Pilih minimal satu data untuk dihapus.');
+                    if (!confirm(`Yakin ingin menghapus ${selected.length} customer terpilih?`)) return;
+
+                    fetch("{{ route('customer.bulkDelete') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                ids: selected
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                alert('Gagal menghapus data!');
+                            }
+                        })
+                        .catch(err => alert('Terjadi kesalahan.'));
+                });
+            });
         </script>
     @endpush

@@ -18,6 +18,9 @@
                     <a href="{{ route('news.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
                         <i class="fa fa-plus me-2"></i> Add News
                     </a>
+                    <button type="button" id="deleteSelectedNews" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
                 </div>
 
                 {{-- Search --}}
@@ -32,44 +35,54 @@
 
             {{-- Table --}}
             <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
+                <div style="overflow-x:auto;">
+                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless"
+                        style="min-width: 1300px; table-layout: fixed;">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
+                                <th style="width: 40px;"><input type="checkbox" id="selectAllNews"></th>
                                 <th style="width: 50px;">ID</th>
-                                <th>Title</th>
-                                <th>Content</th>
-                                <th>Image (Web)</th>
-                                <th>Image (App)</th>
-                                <th>Caption</th>
-                                <th>Created Date</th>
-                                <th>Admin</th>
+                                <th style="max-width: 200px;">Title</th>
+                                <th style="max-width: 400px;">Content</th>
+                                <th style="width: 120px;">Image (Web)</th>
+                                <th style="width: 120px;">Image (App)</th>
+                                <th style="width: 150px;">Caption</th>
+                                <th style="width: 120px;">Created Date</th>
+                                <th style="width: 120px;">Admin</th>
                                 <th style="width: 110px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($news as $item)
                                 <tr>
+                                    <td><input type="checkbox" class="select-news" value="{{ $item->news_id }}"></td>
                                     <td>{{ $item->news_id }}</td>
-                                    <td class="text-start ps-3 fw-semibold">{{ $item->news_title }}</td>
-                                    <td>{{ \Illuminate\Support\Str::limit($item->news_content, 50) }}</td>
+                                    <td class="text-start ps-3" style="min-width:200px; word-wrap: break-word;">
+                                        {{ $item->news_title }}
+                                    </td>
+                                    <td class="text-start" style="min-width:400px; word-wrap: break-word;"
+                                        title="{{ strip_tags($item->news_content) }}">
+                                        {{ \Illuminate\Support\Str::limit(strip_tags($item->news_content), 100) }}
+                                        @if (strlen(strip_tags($item->news_content)) > 100)
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#newsContentModal{{ $item->news_id }}">
+                                                Read more
+                                            </button>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($item->news_image)
                                             <button type="button" class="btn btn-sm btn-outline-secondary news-preview-btn"
-                                                data-preview-url="{{ asset($item->news_image) }}">
-                                                View
-                                            </button>
+                                                data-preview-url="{{ Storage::url($item->news_image) }}">View</button>
                                         @else
                                             <span class="text-muted">No File</span>
                                         @endif
                                     </td>
-
                                     <td>
                                         @if ($item->news_image_app)
                                             <button type="button" class="btn btn-sm btn-outline-secondary news-preview-btn"
-                                                data-preview-url="{{ asset($item->news_image_app) }}">
-                                                View
-                                            </button>
+                                                data-preview-url="{{ Storage::url($item->news_image_app) }}">View</button>
                                         @else
                                             <span class="text-muted">No File</span>
                                         @endif
@@ -94,9 +107,26 @@
                                         </div>
                                     </td>
                                 </tr>
+
+                                {{-- Modal Full Content --}}
+                                <div class="modal fade" id="newsContentModal{{ $item->news_id }}" tabindex="-1"
+                                    aria-labelledby="newsContentModalLabel{{ $item->news_id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ $item->news_title }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {!! $item->news_content !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-muted text-center py-4">No news data available</td>
+                                    <td colspan="10" class="text-muted text-center py-4">No news data available</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -104,13 +134,29 @@
                 </div>
             </div>
 
+            {{-- Modal Preview Gambar --}}
+            <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content border-0">
+                        <div class="modal-body p-0">
+                            <img src="" id="imagePreview" class="img-fluid w-100" alt="Preview">
+                        </div>
+                        <div class="modal-footer py-2">
+                            <button type="button" class="btn btn-secondary btn-sm"
+                                data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             {{-- Footer: Records per page + Pagination --}}
             <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
-                {{-- Records per page --}}
                 <form method="GET" action="{{ route('news.index') }}" id="perPageForm"
                     class="d-flex align-items-center gap-2">
                     <label for="per_page" class="mb-0">Show</label>
-                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <select name="per_page" id="per_page" class="form-select form-select-sm"
+                        onchange="this.form.submit()">
                         @foreach ([10, 25, 50, 100, 'All'] as $size)
                             <option value="{{ $size }}"
                                 {{ strtolower(request('per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
@@ -118,14 +164,11 @@
                             </option>
                         @endforeach
                     </select>
-
-                    {{-- Pertahankan query search --}}
                     @foreach (request()->except('per_page', 'page') as $key => $value)
                         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                     @endforeach
                 </form>
 
-                {{-- Pagination --}}
                 <div>
                     {{ $news->links() }}
                 </div>
@@ -136,93 +179,145 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Konfirmasi hapus
+
+                const selectAll = document.getElementById('selectAllNews');
+                const checkboxes = document.querySelectorAll('.select-news');
+
+                selectAll.addEventListener('change', function() {
+                    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                });
+
+                const deleteBtn = document.getElementById('deleteSelectedNews');
+                deleteBtn.addEventListener('click', function() {
+                    const selectedIds = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    if (selectedIds.length === 0) {
+                        alert('No news selected.');
+                        return;
+                    }
+                    if (!confirm(
+                            `Are you sure you want to delete ${selectedIds.length} selected news? This cannot be undone.`
+                        )) return;
+
+                    fetch("{{ route('news.bulkDelete') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                ids: selectedIds
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(() => alert('Error, please try again.'));
+                });
+
                 document.querySelectorAll('.delete-form').forEach(form => {
                     form.addEventListener('submit', e => {
                         e.preventDefault();
                         const title = form.dataset.title || 'berita ini';
-                        if (confirm(
-                                `Yakin ingin menghapus ${title}? Aksi ini tidak dapat dibatalkan.`)) {
+                        if (confirm(`Yakin ingin menghapus ${title}? Aksi ini tidak dapat dibatalkan.`))
                             form.submit();
-                        }
                     });
                 });
+
             });
         </script>
+    @endpush
 
+    @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Modal HTML
-                const modalHtml = `
-                    <div class="modal fade" id="newsPreviewModal" tabindex="-1">
-                        <div class="modal-dialog modal-xl modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">News Image Preview</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body p-0 d-flex align-items-center justify-content-center" style="height: 80vh; background-color: #f8f9fa;">
-                                    <div id="newsSpinner" class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <img id="newsPreviewImage" style="max-width: 100%; max-height: 100%; object-fit: contain; display: none;" />
-                                    <div id="newsPreviewError" class="text-center" style="display: none;">
-                                        <p class="mb-0">File not found or could not be displayed.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-                const newsModalEl = document.getElementById('newsPreviewModal');
-                const newsModal = new bootstrap.Modal(newsModalEl);
-                const spinner = document.getElementById('newsSpinner');
-                const img = document.getElementById('newsPreviewImage');
-                const errorMsg = document.getElementById('newsPreviewError');
+                // Tombol preview gambar
+                const previewButtons = document.querySelectorAll('.news-preview-btn');
+                const imageModal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+                const imagePreview = document.getElementById('imagePreview');
 
-                // Button preview logic
-                document.querySelectorAll('.news-preview-btn').forEach(btn => {
+                previewButtons.forEach(btn => {
                     btn.addEventListener('click', function() {
-                        const previewUrl = this.dataset.previewUrl;
-
-                        img.style.display = 'none';
-                        errorMsg.style.display = 'none';
-                        spinner.style.display = 'block';
-
-                        newsModal.show();
-
-                        img.src = previewUrl;
-                        img.onload = () => {
-                            spinner.style.display = 'none';
-                            img.style.display = 'block';
-                        };
-                        img.onerror = () => {
-                            spinner.style.display = 'none';
-                            errorMsg.style.display = 'block';
-                        };
+                        const url = this.dataset.previewUrl;
+                        imagePreview.src = url;
+                        imageModal.show();
                     });
                 });
 
-                // Reset modal ketika ditutup
-                newsModalEl.addEventListener('hidden.bs.modal', function() {
-                    img.src = '';
-                    img.style.display = 'none';
-                    errorMsg.style.display = 'none';
-                    spinner.style.display = 'none';
+                // Checkbox select all
+                const selectAll = document.getElementById('selectAllNews');
+                const checkboxes = document.querySelectorAll('.select-news');
+
+                selectAll.addEventListener('change', function() {
+                    checkboxes.forEach(cb => cb.checked = selectAll.checked);
                 });
+
+                // Delete selected
+                const deleteBtn = document.getElementById('deleteSelectedNews');
+                deleteBtn.addEventListener('click', function() {
+                    const selectedIds = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    if (selectedIds.length === 0) {
+                        alert('No news selected.');
+                        return;
+                    }
+                    if (!confirm(
+                            `Are you sure you want to delete ${selectedIds.length} selected news? This cannot be undone.`
+                        )) return;
+
+                    fetch("{{ route('news.bulkDelete') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                ids: selectedIds
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(() => alert('Error, please try again.'));
+                });
+
+                // Confirm single delete
+                document.querySelectorAll('.delete-form').forEach(form => {
+                    form.addEventListener('submit', e => {
+                        e.preventDefault();
+                        const title = form.dataset.title || 'berita ini';
+                        if (confirm(`Yakin ingin menghapus ${title}? Aksi ini tidak dapat dibatalkan.`))
+                            form.submit();
+                    });
+                });
+
             });
         </script>
     @endpush
 
     @push('styles')
         <style>
+            .table th,
+            .table td {
+                vertical-align: middle;
+            }
+
             .btn-outline-secondary {
                 border: 1.5px solid #6c757d;
                 color: #6c757d;
                 background: #fff;
-                transition: all 0.2s ease;
+                transition: 0.2s;
             }
 
             .btn-outline-secondary:hover {
@@ -233,16 +328,11 @@
             .btn-primary {
                 background-color: #007bff;
                 border: none;
-                transition: all 0.2s ease;
+                transition: 0.2s;
             }
 
             .btn-primary:hover {
                 background-color: #0056b3;
-            }
-
-            .table th,
-            .table td {
-                vertical-align: middle;
             }
 
             .table-striped>tbody>tr:nth-of-type(odd) {
@@ -255,6 +345,16 @@
 
             .fw-semibold {
                 font-weight: 600;
+            }
+
+            .text-truncate {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .table td {
+                white-space: normal !important;
             }
         </style>
     @endpush

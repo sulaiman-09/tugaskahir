@@ -5,6 +5,7 @@
 @section('content')
     <div class="container py-4">
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
             {{-- Header --}}
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="mb-0 fw-semibold text-dark">Edit News</h5>
@@ -38,7 +39,7 @@
                         <label class="form-label fw-semibold small text-primary">Web Image</label>
                         @if ($news->news_image)
                             <div class="mb-2">
-                                <img src="{{ asset($news->news_image) }}" alt="News Image" width="120"
+                                <img src="{{ Storage::url($news->news_image) }}" alt="News Image" width="120"
                                     class="rounded border shadow-sm">
                             </div>
                         @endif
@@ -52,7 +53,7 @@
                         <label class="form-label fw-semibold small text-primary">App Image</label>
                         @if ($news->news_image_app)
                             <div class="mb-2">
-                                <img src="{{ asset($news->news_image_app) }}" alt="App Image" width="120"
+                                <img src="{{ Storage::url($news->news_image_app) }}" alt="App Image" width="120"
                                     class="rounded border shadow-sm">
                             </div>
                         @endif

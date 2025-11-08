@@ -40,6 +40,7 @@ class BannerController extends Controller
     }
 
     // Simpan banner baru ke database
+    // Simpan banner baru ke database
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -49,14 +50,23 @@ class BannerController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
+        $banner = new Banner();
+        $banner->name = $validated['name'];
+        $banner->is_active = $validated['is_active'];
+
+        // Upload web image
         if ($request->hasFile('web_image')) {
-            $validated['web_image'] = $request->file('web_image')->store('banners', 'public');
-        }
-        if ($request->hasFile('mobile_image')) {
-            $validated['mobile_image'] = $request->file('mobile_image')->store('banners', 'public');
+            $path = $request->file('web_image')->store('banners', 'public');
+            $banner->path = $path;
         }
 
-        Banner::create($validated);
+        // Upload mobile image
+        if ($request->hasFile('mobile_image')) {
+            $path_apps = $request->file('mobile_image')->store('banners', 'public');
+            $banner->path_apps = $path_apps;
+        }
+
+        $banner->save();
 
         return redirect()->route('banner.index')->with('success', 'Banner berhasil ditambahkan.');
     }
@@ -71,8 +81,6 @@ class BannerController extends Controller
     // Update banner
     public function update(Request $request, $id)
     {
-        $banner = Banner::findOrFail($id);
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -80,14 +88,23 @@ class BannerController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
+        $banner = Banner::findOrFail($id);
+        $banner->name = $validated['name'];
+        $banner->is_active = $validated['is_active'];
+
+        // Jika user upload gambar baru untuk web
         if ($request->hasFile('web_image')) {
-            $validated['web_image'] = $request->file('web_image')->store('banners', 'public');
-        }
-        if ($request->hasFile('mobile_image')) {
-            $validated['mobile_image'] = $request->file('mobile_image')->store('banners', 'public');
+            $path = $request->file('web_image')->store('banners', 'public');
+            $banner->path = $path;
         }
 
-        $banner->update($validated);
+        // Jika user upload gambar baru untuk mobile
+        if ($request->hasFile('mobile_image')) {
+            $path_apps = $request->file('mobile_image')->store('banners', 'public');
+            $banner->path_apps = $path_apps;
+        }
+
+        $banner->save();
 
         return redirect()->route('banner.index')->with('success', 'Banner berhasil diperbarui.');
     }
@@ -145,5 +162,17 @@ class BannerController extends Controller
             'success' => true,
             'is_active' => $banner->is_active,
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids ?? [];
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada data yang dipilih.']);
+        }
+
+        Banner::whereIn('id', $ids)->delete();
+
+        return response()->json(['success' => true, 'message' => count($ids) . ' banner berhasil dihapus.']);
     }
 }

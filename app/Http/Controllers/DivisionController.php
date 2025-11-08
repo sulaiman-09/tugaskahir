@@ -139,4 +139,20 @@ class DivisionController extends Controller
 
         return response()->json(['success' => true, 'status' => $division->status]);
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids; // array of IDs
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'No items selected.']);
+        }
+
+        try {
+            Division::whereIn('id', $ids)->delete();
+            return response()->json(['success' => true, 'message' => 'Divisions deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete divisions.']);
+        }
+    }
 }

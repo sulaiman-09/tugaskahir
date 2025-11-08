@@ -42,6 +42,12 @@
                     + Tambah Homepass
                 </a>
 
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" id="deleteSelectedCustomers" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
+                </div>
+
                 {{-- Search --}}
                 <form action="{{ route('sudirmanpark.alamat') }}" method="GET" class="d-flex align-items-center ms-auto"
                     style="max-width: 420px; width:100%;">
@@ -62,7 +68,9 @@
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
-                                <th style="width: 40px;">No</th>
+                                <th style="width: 40px;">
+                                    <input type="checkbox" id="checkAll">
+                                </th>
                                 <th>Tower</th>
                                 <th>Floor</th>
                                 <th>Unit</th>
@@ -76,7 +84,9 @@
                         <tbody>
                             @forelse ($addresses as $index => $address)
                                 <tr>
-                                    <td>{{ $addresses->firstItem() + $index }}</td>
+                                    <td>
+                                        <input type="checkbox" class="rowCheckbox" value="{{ $address->id }}">
+                                    </td>
                                     <td>{{ $address->tower }}</td>
                                     <td>{{ $address->floor }}</td>
                                     <td>{{ $address->unit }}</td>
@@ -91,15 +101,14 @@
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
                                             <a href="{{ route('sudirmanpark.editHomepass', $address->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                                class="btn btn-warning btn-sm">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                             <form action="{{ route('sudirmanpark.destroyHomepass', $address->id) }}"
-                                                method="POST" class="delete-form"
-                                                data-name="{{ $address->tower }} - {{ $address->unit }}">
+                                                method="POST" class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                                <button type="submit" class="btn btn-danger btn-sm">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -112,6 +121,7 @@
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
             </div>
@@ -422,6 +432,55 @@
                 const t = new bootstrap.Toast(toastEl);
                 t.show();
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkAll = document.getElementById('checkAll');
+            const rowCheckboxes = document.querySelectorAll('.rowCheckbox');
+
+            // Select / deselect all
+            if (checkAll) {
+                checkAll.addEventListener('change', () => {
+                    rowCheckboxes.forEach(cb => cb.checked = checkAll.checked);
+                });
+            }
+
+            // Tombol Bulk Delete
+            const bulkDeleteBtn = document.createElement('button');
+            bulkDeleteBtn.addEventListener('click', () => {
+                const ids = Array.from(rowCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (ids.length === 0) {
+                    alert('Pilih minimal satu alamat.');
+                    return;
+                }
+
+                if (!confirm(`Yakin ingin menghapus ${ids.length} alamat terpilih?`)) return;
+
+                fetch('{{ route('sudirmanpark.bulkDeleteHomepass') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ids
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.success) location.reload();
+                    })
+                    .catch(() => alert('Terjadi kesalahan.'));
+            });
+
+            // Tambahkan tombol ke card body (misal setelah tombol tambah homepass)
+            const cardBody = document.querySelector('.card-body.d-flex.flex-wrap');
+            if (cardBody) cardBody.appendChild(bulkDeleteBtn);
         });
     </script>
 @endpush

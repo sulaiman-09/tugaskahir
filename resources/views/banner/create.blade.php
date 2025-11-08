@@ -20,19 +20,26 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Banner Information</h6>
                         <div class="row g-3">
+                            {{-- Banner Name --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Banner Name <span
-                                        class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small">
+                                    Banner Name <span class="text-danger">*</span>
+                                </label>
                                 <input type="text" name="name"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     placeholder="Enter banner name" required>
                             </div>
+
+                            {{-- Status --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Status <span
-                                        class="text-danger">*</span></label>
-                                <select name="is_active" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                                    <option value="1" {{ $banner->is_active ? 'selected' : '' }}>Active</option>
-                                    <option value="0" {{ !$banner->is_active ? 'selected' : '' }}>Inactive</option>
+                                <label class="form-label fw-semibold small">
+                                    Status <span class="text-danger">*</span>
+                                </label>
+                                <select name="is_active"
+                                    class="form-select rounded-3 shadow-sm border-0 bg-white"
+                                    required>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </select>
                             </div>
                         </div>
@@ -42,11 +49,14 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Banner Images</h6>
                         <div class="row g-3">
+                            {{-- Web Image --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Web Image</label>
                                 <input type="file" name="web_image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
+
+                            {{-- Mobile Image --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Mobile Image</label>
                                 <input type="file" name="mobile_image"
@@ -57,10 +67,12 @@
 
                     {{-- Tombol Aksi --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
-                        <a href="{{ route('banner.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                        <a href="{{ route('banner.index') }}"
+                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
                             Cancel
                         </a>
-                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                        <button type="submit"
+                            class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
                             Save Banner
                         </button>
                     </div>

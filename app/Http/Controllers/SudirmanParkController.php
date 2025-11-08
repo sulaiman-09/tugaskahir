@@ -69,14 +69,14 @@ class SudirmanParkController extends Controller
         ]);
 
         if ($request->hasFile('ktp')) {
-        try {
+            try {
                 $file = $request->file('ktp');
                 $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
                 Storage::disk('public')->putFileAs('ktp', $file, $filename);
                 $validated['ktp'] = $filename;
                 \Log::info('KTP uploaded for new customer: ' . $filename);
             } catch (\Exception $e) {
-            \Log::error('KTP upload failed: ' . $e->getMessage());
+                \Log::error('KTP upload failed: ' . $e->getMessage());
                 return back()->withErrors(['ktp' => 'Gagal menyimpan file KTP. Silakan cek permission/storage link.']);
             }
         }
@@ -108,7 +108,7 @@ class SudirmanParkController extends Controller
         Log::info('SudirmanPark update START for id: ' . $id);
         Log::info('Request method: ' . $request->method() . ', data: ' . json_encode($request->all()));
         $customer = SudirmanPark::findOrFail($id);
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
@@ -121,8 +121,8 @@ class SudirmanParkController extends Controller
         ]);
 
         if ($request->hasFile('ktp')) {
-        // delete old file if exists
-        if ($customer->ktp) {
+            // delete old file if exists
+            if ($customer->ktp) {
                 Storage::disk('public')->delete('ktp/' . $customer->ktp);
             }
             try {
@@ -241,7 +241,6 @@ class SudirmanParkController extends Controller
             // Gunakan response()->file() untuk mengirim file.
             // Ini secara otomatis menangani header seperti Content-Type dan Content-Length.
             return response()->file($absolutePath);
-
         } catch (\Throwable $e) {
             \Log::error("KTP preview failed for path: {$path}. Error: " . $e->getMessage());
             abort(500, 'Gagal menampilkan file karena kesalahan server.');
@@ -497,5 +496,34 @@ class SudirmanParkController extends Controller
             "Content-Disposition" => "attachment; filename={$filename}"
         ]);
     }
-}
 
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada data yang dipilih.']);
+        }
+
+        try {
+            Customer::whereIn('id', $ids)->delete(); // langsung hapus permanen
+            return response()->json(['success' => true, 'message' => count($ids) . ' customer berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus.']);
+        }
+    }
+
+    public function bulkDeleteHomepass(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada data yang dipilih.']);
+        }
+
+        try {
+            SudirmanTowerAddress::whereIn('id', $ids)->delete(); // bisa soft delete kalau model pakai SoftDeletes
+            return response()->json(['success' => true, 'message' => count($ids) . ' alamat berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus.']);
+        }
+    }
+}

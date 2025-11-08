@@ -33,6 +33,12 @@
                     Kelola Produk
                 </a>
 
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" id="deleteSelectedCustomers" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    </button>
+                </div>
+
                 {{-- Search --}}
                 <form action="{{ route('sudirmanpark.index') }}" method="GET" class="d-flex align-items-center ms-auto"
                     style="max-width: 420px; width:100%;">
@@ -53,6 +59,7 @@
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
+                                <th><input type="checkbox" id="selectAllCustomers"></th> {{-- Checkbox select all --}}
                                 <th style="width: 40px;">No</th>
                                 <th>Nama Customer</th>
                                 <th>No. Telepon</th>
@@ -70,6 +77,7 @@
                         <tbody>
                             @forelse($customers as $index => $customer)
                                 <tr>
+                                    <td><input type="checkbox" class="customer-checkbox" value="{{ $customer->id }}"></td>
                                     <td>{{ $customers->firstItem() + $index }}</td>
                                     <td class="text-start ps-3">{{ $customer->name }}</td>
                                     <td>{{ $customer->phone }}</td>
@@ -90,10 +98,10 @@
                                     <td>
                                         <span
                                             class="badge 
-                                        @if ($customer->status == 'approved') bg-success
-                                        @elseif($customer->status == 'processed') bg-warning
-                                        @elseif($customer->status == 'registration') bg-info
-                                        @elseif($customer->status == 'cancelled') bg-danger @endif">
+                    @if ($customer->status == 'approved') bg-success
+                    @elseif($customer->status == 'processed') bg-warning
+                    @elseif($customer->status == 'registration') bg-info
+                    @elseif($customer->status == 'cancelled') bg-danger @endif">
                                             {{ ucfirst($customer->status) }}
                                         </span>
                                     </td>
@@ -104,14 +112,11 @@
                                                 {{ $customer->status == 'registration' ? 'selected' : '' }}>Registration
                                             </option>
                                             <option value="processed"
-                                                {{ $customer->status == 'processed' ? 'selected' : '' }}>
-                                                Processed</option>
+                                                {{ $customer->status == 'processed' ? 'selected' : '' }}>Processed</option>
                                             <option value="approved"
-                                                {{ $customer->status == 'approved' ? 'selected' : '' }}>
-                                                Approved</option>
+                                                {{ $customer->status == 'approved' ? 'selected' : '' }}>Approved</option>
                                             <option value="cancelled"
-                                                {{ $customer->status == 'cancelled' ? 'selected' : '' }}>
-                                                Cancelled</option>
+                                                {{ $customer->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                         </select>
                                     </td>
                                     <td>{{ $customer->status_change ?? '-' }}</td>
@@ -135,10 +140,11 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="text-muted text-center py-4">Belum ada data customer</td>
+                                    <td colspan="13" class="text-muted text-center py-4">Belum ada data customer</td>
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
             </div>
@@ -215,8 +221,6 @@
             min-width: 1200px;
             /* sesuaikan total kolom agar scroll muncul */
         }
-
-        
     </style>
 @endpush
 
@@ -430,7 +434,7 @@
                                                     'X-CSRF-TOKEN': document
                                                         .querySelector(
                                                             'meta[name="csrf-token"]'
-                                                            ).getAttribute(
+                                                        ).getAttribute(
                                                             'content'),
                                                     'X-Requested-With': 'XMLHttpRequest'
                                                 }
@@ -646,6 +650,42 @@
                 frame.style.display = 'none';
                 errorMsg.style.display = 'none';
                 spinner.style.display = 'none';
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Select all
+            document.getElementById('selectAllCustomers').addEventListener('change', function() {
+                document.querySelectorAll('.customer-checkbox').forEach(cb => cb.checked = this.checked);
+            });
+
+            // Bulk delete
+            document.getElementById('deleteSelectedCustomers').addEventListener('click', () => {
+                const selected = Array.from(document.querySelectorAll('.customer-checkbox:checked')).map(
+                    cb => cb.value);
+                if (selected.length === 0) return alert('Pilih minimal satu customer untuk dihapus.');
+                if (!confirm(`Yakin ingin menghapus ${selected.length} customer terpilih?`)) return;
+
+                fetch("{{ route('sudirmanpark.bulkDelete') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            ids: selected
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                            location.reload();
+                        } else alert(data.message);
+                    })
+                    .catch(() => alert('Terjadi kesalahan.'));
             });
         });
     </script>

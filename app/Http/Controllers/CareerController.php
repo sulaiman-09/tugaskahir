@@ -12,7 +12,7 @@ class CareerController extends Controller
     {
         $query = Career::query();
 
-        // Search
+        // 🔍 Search
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -22,16 +22,13 @@ class CareerController extends Controller
             });
         }
 
-        // Records per page
-        $perPage = $request->query('per_page', 10); // default 10
-        if ($perPage === 'all') {
-            $careers = $query->latest()->get();
-        } else {
-            $perPage = (int)$perPage;
-            $careers = $query->latest()->paginate($perPage)->withQueryString();
-        }
+        // 🔢 Pagination
+        $perPage = $request->query('per_page', 10);
+        $careers = $perPage === 'all'
+            ? $query->latest()->get()
+            : $query->latest()->paginate((int) $perPage)->withQueryString();
 
-        // Tambahkan status string
+        // Tambah status aktif/tidak
         $careers->getCollection()->transform(function ($career) {
             $career->status = $career->is_active ? 'Active' : 'Inactive';
             return $career;
@@ -39,7 +36,6 @@ class CareerController extends Controller
 
         return view('career.index', compact('careers', 'perPage'));
     }
-
 
     public function create()
     {
@@ -54,23 +50,21 @@ class CareerController extends Controller
             'education_level' => 'required|string|max:50',
             'location' => 'nullable|string|max:255',
             'description' => 'required|string',
+            'job_description' => 'nullable|string',
             'job_requirements' => 'sometimes|array',
             'job_requirements.*' => 'string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            // ubah rule ini ↓
+            'image_path' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'is_active' => 'nullable',
         ]);
 
-        // Pastikan checkbox jadi boolean
         $validated['is_active'] = $request->has('is_active') ? 1 : 0;
-
-        $validated['job_requirements'] = $request->input('job_requirements', []);
         $validated['slug'] = Str::slug($validated['title']);
-        $validated['job_description'] = $validated['description'];
+        $validated['job_description'] = $request->input('job_description', '');
+        $validated['job_requirements'] = json_encode($request->input('job_requirements', []));
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('careers', 'public');
+        // 📁 Upload Gambar
+        if ($request->hasFile('image_path')) {
+            $path = $request->file('image_path')->store('careers', 'public');
             $validated['image_path'] = 'storage/' . $path;
         }
 
@@ -88,28 +82,33 @@ class CareerController extends Controller
 
     public function update(Request $request, $id)
     {
+        $career = Career::findOrFail($id);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|string|max:50',
-            'education_level' => 'required|string|in:SMA/SMK,Diploma,S1,S2,S3',
+            'education_level' => 'required|string|max:50',
             'location' => 'nullable|string|max:255',
             'description' => 'required|string',
+            'job_description' => 'nullable|string',
             'job_requirements' => 'sometimes|array',
             'job_requirements.*' => 'string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'image_path' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'is_active' => 'nullable',
         ]);
 
-        $career = Career::findOrFail($id);
-
         $validated['is_active'] = $request->has('is_active') ? 1 : 0;
-        $validated['job_requirements'] = $request->input('job_requirements', []);
         $validated['slug'] = Str::slug($validated['title']);
+        $validated['job_description'] = $request->input('job_description', '');
+        $validated['job_requirements'] = json_encode($request->input('job_requirements', []));
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('careers', 'public');
-            $validated['image'] = 'storage/' . $path;
+        // 🖼️ Jika upload gambar baru
+        if ($request->hasFile('image_path')) {
+            if ($career->image_path && file_exists(public_path($career->image_path))) {
+                unlink(public_path($career->image_path));
+            }
+            $path = $request->file('image_path')->store('careers', 'public');
+            $validated['image_path'] = 'storage/' . $path;
         }
 
         $career->update($validated);
@@ -121,12 +120,25 @@ class CareerController extends Controller
     {
         $career = Career::findOrFail($id);
 
-        if ($career->image && file_exists(public_path($career->image))) {
-            unlink(public_path($career->image));
+        if ($career->image_path && file_exists(public_path($career->image_path))) {
+            unlink(public_path($career->image_path));
         }
 
         $career->delete();
 
         return redirect()->route('career.index')->with('success', 'Career deleted successfully.');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada data yang dipilih.']);
+        }
+
+        Career::whereIn('id', $ids)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
     }
 }

@@ -67,6 +67,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/edit', [CustomerController::class, 'edit'])->name('edit');
         Route::put('/{id}', [CustomerController::class, 'update'])->name('update');
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
+
+        // Bulk delete customer (perbaiki)
+        Route::post('/bulk-delete', [CustomerController::class, 'bulkDelete'])
+            ->name('bulkDelete'); // tidak perlu customer. lagi
     });
 
     Route::prefix('sudirmanpark')
@@ -81,12 +85,22 @@ Route::middleware('auth')->group(function () {
             Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
 
+            // 🔹 Bulk Delete
+            Route::post('/bulk-delete', [SudirmanParkController::class, 'bulkDelete'])->name('bulkDelete');
+
+            // 🔹 Bulk Delete Homepass (ALAMAT TOWER)
+            Route::delete('/homepass/bulk-delete', [SudirmanParkController::class, 'bulkDeleteHomepass'])
+                ->name('bulkDeleteHomepass');
+
             // Ajax status update for a customer
             Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
+
             // Remove KTP file
             Route::delete('/{id}/ktp', [SudirmanParkController::class, 'removeKtp'])->name('removeKtp');
+
             // Download KTP (secure via controller)
             Route::get('/{id}/ktp/download', [SudirmanParkController::class, 'downloadKtp'])->name('downloadKtp');
+
             // Preview KTP inline for modal
             Route::get('/{id}/ktp/preview', [SudirmanParkController::class, 'previewKtp'])->name('previewKtp');
 
@@ -109,6 +123,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/product/{id}', [ProductController::class, 'update'])->name('product.update');
         Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
 
+        // Bulk Delete Product
+        Route::post('/product/bulk-delete', [ProductController::class, 'bulkDelete'])
+            ->name('product.bulkDelete');
+
         // ===== Product Category Routes =====
         Route::get('/product/category/create', [ProductController::class, 'createCategory'])->name('product.category.create');
         Route::post('/product/category', [ProductController::class, 'storeCategory'])->name('product.category.store');
@@ -116,9 +134,14 @@ Route::middleware('auth')->group(function () {
         Route::put('/product/category/{id}', [ProductController::class, 'updateCategory'])->name('product.category.update');
         Route::delete('/product/category/{id}', [ProductController::class, 'destroyCategory'])->name('product.category.destroy');
 
+        // Bulk Delete Category
+        Route::post('/product/category/bulk-delete', [ProductController::class, 'bulkDeleteCategory'])
+            ->name('product.category.bulkDelete');
+
         // Export Category
         Route::get('/product/category/export', [ProductController::class, 'exportCategory'])->name('product.category.export');
 
+        // Toggle Show Price Category
         Route::put('/product/category/{id}/toggle-price', [ProductController::class, 'toggleCategoryPrice'])
             ->name('product.category.togglePrice');
     });
@@ -128,14 +151,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/banner/export', [App\Http\Controllers\BannerController::class, 'export'])->name('banner.export');
         Route::patch('/banner/{banner}/toggle-status', [App\Http\Controllers\BannerController::class, 'toggleStatus'])
             ->name('banner.toggle-status');
+        Route::post('/bulk-delete', [BannerController::class, 'bulkDelete'])->name('banner.bulkDelete');
     });
 
     Route::middleware(['auth'])->group(function () {
-        // Letakkan di atas dulu
+        // Export & status update
         Route::get('/division/export', [App\Http\Controllers\DivisionController::class, 'export'])->name('division.export');
         Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
-        // Baru resource di bawah
+        // Resource
         Route::resource('division', App\Http\Controllers\DivisionController::class);
+        // Bulk delete (dengan prefix name 'division.')
+        Route::post('/division/bulk-delete', [App\Http\Controllers\DivisionController::class, 'bulkDelete'])
+            ->name('division.bulkDelete');
     });
 
     Route::middleware(['auth'])->group(function () {
@@ -146,12 +173,14 @@ Route::middleware('auth')->group(function () {
         Route::get('career/export', [App\Http\Controllers\CareerController::class, 'export'])->name('career.export');
         Route::get('/career/create', [CareerController::class, 'create'])->name('career.create');
         Route::post('/career', [CareerController::class, 'store'])->name('career.store');
+        Route::post('/career/bulk-delete', [CareerController::class, 'bulkDelete'])->name('career.bulkDelete');
     });
 
     Route::middleware(['auth'])->group(function () {
         Route::resource('news', NewsController::class);
         Route::get('news/export/csv', [NewsController::class, 'exportCsv'])->name('news.export.csv');
         Route::get('news/export/xlsx', [NewsController::class, 'exportXlsx'])->name('news.export.xlsx');
+        Route::post('/news/bulk-delete', [App\Http\Controllers\NewsController::class, 'bulkDelete'])->name('news.bulkDelete');
     });
 
     Route::prefix('settings-content')->group(function () {
@@ -162,6 +191,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/{id}', [SettingsContentController::class, 'update'])->name('settings-content.update');
         Route::delete('/{id}', [SettingsContentController::class, 'destroy'])->name('settings-content.destroy');
         Route::get('settings-content/export', [SettingsContentController::class, 'export'])->name('settings-content.export');
+        Route::post('/settings-content/bulk-delete', [SettingsContentController::class, 'bulkDelete'])->name('settings-content.bulkDelete');
     });
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -170,6 +200,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::post('/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulkDelete');
 
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
@@ -177,6 +208,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
     Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
     Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+    Route::post('roles/bulk-delete', [RoleController::class, 'bulkDelete'])->name('roles.bulkDelete');
 
     Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
@@ -184,4 +216,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/permissions/{permission}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
     Route::put('/permissions/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
     Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    Route::post('/permissions/bulk-delete', [App\Http\Controllers\PermissionController::class, 'bulkDelete'])
+        ->name('permissions.bulkDelete');
 });
