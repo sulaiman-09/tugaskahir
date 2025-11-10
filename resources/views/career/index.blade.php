@@ -16,10 +16,16 @@
                 {{-- Kiri: Export & Add --}}
                 <div class="d-flex align-items-center gap-2">
                     {{-- Tombol Export --}}
-                    <a href="{{ route('career.export', request()->query()) }}"
-                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                        <i class="fa fa-print me-2"></i> Export CSV
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-print me-2"></i> Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('career.export.excel') }}">Export Excel</a></li>
+                            <li><a class="dropdown-item" href="{{ route('career.export.pdf') }}">Export PDF</a></li>
+                        </ul>
+                    </div>
 
                     {{-- Tambah Career --}}
                     <a href="{{ route('career.create') }}" class="btn btn-primary btn-sm">+ Add Career</a>

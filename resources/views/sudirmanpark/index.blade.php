@@ -13,10 +13,17 @@
             <div class="card-body py-3 d-flex flex-wrap gap-2 align-items-center">
 
                 {{-- Export CSV --}}
-                <a href="{{ route('sudirmanpark.export', request()->query()) }}"
-                    class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                    <i class="fa fa-print me-2"></i> Export CSV
-                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-print me-2"></i> Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportExcel') }}">Export Excel</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportPdf') }}">Export PDF</a></li>
+                    </ul>
+                </div>
 
                 <a href="{{ route('sudirmanpark.create') }}"
                     class="btn btn-sm {{ request()->routeIs('sudirmanpark.create') ? 'btn-primary text-white' : 'btn-outline-primary' }}">

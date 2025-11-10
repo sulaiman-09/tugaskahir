@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Barryvdh\DomPDF\Facade\Pdf; // ✅ tambahkan baris ini
 
 class NewsController extends Controller
 {
@@ -152,35 +153,6 @@ class NewsController extends Controller
         return redirect()->route('news.index')->with('success', 'News deleted successfully!');
     }
 
-    public function exportCsv()
-    {
-        $fileName = 'news_' . date('Y-m-d_H-i-s') . '.csv';
-        $newsList = News::select('news_title', 'news_image_caption', 'news_user_id', 'news_created_date')->get();
-
-        $response = new StreamedResponse(function () use ($newsList) {
-            $handle = fopen('php://output', 'w');
-            // Header CSV
-            fputcsv($handle, ['Title', 'Image Caption', 'Created By (User ID)', 'Created Date']);
-
-            foreach ($newsList as $news) {
-                fputcsv($handle, [
-                    $news->news_title,
-                    $news->news_image_caption,
-                    $news->news_user_id,
-                    $news->news_created_date,
-                ]);
-            }
-
-            fclose($handle);
-        });
-
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $fileName . '"');
-
-        return $response;
-    }
-
-
     public function exportXlsx()
     {
         $fileName = 'news_' . date('Y-m-d_H-i-s') . '.xlsx';
@@ -212,6 +184,17 @@ class NewsController extends Controller
         $writer->save($tempFile);
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+    public function exportPdf()
+    {
+        $newsList = News::select('news_title', 'news_image_caption', 'news_user_id', 'news_created_date')->get();
+
+        // Load view export PDF
+        $pdf = Pdf::loadView('news.export-pdf', ['newsList' => $newsList])
+            ->setPaper('a4', 'landscape'); // biar muat lebar
+
+        return $pdf->download('news_' . now()->format('Ymd_His') . '.pdf');
     }
 
     public function bulkDelete(Request $request)

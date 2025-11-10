@@ -13,10 +13,22 @@
             {{-- Header Card --}}
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('sudirmanpark.exportHomepass', request()->query()) }}"
-                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                        <i class="fa fa-print me-2"></i> Export CSV
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-print me-2"></i> Export
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li>
+                                <a class="dropdown-item"
+                                    href="{{ route('banner.export.excel', request()->query()) }}">Export Excel</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('banner.export.pdf', request()->query()) }}">Export
+                                    PDF</a>
+                            </li>
+                        </ul>
+                    </div>
                     <a href="{{ route('banner.create') }}" class="btn btn-primary btn-sm">
                         + Add Banner
                     </a>
@@ -246,7 +258,7 @@
                         e.preventDefault();
                         const name = form.dataset.name || 'banner ini';
                         if (confirm(
-                            `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
+                                `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
                             form.submit();
                         }
                     });

@@ -17,10 +17,20 @@
                     <h6 class="fw-semibold mb-0 text-dark">Product Categories</h6>
 
                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <a href="{{ route('product.category.export', ['product_search' => request('product_search')]) }}"
-                            class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                            <i class="fa fa-print me-2"></i> Export CSV
-                        </a>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                data-bs-toggle="dropdown">
+                                <i class="fa fa-print me-2"></i> Export
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ route('product.category.export.excel') }}">Export
+                                        Excel</a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{ route('product.category.export.pdf') }}">Export
+                                        PDF</a></li>
+                            </ul>
+                        </div>
+
 
                         <a href="{{ route('product.category.create') }}"
                             class="btn btn-primary btn-sm d-flex align-items-center">
@@ -81,19 +91,12 @@
                                     </td>
                                     <td class="text-start">
                                         @if ($cat->benefits->count() > 0)
-                                            <ul class="mb-0 list-unstyled small">
+                                            <ul class="mb-0 list-unstyled" style="padding-left: 25px; text-align: justify;">
                                                 @foreach ($cat->benefits as $benefit)
-                                                    <li class="d-flex align-items-center mb-1">
-                                                        @if (!empty($benefit->icon))
-                                                            @php
-                                                                $iconPath = Str::startsWith($benefit->icon, 'storage/')
-                                                                    ? asset($benefit->icon)
-                                                                    : asset('storage/' . $benefit->icon);
-                                                            @endphp
-                                                            <img src="{{ $iconPath }}" alt="icon" class="me-2"
-                                                                width="22" height="22" style="object-fit:contain;">
-                                                        @endif
-                                                        <span>{{ $benefit->description }}</span>
+                                                    <li style="margin-bottom: 5px; position: relative; padding-left: 18px;">
+                                                        <span
+                                                            style="position: absolute; left: 0; top: 0; color: #0d6efd; font-size: 18px;">•</span>
+                                                        {{ $benefit->description }}
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -160,10 +163,16 @@
                 <h6 class="fw-semibold mb-0 text-dark">Product List</h6>
 
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('product.export', ['product_search' => request('product_search')]) }}"
-                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                        <i class="fa fa-print me-2"></i> Export CSV
-                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <i class="fa fa-print me-2"></i> Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('product.export.excel') }}">Export Excel</a></li>
+                            <li><a class="dropdown-item" href="{{ route('product.export.pdf') }}">Export PDF</a></li>
+                        </ul>
+                    </div>
 
                     <a href="{{ route('product.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
                         <i class="fa fa-plus me-2"></i> Tambah Product Baru
@@ -210,14 +219,22 @@
                                     <td>{{ $prod->speed }}</td>
                                     <td>
                                         @if ($prod->web_image)
-                                            <img src="{{ asset('storage/' . $prod->web_image) }}" class="img-thumbnail"
-                                                width="90">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary preview-btn"
+                                                data-preview-url="{{ asset('storage/' . $prod->web_image) }}">
+                                                View
+                                            </button>
+                                        @else
+                                            <span class="text-muted">No File</span>
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($prod->apps_image)
-                                            <img src="{{ asset('storage/' . $prod->apps_image) }}" class="img-thumbnail"
-                                                width="90">
+                                        @if ($prod->path_apps)
+                                            <button type="button" class="btn btn-sm btn-outline-secondary preview-btn"
+                                                data-preview-url="{{ asset('storage/' . $prod->path_apps) }}">
+                                                View
+                                            </button>
+                                        @else
+                                            <span class="text-muted">No File</span>
                                         @endif
                                     </td>
                                     <td>{{ $prod->category->name ?? '-' }}</td>
@@ -255,6 +272,22 @@
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
+                                            <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Preview Image</h5>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-center">
+                                                            <img id="previewImage" src="" class="img-fluid"
+                                                                alt="Preview">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -368,6 +401,17 @@
                             } else alert(data.message);
                         })
                         .catch(() => alert('Error, please try again.'));
+                });
+            });
+        </script>
+
+        <script>
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.dataset.previewUrl;
+                    const img = document.getElementById('previewImage');
+                    img.src = url;
+                    new bootstrap.Modal(document.getElementById('previewModal')).show();
                 });
             });
         </script>

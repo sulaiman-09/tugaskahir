@@ -13,10 +13,17 @@
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 {{-- Kiri: Export & Add --}}
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('settings-content.export', request()->query()) }}"
-                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                        <i class="fa fa-print me-2"></i> Export CSV
-                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-print me-2"></i> Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('settings-content.export.excel') }}">Export Excel</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('settings-content.export.pdf') }}">Export PDF</a></li>
+                        </ul>
+                    </div>
                     <a href="{{ route('settings-content.create') }}" class="btn btn-primary btn-sm">
                         + Add Content
                     </a>

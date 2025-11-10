@@ -12,6 +12,11 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\SudirmanTowerAddress;
 use App\Models\Product;
 use Illuminate\Support\Facades\Response;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SudirmanParkExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class SudirmanParkController extends Controller
 {
@@ -281,54 +286,48 @@ class SudirmanParkController extends Controller
         return response()->json(['status' => $customer->status, 'status_change' => $customer->status_change]);
     }
 
-    public function export(Request $request): StreamedResponse
+    // 🟢 Export Excel
+    public function exportExcel(Request $request)
     {
-        $q = $request->query('q');
-        $showAll = $request->query('show_all') == '1';
-
+        $filename = 'sudirmanpark_' . now()->format('Ymd_His') . '.xlsx';
         $query = SudirmanPark::query();
-        $hasVisible = Schema::hasColumn('sudirman_parks', 'visible');
-        if (!$showAll && $hasVisible) {
-            $query->where('visible', true);
-        }
-        if ($q) {
+
+        if ($request->filled('q')) {
+            $q = $request->q;
             $query->where(function ($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
-                    ->orWhere('phone', 'like', "%{$q}%");
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
             });
         }
 
-        $items = $query->latest()->get();
+        $data = $query->latest()->get();
 
-        $filename = 'sudirmanpark_export_' . now()->format('Ymd_His') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function () use ($items) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID', 'Name', 'Phone', 'Email', 'Tower', 'Package', 'KTP', 'Status', 'Visible', 'Created At']);
-            foreach ($items as $i) {
-                fputcsv($out, [
-                    $i->id,
-                    $i->name,
-                    $i->phone,
-                    $i->email,
-                    $i->tower,
-                    $i->package,
-                    $i->ktp ? asset('storage/ktp/' . $i->ktp) : '',
-                    $i->status,
-                    ($hasVisible ? ($i->visible ? '1' : '0') : ''),
-                    $i->created_at,
-                ]);
-            }
-            fclose($out);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return Excel::download(new SudirmanParkExport($data), $filename);
     }
+
+    // 🔴 Export PDF
+    public function exportPdf(Request $request)
+    {
+        $query = SudirmanPark::query();
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
+            });
+        }
+
+        $customers = $query->latest()->get();
+
+        $pdf = Pdf::loadView('sudirmanpark.export-pdf', compact('customers'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('sudirmanpark_' . now()->format('Ymd_His') . '.pdf');
+    }
+
 
     public function alamat(Request $request)
     {
@@ -478,11 +477,10 @@ class SudirmanParkController extends Controller
         return redirect()->route('sudirmanpark.alamat')->with('success', 'Homepass berhasil dihapus!');
     }
 
-    public function exportHomepass(Request $request)
+    public function exportHomepassExcel(Request $request)
     {
-        $query = SudirmanTowerAddress::query(); // pakai model yang benar
+        $query = SudirmanTowerAddress::query();
 
-        // Fitur search
         if ($request->filled('q')) {
             $search = $request->input('q');
             $query->where('tower', 'like', "%{$search}%")
@@ -493,32 +491,51 @@ class SudirmanParkController extends Controller
 
         $homepasses = $query->get();
 
-        $csvHeader = ['Tower', 'Floor', 'Unit', 'Alamat Lengkap', 'Jumlah Customer', 'Status', 'Tanggal Dibuat'];
-        $filename = 'homepass_export_' . date('Ymd_His') . '.csv';
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        $callback = function () use ($homepasses, $csvHeader) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $csvHeader);
+        $sheet->fromArray(['Tower', 'Floor', 'Unit', 'Alamat Lengkap', 'Jumlah Customer', 'Status', 'Tanggal Dibuat'], null, 'A1');
 
-            foreach ($homepasses as $h) {
-                fputcsv($file, [
-                    $h->tower,
-                    $h->floor,
-                    $h->unit,
-                    $h->full_address,
-                    $h->jumlah_customer ?? 0,
-                    ($h->is_active ? 'Aktif' : 'Nonaktif'),
-                    $h->created_at->format('d/m/Y H:i:s'),
-                ]);
-            }
+        $row = 2;
+        foreach ($homepasses as $h) {
+            $sheet->fromArray([
+                $h->tower,
+                $h->floor,
+                $h->unit,
+                $h->full_address,
+                $h->jumlah_customer ?? 0,
+                ($h->is_active ? 'Aktif' : 'Nonaktif'),
+                $h->created_at->format('d/m/Y H:i:s'),
+            ], null, 'A' . $row);
+            $row++;
+        }
 
-            fclose($file);
-        };
+        $filename = 'homepass_export_' . date('Ymd_His') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
 
-        return Response::stream($callback, 200, [
-            "Content-Type" => "text/csv",
-            "Content-Disposition" => "attachment; filename={$filename}"
-        ]);
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename);
+    }
+
+    public function exportHomepassPdf(Request $request)
+    {
+        $query = SudirmanTowerAddress::query();
+
+        if ($request->filled('q')) {
+            $search = $request->input('q');
+            $query->where('tower', 'like', "%{$search}%")
+                ->orWhere('floor', 'like', "%{$search}%")
+                ->orWhere('unit', 'like', "%{$search}%")
+                ->orWhere('full_address', 'like', "%{$search}%");
+        }
+
+        $homepasses = $query->limit(200)->get(); // ambil maksimal 200 data dulu biar gak overload
+
+        $pdf = Pdf::loadView('sudirmanpark.export-homepass-pdf', compact('homepasses'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('homepass_export_' . now()->format('Ymd_His') . '.pdf');
     }
 
     public function bulkDelete(Request $request)

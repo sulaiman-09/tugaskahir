@@ -6,6 +6,9 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ArrayExport;
 
 class CustomerController extends Controller
 {
@@ -200,5 +203,39 @@ class CustomerController extends Controller
                 'message' => 'Gagal menghapus data: ' . $e->getMessage()
             ]);
         }
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $customers = Customer::with(['product', 'productCategory'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $data = $customers->map(function ($c) {
+            return [
+                'ID' => $c->id,
+                'Customer Name' => $c->customer_name,
+                'Phone' => $c->customer_phone,
+                'Email' => $c->email,
+                'Address' => $c->address,
+                'Product' => $c->product->product_name ?? '-',
+                'Category' => $c->productCategory->name ?? '-',
+                'Created At' => $c->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        return Excel::download(new ArrayExport($data), 'customers_' . now()->format('Ymd_His') . '.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $customers = Customer::with(['product', 'productCategory'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('customer.export-pdf', compact('customers'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('customers_' . now()->format('Ymd_His') . '.pdf');
     }
 }

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\SettingsContent;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class SettingsContentController extends Controller
 {
@@ -128,49 +131,53 @@ class SettingsContentController extends Controller
         return redirect()->route('settings-content.index')->with('success', 'Content deleted successfully!');
     }
 
-    public function export(Request $request)
+    // ✅ Export Excel
+    public function exportExcel()
     {
-        $query = SettingsContent::query();
+        $contents = \App\Models\SettingsContent::orderBy('order')->get();
 
-        // Jika ada search, ikut filter
-        if ($search = $request->input('search')) {
-            $query->where('title', 'like', "%{$search}%")
-                ->orWhere('name', 'like', "%{$search}%");
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->fromArray(['ID', 'Title', 'Name', 'Type ID', 'Order', 'Status'], null, 'A1');
+
+        // Data
+        $row = 2;
+        foreach ($contents as $c) {
+            $sheet->fromArray([
+                $c->id,
+                $c->title,
+                $c->name,
+                $c->content_type_id,
+                $c->order,
+                $c->is_active ? 'Active' : 'Inactive',
+            ], null, "A{$row}");
+            $row++;
         }
 
-        $contents = $query->orderBy('order')->get();
+        foreach (range('A', 'F') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
-        $filename = 'settings_content_' . date('Ymd_His') . '.csv';
+        $fileName = 'settings_content_' . now()->format('Ymd_His') . '.xlsx';
+        $tempFile = tempnam(sys_get_temp_dir(), 'settings_content_');
+        (new Xlsx($spreadsheet))->save($tempFile);
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename={$filename}",
-        ];
-
-        $columns = ['ID', 'Title', 'Name', 'Type ID', 'Order', 'Status', 'Image', 'Icon'];
-
-        $callback = function () use ($contents, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            foreach ($contents as $c) {
-                fputcsv($file, [
-                    $c->id,
-                    $c->title,
-                    $c->name,
-                    $c->content_type_id,
-                    $c->order,
-                    $c->is_active ? 'Active' : 'Inactive',
-                    $c->image ? asset('storage/' . $c->image) : '',
-                    $c->icon ? asset('storage/' . $c->icon) : '',
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return Response::stream($callback, 200, $headers);
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
+
+    // ✅ Export PDF
+    public function exportPdf()
+    {
+        $contents = \App\Models\SettingsContent::orderBy('order')->get();
+
+        $pdf = Pdf::loadView('settingscontent.export-pdf', compact('contents'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('settings_content_' . now()->format('Ymd_His') . '.pdf');
+    }
+
 
     public function bulkDelete(Request $request)
     {

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Division;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ArrayExport;
 
 class DivisionController extends Controller
 {
@@ -154,5 +157,56 @@ class DivisionController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to delete divisions.']);
         }
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $q = $request->query('search');
+        $query = Division::query();
+
+        // 🔍 Filter berdasarkan pencarian
+        if ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhere('status', 'like', "%{$q}%");
+            });
+        }
+
+        $divisions = $query->orderBy('created_at', 'desc')->get();
+
+        $data = $divisions->map(function ($d) {
+            return [
+                'ID' => $d->id,
+                'Name' => $d->name,
+                'Description' => $d->description,
+                'Status' => $d->status ? 'Active' : 'Inactive',
+                'Customer Leads' => $d->customer_leads,
+                'Created At' => $d->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        return Excel::download(new ArrayExport($data), 'divisions_' . now()->format('Ymd_His') . '.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $q = $request->query('search');
+        $query = Division::query();
+
+        if ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhere('status', 'like', "%{$q}%");
+            });
+        }
+
+        $divisions = $query->orderBy('created_at', 'desc')->get();
+
+        $pdf = Pdf::loadView('division.export-pdf', compact('divisions'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('divisions_' . now()->format('Ymd_His') . '.pdf');
     }
 }

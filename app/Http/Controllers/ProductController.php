@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProductController extends Controller
 {
@@ -149,9 +152,6 @@ class ProductController extends Controller
         return redirect()->route('product.index')->with('success', 'Category deleted successfully!');
     }
 
-
-
-
     /* ======================================================
        ===============  BAGIAN B : PRODUCT CRUD  =============
        ====================================================== */
@@ -171,30 +171,43 @@ class ProductController extends Controller
     // SIMPAN PRODUK BARU
     public function store(Request $request)
     {
-        $request->validate([
+        // Validasi input
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'speed' => 'required|string|max:50',
             'description' => 'required|string',
             'product_category_id' => 'required|exists:product_categories,id',
             'price' => 'nullable|numeric',
-            'web_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'apps_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'apps_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['name', 'speed', 'description', 'product_category_id', 'price']);
-        $data['show_price'] = 1;
+        // Siapkan data untuk insert
+        $data = [
+            'name' => $validated['name'],
+            'speed' => $validated['speed'],
+            'description' => $validated['description'],
+            'product_category_id' => $validated['product_category_id'],
+            'price' => $validated['price'],
+            'show_price' => 1, // default show price
+        ];
 
+        // Simpan web_image jika ada
         if ($request->hasFile('web_image')) {
             $data['web_image'] = $request->file('web_image')->store('products', 'public');
         }
+
+        // Simpan apps_image → path_apps jika ada
         if ($request->hasFile('apps_image')) {
-            $data['apps_image'] = $request->file('apps_image')->store('products', 'public');
+            $data['path_apps'] = $request->file('apps_image')->store('products', 'public');
         }
 
+        // Simpan produk baru
         Product::create($data);
 
         return redirect()->route('product.index')->with('success', 'Product created successfully!');
     }
+
 
     // EDIT PRODUK
     public function edit($id)
@@ -207,34 +220,53 @@ class ProductController extends Controller
     // UPDATE PRODUK
     public function update(Request $request, $id)
     {
+        // Ambil data produk
         $product = Product::findOrFail($id);
 
-        $request->validate([
+        // Validasi input
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'speed' => 'required|string|max:50',
             'description' => 'required|string',
             'product_category_id' => 'required|exists:product_categories,id',
             'price' => 'nullable|numeric',
-            'web_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'apps_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'web_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'apps_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['name', 'speed', 'description', 'product_category_id', 'price']);
+        // Siapkan data update
+        $data = [
+            'name' => $validated['name'],
+            'speed' => $validated['speed'],
+            'description' => $validated['description'],
+            'product_category_id' => $validated['product_category_id'],
+            'price' => $validated['price'],
+        ];
 
+        // Update Web Image jika ada file baru
         if ($request->hasFile('web_image')) {
-            if ($product->web_image) Storage::disk('public')->delete($product->web_image);
+            // Hapus file lama jika ada
+            if ($product->web_image && Storage::disk('public')->exists($product->web_image)) {
+                Storage::disk('public')->delete($product->web_image);
+            }
+            // Simpan file baru
             $data['web_image'] = $request->file('web_image')->store('products', 'public');
         }
 
+        // Update Apps Image → simpan ke kolom path_apps
         if ($request->hasFile('apps_image')) {
-            if ($product->apps_image) Storage::disk('public')->delete($product->apps_image);
-            $data['apps_image'] = $request->file('apps_image')->store('products', 'public');
+            if ($product->path_apps && Storage::disk('public')->exists($product->path_apps)) {
+                Storage::disk('public')->delete($product->path_apps);
+            }
+            $data['path_apps'] = $request->file('apps_image')->store('products', 'public');
         }
 
+        // Update data produk
         $product->update($data);
 
         return redirect()->route('product.index')->with('success', 'Product updated successfully!');
     }
+
 
     // HAPUS PRODUK
     public function destroy($id)
@@ -267,10 +299,12 @@ class ProductController extends Controller
     }
 
     // EXPORT PRODUCT KE CSV
-    public function export(Request $request)
+    // ====================================
+    // 🔹 EXPORT PRODUCT KE EXCEL
+    // ====================================
+    public function exportExcel(Request $request)
     {
         $search = $request->input('product_search');
-
         $products = Product::with('category')
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', "%$search%")
@@ -280,37 +314,58 @@ class ProductController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $filename = 'products_' . date('Y-m-d_H-i-s') . '.csv';
-        $columns = ['ID', 'Name', 'Category', 'Speed', 'Price', 'Description', 'Show Price'];
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray(['ID', 'Name', 'Category', 'Speed', 'Price', 'Description', 'Show Price'], null, 'A1');
 
-        $callback = function () use ($products, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
+        $row = 2;
+        foreach ($products as $p) {
+            $sheet->fromArray([
+                $p->id,
+                $p->name,
+                optional($p->category)->name,
+                $p->speed,
+                $p->price,
+                strip_tags($p->description),
+                $p->show_price ? 'Yes' : 'No',
+            ], null, "A{$row}");
+            $row++;
+        }
 
-            foreach ($products as $p) {
-                fputcsv($file, [
-                    $p->id,
-                    $p->name,
-                    optional($p->category)->name,
-                    $p->speed,
-                    $p->price,
-                    strip_tags($p->description),
-                    $p->show_price ? 'Yes' : 'No',
-                ]);
-            }
-            fclose($file);
-        };
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'products_' . now()->format('Ymd_His') . '.xlsx';
 
-        return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=$filename",
-        ]);
+        // simpan ke output
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename);
     }
 
-    public function exportCategory(Request $request)
+    // ====================================
+    // 🔹 EXPORT PRODUCT KE PDF
+    // ====================================
+    public function exportPdf(Request $request)
+    {
+        $search = $request->input('product_search');
+        $products = Product::with('category')
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%")
+                    ->orWhere('speed', 'like', "%$search%")
+                    ->orWhereHas('category', fn($q) => $q->where('name', 'like', "%$search%"));
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('product.export-pdf', compact('products'));
+        return $pdf->download('products_' . now()->format('Ymd_His') . '.pdf');
+    }
+
+    // ====================================
+    // 🔹 EXPORT CATEGORY KE EXCEL
+    // ====================================
+    public function exportCategoryExcel(Request $request)
     {
         $search = $request->input('category_search');
-
         $categories = ProductCategory::when($search, function ($query) use ($search) {
             $query->where('name', 'like', "%$search%")
                 ->orWhere('slug', 'like', "%$search%");
@@ -318,30 +373,46 @@ class ProductController extends Controller
             ->orderBy('id', 'asc')
             ->get();
 
-        $filename = 'product_categories_' . date('Y-m-d_H-i-s') . '.csv';
-        $columns = ['ID', 'Name', 'Slug', 'Short Description', 'Show Price'];
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray(['ID', 'Name', 'Slug', 'Short Description', 'Show Price'], null, 'A1');
 
-        $callback = function () use ($categories, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
+        $row = 2;
+        foreach ($categories as $c) {
+            $sheet->fromArray([
+                $c->id,
+                $c->name,
+                $c->slug,
+                strip_tags($c->short_description),
+                $c->show_price ? 'Yes' : 'No',
+            ], null, "A{$row}");
+            $row++;
+        }
 
-            foreach ($categories as $c) {
-                fputcsv($file, [
-                    $c->id,
-                    $c->name,
-                    $c->slug,
-                    strip_tags($c->short_description),
-                    $c->show_price ? 'Yes' : 'No',
-                ]);
-            }
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=$filename",
-        ]);
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'categories_' . now()->format('Ymd_His') . '.xlsx';
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename);
     }
+
+    // ====================================
+    // 🔹 EXPORT CATEGORY KE PDF
+    // ====================================
+    public function exportCategoryPdf(Request $request)
+    {
+        $search = $request->input('category_search');
+        $categories = ProductCategory::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%$search%")
+                ->orWhere('slug', 'like', "%$search%");
+        })
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $pdf = Pdf::loadView('product.export-category-pdf', compact('categories'));
+        return $pdf->download('product_categories_' . now()->format('Ymd_His') . '.pdf');
+    }
+
 
     // Bulk delete Product
     public function bulkDelete(Request $request)

@@ -11,10 +11,17 @@
             {{-- Header --}}
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('news.export.csv') }}"
-                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                        <i class="fa fa-print me-2"></i> Export CSV
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center"
+                            type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-print me-2"></i> Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('news.export.xlsx') }}">Export Excel</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('news.export.pdf') }}">Export PDF</a></li>
+                        </ul>
+                    </div>
                     <a href="{{ route('news.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
                         <i class="fa fa-plus me-2"></i> Add News
                     </a>

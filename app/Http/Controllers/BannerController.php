@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use App\Exports\BannersExport;
 
 class BannerController extends Controller
 {
@@ -118,7 +122,7 @@ class BannerController extends Controller
         return redirect()->route('banner.index')->with('success', 'Banner berhasil dihapus.');
     }
 
-    public function export(Request $request)
+    public function exportExcel(Request $request)
     {
         $q = $request->query('search');
         $query = Banner::query();
@@ -129,30 +133,36 @@ class BannerController extends Controller
 
         $items = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'banners_export_' . now()->format('Ymd_His') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function () use ($items) {
-            $out = fopen('php://output', 'w');
-            fputcsv($out, ['ID', 'Name', 'Web Image', 'Mobile Image', 'Created At']);
-            foreach ($items as $i) {
-                fputcsv($out, [
-                    $i->id,
-                    $i->name,
-                    $i->web_image,
-                    $i->mobile_image,
-                    $i->created_at,
-                ]);
-            }
-            fclose($out);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        $filename = 'banners_export_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new BannersExport($items), $filename);
     }
 
+    public function exportPdf(Request $request)
+    {
+        $q = $request->query('search');
+        $query = Banner::query();
+
+        if ($q) {
+            $query->where('name', 'like', "%{$q}%");
+        }
+
+        $items = $query->orderBy('created_at', 'desc')->get();
+
+        $html = view('banner.export-pdf', compact('items'))->render();
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        return response($dompdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="banners_export_' . now()->format('Ymd_His') . '.pdf"');
+    }
     public function toggleStatus(Request $request, Banner $banner)
     {
         $banner->is_active = $request->is_active;

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Career;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CareerController extends Controller
 {
@@ -140,5 +142,32 @@ class CareerController extends Controller
         Career::whereIn('id', $ids)->delete();
 
         return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $careers = Career::orderBy('created_at', 'desc')->get();
+
+        $data = $careers->map(function ($career) {
+            return [
+                'ID' => $career->id,
+                'Title' => $career->title,
+                'Type' => $career->type,
+                'Education Level' => $career->education_level,
+                'Location' => $career->location,
+                'Status' => $career->is_active ? 'Active' : 'Inactive',
+                'Created At' => $career->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        return Excel::download(new \App\Exports\ArrayExport($data), 'careers_' . now()->format('Ymd_His') . '.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $careers = Career::orderBy('created_at', 'desc')->get();
+
+        $pdf = Pdf::loadView('career.export-pdf', ['careers' => $careers]);
+        return $pdf->download('careers_' . now()->format('Ymd_His') . '.pdf');
     }
 }

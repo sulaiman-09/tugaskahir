@@ -63,7 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [CustomerController::class, 'index'])->name('index');
         Route::get('/create', [CustomerController::class, 'create'])->name('create');
         Route::post('/', [CustomerController::class, 'store'])->name('store');
-        Route::get('/export', [CustomerController::class, 'export'])->name('export');
+        Route::get('/export/excel', [CustomerController::class, 'exportExcel'])->name('export.excel');
+        Route::get('/export/pdf', [CustomerController::class, 'exportPdf'])->name('export.pdf');
         Route::get('/{id}/edit', [CustomerController::class, 'edit'])->name('edit');
         Route::put('/{id}', [CustomerController::class, 'update'])->name('update');
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
@@ -76,42 +77,45 @@ Route::middleware('auth')->group(function () {
     Route::prefix('sudirmanpark')
         ->name('sudirmanpark.')
         ->group(function () {
-            // Main CRUD
+            // 🏢 Main CRUD Sudirman Park
             Route::get('/', [SudirmanParkController::class, 'index'])->name('index');
             Route::get('/create', [SudirmanParkController::class, 'create'])->name('create');
             Route::post('/store', [SudirmanParkController::class, 'store'])->name('store');
-            Route::get('/export', [SudirmanParkController::class, 'export'])->name('export');
             Route::get('/{id}/edit', [SudirmanParkController::class, 'edit'])->name('edit');
             Route::put('/{id}', [SudirmanParkController::class, 'update'])->name('update');
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
 
-            // 🔹 Bulk Delete
+            // 🗑️ Bulk Delete (Customer)
             Route::post('/bulk-delete', [SudirmanParkController::class, 'bulkDelete'])->name('bulkDelete');
 
-            // 🔹 Bulk Delete Homepass (ALAMAT TOWER)
-            Route::delete('/homepass/bulk-delete', [SudirmanParkController::class, 'bulkDeleteHomepass'])
-                ->name('bulkDeleteHomepass');
+            // 🗑️ Bulk Delete Homepass (Alamat Tower)
+            Route::delete('/homepass/bulk-delete', [SudirmanParkController::class, 'bulkDeleteHomepass'])->name('bulkDeleteHomepass');
 
-            // Ajax status update for a customer
+            // ⚙️ Update Status Customer
             Route::patch('/{id}/status', [SudirmanParkController::class, 'updateStatus'])->name('updateStatus');
 
-            // Remove KTP file
+            // 🧾 KTP Operations
             Route::delete('/{id}/ktp', [SudirmanParkController::class, 'removeKtp'])->name('removeKtp');
-
-            // Download KTP (secure via controller)
             Route::get('/{id}/ktp/download', [SudirmanParkController::class, 'downloadKtp'])->name('downloadKtp');
-
-            // Preview KTP inline for modal
             Route::get('/{id}/ktp/preview', [SudirmanParkController::class, 'previewKtp'])->name('previewKtp');
 
-            // Homepass (alamat tower) CRUD
+            // 🏠 Homepass (Alamat Tower)
             Route::get('/alamat', [SudirmanParkController::class, 'alamat'])->name('alamat');
             Route::get('/homepass/create', [SudirmanParkController::class, 'createHomepass'])->name('createHomepass');
             Route::post('/homepass', [SudirmanParkController::class, 'storeHomepass'])->name('storeHomepass');
             Route::get('/homepass/{id}/edit', [SudirmanParkController::class, 'editHomepass'])->name('editHomepass');
             Route::put('/homepass/{id}', [SudirmanParkController::class, 'updateHomepass'])->name('updateHomepass');
             Route::delete('/homepass/{id}', [SudirmanParkController::class, 'destroyHomepass'])->name('destroyHomepass');
-            Route::get('/homepass/export', [SudirmanParkController::class, 'exportHomepass'])->name('exportHomepass');
+
+            // 📤 Export Homepass (Excel & PDF)
+            Route::get('/homepass/export/excel', [SudirmanParkController::class, 'exportHomepassExcel'])
+                ->name('exportHomepassExcel');
+            Route::get('/homepass/export/pdf', [SudirmanParkController::class, 'exportHomepassPdf'])
+                ->name('exportHomepassPdf');
+
+            // 📤 Export Customer (optional)
+            Route::get('/export/pdf', [SudirmanParkController::class, 'exportPdf'])->name('exportPdf');
+            Route::get('/export/excel', [SudirmanParkController::class, 'exportExcel'])->name('exportExcel');
         });
 
     Route::middleware('role:admin,sudirmanpark')->group(function () {
@@ -138,39 +142,46 @@ Route::middleware('auth')->group(function () {
         Route::post('/product/category/bulk-delete', [ProductController::class, 'bulkDeleteCategory'])
             ->name('product.category.bulkDelete');
 
-        // Export Category
-        Route::get('/product/category/export', [ProductController::class, 'exportCategory'])->name('product.category.export');
+        // ========== EXPORT PRODUCT ==========
+        Route::get('/product/export/excel', [ProductController::class, 'exportExcel'])->name('product.export.excel');
+        Route::get('/product/export/pdf', [ProductController::class, 'exportPdf'])->name('product.export.pdf');
+
+        // ========== EXPORT CATEGORY ==========
+        Route::get('/product/category/export/excel', [ProductController::class, 'exportCategoryExcel'])->name('product.category.export.excel');
+        Route::get('/product/category/export/pdf', [ProductController::class, 'exportCategoryPdf'])->name('product.category.export.pdf');
 
         // Toggle Show Price Category
         Route::put('/product/category/{id}/toggle-price', [ProductController::class, 'toggleCategoryPrice'])
             ->name('product.category.togglePrice');
     });
 
+
     Route::middleware(['auth'])->group(function () {
-        Route::resource('banner', App\Http\Controllers\BannerController::class)->except(['show']);
-        Route::get('/banner/export', [App\Http\Controllers\BannerController::class, 'export'])->name('banner.export');
-        Route::patch('/banner/{banner}/toggle-status', [App\Http\Controllers\BannerController::class, 'toggleStatus'])
-            ->name('banner.toggle-status');
-        Route::post('/bulk-delete', [BannerController::class, 'bulkDelete'])->name('banner.bulkDelete');
+        Route::resource('banner', BannerController::class)->except(['show']);
+        Route::get('/banner/export', [BannerController::class, 'export'])->name('banner.export');
+        Route::get('/banner/export/excel', [BannerController::class, 'exportExcel'])->name('banner.export.excel');
+        Route::get('/banner/export/pdf', [BannerController::class, 'exportPdf'])->name('banner.export.pdf');
+        Route::patch('/banner/{banner}/toggle-status', [BannerController::class, 'toggleStatus'])->name('banner.toggle-status');
+        Route::post('/banner/bulk-delete', [BannerController::class, 'bulkDelete'])->name('banner.bulkDelete');
     });
 
     Route::middleware(['auth'])->group(function () {
-        // Export & status update
         Route::get('/division/export', [App\Http\Controllers\DivisionController::class, 'export'])->name('division.export');
+        Route::get('/division/export/excel', [App\Http\Controllers\DivisionController::class, 'exportExcel'])->name('division.export.excel');
+        Route::get('/division/export/pdf', [App\Http\Controllers\DivisionController::class, 'exportPdf'])->name('division.export.pdf');
         Route::patch('/division/{id}/status', [App\Http\Controllers\DivisionController::class, 'updateStatus'])->name('division.updateStatus');
-        // Resource
         Route::resource('division', App\Http\Controllers\DivisionController::class);
-        // Bulk delete (dengan prefix name 'division.')
-        Route::post('/division/bulk-delete', [App\Http\Controllers\DivisionController::class, 'bulkDelete'])
-            ->name('division.bulkDelete');
+        Route::post('/division/bulk-delete', [App\Http\Controllers\DivisionController::class, 'bulkDelete'])->name('division.bulkDelete');
     });
+
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/career', [CareerController::class, 'index'])->name('career.index');
         Route::get('/career/{id}/edit', [CareerController::class, 'edit'])->name('career.edit');
         Route::put('/career/{id}', [CareerController::class, 'update'])->name('career.update');
         Route::delete('/career/{id}', [CareerController::class, 'destroy'])->name('career.destroy');
-        Route::get('career/export', [App\Http\Controllers\CareerController::class, 'export'])->name('career.export');
+        Route::get('/career/export/excel', [CareerController::class, 'exportExcel'])->name('career.export.excel');
+        Route::get('/career/export/pdf', [CareerController::class, 'exportPdf'])->name('career.export.pdf');
         Route::get('/career/create', [CareerController::class, 'create'])->name('career.create');
         Route::post('/career', [CareerController::class, 'store'])->name('career.store');
         Route::post('/career/bulk-delete', [CareerController::class, 'bulkDelete'])->name('career.bulkDelete');
@@ -178,7 +189,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['auth'])->group(function () {
         Route::resource('news', NewsController::class);
-        Route::get('news/export/csv', [NewsController::class, 'exportCsv'])->name('news.export.csv');
+        Route::get('news/export/pdf', [NewsController::class, 'exportPdf'])->name('news.export.pdf');
         Route::get('news/export/xlsx', [NewsController::class, 'exportXlsx'])->name('news.export.xlsx');
         Route::post('/news/bulk-delete', [App\Http\Controllers\NewsController::class, 'bulkDelete'])->name('news.bulkDelete');
     });
@@ -190,8 +201,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/edit', [SettingsContentController::class, 'edit'])->name('settings-content.edit');
         Route::put('/{id}', [SettingsContentController::class, 'update'])->name('settings-content.update');
         Route::delete('/{id}', [SettingsContentController::class, 'destroy'])->name('settings-content.destroy');
-        Route::get('settings-content/export', [SettingsContentController::class, 'export'])->name('settings-content.export');
-        Route::post('/settings-content/bulk-delete', [SettingsContentController::class, 'bulkDelete'])->name('settings-content.bulkDelete');
+
+        // ✅ perbaikan: jangan ulang prefix
+        Route::get('/export/excel', [SettingsContentController::class, 'exportExcel'])->name('settings-content.export.excel');
+        Route::get('/export/pdf', [SettingsContentController::class, 'exportPdf'])->name('settings-content.export.pdf');
+
+        Route::post('/bulk-delete', [SettingsContentController::class, 'bulkDelete'])->name('settings-content.bulkDelete');
     });
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

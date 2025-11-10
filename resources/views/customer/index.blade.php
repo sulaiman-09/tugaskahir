@@ -72,10 +72,16 @@
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('customer.export', request()->query()) }}"
-                        class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                        <i class="fa fa-print me-2"></i> Export CSV
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-print me-2"></i> Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('customer.export.excel') }}">Export Excel</a></li>
+                            <li><a class="dropdown-item" href="{{ route('customer.export.pdf') }}">Export PDF</a></li>
+                        </ul>
+                    </div>
                     <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm">
                         + Tambah Lead Baru
                     </a>
