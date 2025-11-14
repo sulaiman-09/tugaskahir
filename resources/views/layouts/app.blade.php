@@ -259,9 +259,15 @@
         }
     </style>
 
+    <style>
+        .sidebar ol, ul {   
+            padding-left: 0 !important;
+        }
+    </style>
+
     {{-- Tempat CSS tambahan dari setiap halaman --}}
     @stack('styles')
-</head>
+</head> 
 
 <body>
     <header class="header">
