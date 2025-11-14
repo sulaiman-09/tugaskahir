@@ -107,43 +107,51 @@
                 </div>
             </div>
 
-            {{-- Footer: per page + pagination --}}
-            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
+            {{-- Footer: per page + showing + pagination --}}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-3">
 
-                {{-- Records per page --}}
-                <form method="GET" action="{{ route('division.index') }}" id="perPageForm"
-                    class="d-flex align-items-center gap-2">
-                    <label for="per_page" class="mb-0">Show</label>
-                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
-                        @foreach ([10, 25, 50, 100, 'All'] as $size)
-                            <option value="{{ $size }}"
-                                {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
-                                {{ $size }}
-                            </option>
+                {{-- Left side: Show per page + Showing text --}}
+                <div class="d-flex align-items-center flex-wrap gap-3">
+
+                    {{-- Records per page --}}
+                    <form method="GET" action="{{ route('division.index') }}" id="perPageForm"
+                        class="d-flex align-items-center gap-2">
+
+                        <label for="per_page" class="mb-0 small text-muted">Show</label>
+
+                        <select name="per_page" id="per_page" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                            @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                <option value="{{ $size }}"
+                                    {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        {{-- Keep other filters --}}
+                        @foreach (request()->except('per_page', 'page') as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
-                    </select>
+                    </form>
 
-                    {{-- Pertahankan query lain --}}
-                    @foreach (request()->except('per_page', 'page') as $key => $value)
-                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                    @endforeach
-                </form>
-
-                {{-- Pagination --}}
-                <div>
-                    <small class="text-muted">
+                    {{-- Showing text DI SAMPING Show Per Page --}}
+                    <div class="small text-muted">
                         @if ($divisions instanceof \Illuminate\Pagination\LengthAwarePaginator)
                             Showing {{ $divisions->firstItem() ?? 0 }} to {{ $divisions->lastItem() ?? 0 }}
                             of {{ $divisions->total() }} Results
                         @else
                             Showing 1 to {{ $divisions->count() }} of {{ $divisions->count() }} Results
                         @endif
-                    </small>
-                    <div>
-                        @if ($divisions instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                            {{ $divisions->links() }}
-                        @endif
                     </div>
+
+                </div>
+
+                {{-- Right side: Pagination --}}
+                <div class="right-pagination pagination-sm">
+                    @if ($divisions instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                        {{ $divisions->links() }}
+                    @endif
                 </div>
 
             </div>

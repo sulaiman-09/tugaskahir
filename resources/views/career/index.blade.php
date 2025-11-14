@@ -119,25 +119,53 @@
                 </div>
             </div>
 
-            {{-- Footer --}}
-            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
-                <div class="d-flex align-items-center">
+            {{-- Footer: per page + showing + pagination --}}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-3">
+
+                {{-- Left: Show per page + showing --}}
+                <div class="d-flex align-items-center flex-wrap gap-3">
+
                     <form method="GET" action="{{ route('career.index') }}" id="perPageForm"
                         class="d-flex align-items-center gap-2">
-                        <label for="per_page" class="mb-0">Show</label>
+                        <label for="per_page" class="mb-0 small text-muted">Show</label>
+
                         <select name="per_page" id="per_page" class="form-select form-select-sm"
                             onchange="this.form.submit()">
                             @foreach ([10, 25, 50, 100, 'All'] as $size)
                                 <option value="{{ $size }}"
-                                    {{ request('per_page', 15) == $size ? 'selected' : '' }}>{{ $size }}</option>
+                                    {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
                             @endforeach
                         </select>
+
+                        {{-- Pertahankan filter lain --}}
                         @foreach (request()->except('per_page', 'page') as $key => $value)
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                     </form>
+
+                    {{-- Showing text --}}
+                    <div class="small text-muted">
+                        @if ($careers instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            Showing {{ $careers->firstItem() ?? 0 }} to {{ $careers->lastItem() ?? 0 }}
+                            of {{ $careers->total() }} Results
+                        @else
+                            Showing 1 to {{ $careers->count() }} of {{ $careers->count() }} Results
+                        @endif
+                    </div>
+
                 </div>
+
+                {{-- Right: Pagination --}}
+                <div class="right-pagination pagination-sm">
+                    @if ($careers instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                        {{ $careers->links() }}
+                    @endif
+                </div>
+
             </div>
+
         </div>
     </div>
 

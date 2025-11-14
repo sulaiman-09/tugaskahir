@@ -157,26 +157,46 @@
             </div>
 
 
-            {{-- Footer: Records per page + Pagination --}}
-            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
-                <form method="GET" action="{{ route('news.index') }}" id="perPageForm"
-                    class="d-flex align-items-center gap-2">
-                    <label for="per_page" class="mb-0">Show</label>
-                    <select name="per_page" id="per_page" class="form-select form-select-sm"
-                        onchange="this.form.submit()">
-                        @foreach ([10, 25, 50, 100, 'All'] as $size)
-                            <option value="{{ $size }}"
-                                {{ strtolower(request('per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
-                                {{ $size }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @foreach (request()->except('per_page', 'page') as $key => $value)
-                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                    @endforeach
-                </form>
+            {{-- Footer: Records per page + Showing + Pagination --}}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-3">
 
-                <div>
+                {{-- Left: Show per page + showing text --}}
+                <div class="d-flex align-items-center flex-wrap gap-3">
+
+                    <form method="GET" action="{{ route('news.index') }}" id="perPageForm"
+                        class="d-flex align-items-center gap-2">
+                        <label for="per_page" class="mb-0 small text-muted">Show</label>
+
+                        <select name="per_page" id="per_page" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                            @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                <option value="{{ $size }}"
+                                    {{ strtolower(request('per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        {{-- Pertahankan query --}}
+                        @foreach (request()->except('per_page', 'page') as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endforeach
+                    </form>
+
+                    {{-- Showing text --}}
+                    <div class="small text-muted">
+                        @if ($news instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            Showing {{ $news->firstItem() ?? 0 }} to {{ $news->lastItem() ?? 0 }}
+                            of {{ $news->total() }} Results
+                        @else
+                            Showing 1 to {{ $news->count() }} of {{ $news->count() }} Results
+                        @endif
+                    </div>
+
+                </div>
+
+                {{-- Right: Pagination --}}
+                <div class="right-pagination pagination-sm">
                     {{ $news->links() }}
                 </div>
             </div>

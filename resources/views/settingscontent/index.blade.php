@@ -19,9 +19,11 @@
                             <i class="fa fa-print me-2"></i> Export
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('settings-content.export.excel') }}">Export Excel</a>
+                            <li><a class="dropdown-item" href="{{ route('settings-content.export.excel') }}">Export
+                                    Excel</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('settings-content.export.pdf') }}">Export PDF</a></li>
+                            <li><a class="dropdown-item" href="{{ route('settings-content.export.pdf') }}">Export PDF</a>
+                            </li>
                         </ul>
                     </div>
                     <a href="{{ route('settings-content.create') }}" class="btn btn-primary btn-sm">
@@ -134,11 +136,15 @@
 
             {{-- Footer: Records per page & Pagination --}}
             <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
-                {{-- Records per page --}}
-                <div class="d-flex align-items-center">
+
+                {{-- Left: Show per page + Showing results --}}
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                    {{-- Show per page --}}
                     <form method="GET" action="{{ route('settings-content.index') }}" id="perPageForm"
                         class="d-flex align-items-center gap-2">
                         <label for="per_page" class="mb-0">Show</label>
+
                         <select name="per_page" id="per_page" class="form-select form-select-sm"
                             onchange="this.form.submit()">
                             @foreach ([10, 25, 50, 100, 'All'] as $size)
@@ -149,22 +155,23 @@
                             @endforeach
                         </select>
 
-                        {{-- Pertahankan semua query --}}
+                        {{-- Pertahankan query --}}
                         @foreach (request()->except('per_page', 'page') as $key => $value)
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                     </form>
-                </div>
 
-                {{-- Pagination --}}
-                <div>
+                    {{-- Showing results (sejajar dengan dropdown) --}}
                     <small class="text-muted">
                         Showing {{ $contents->firstItem() ?? 0 }} to {{ $contents->lastItem() ?? 0 }}
                         of {{ $contents->total() }} Results
                     </small>
-                    <div>
-                        {{ $contents->links() }}
-                    </div>
+
+                </div>
+
+                {{-- Right: Pagination --}}
+                <div>
+                    {{ $contents->links() }}
                 </div>
             </div>
         </div>

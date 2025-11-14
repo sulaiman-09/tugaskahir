@@ -193,32 +193,41 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
-            <div class="d-flex align-items-center">
-                <form method="GET" action="{{ route('customer.index') }}" id="perPageForm"
-                    class="d-flex align-items-center">
-                    <label for="per_page" class="mb-0 me-2">Show</label>
-                    <select name="per_page" id="per_page" class="form-select form-select-sm"
-                        onchange="this.form.submit()">
-                        @foreach ([10, 25, 50, 100, 'All'] as $size)
-                            <option value="{{ $size }}"
-                                {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
+        <div class="pagination-wrapper d-flex justify-content-between align-items-center mt-3 flex-wrap">
+            <!-- Left: Show Per Page + Showing Text -->
+            <div class="left-info d-flex align-items-center flex-wrap gap-2">
+
+                <form method="GET" id="perPageForm" class="d-flex align-items-center gap-2">
+                    <label for="per_page" class="m-0 small text-muted">Show</label>
+
+                    <select name="per_page" id="per_page" onchange="this.form.submit()"
+                        class="form-select form-select-sm">
+                        @foreach ([10, 25, 50, 100] as $size)
+                            <option value="{{ $size }}" {{ request('per_page') == $size ? 'selected' : '' }}>
                                 {{ $size }}
                             </option>
                         @endforeach
                     </select>
 
-                    {{-- Pertahankan search & filter --}}
+                    {{-- Keep other filters --}}
                     @foreach (request()->except('per_page', 'page') as $key => $value)
                         <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                     @endforeach
                 </form>
+
+                <div class="showing-text small text-muted">
+                    Showing {{ $customer_leads->firstItem() }} to {{ $customer_leads->lastItem() }} of
+                    {{ $customer_leads->total() }} results
+                </div>
             </div>
 
-            <div class="d-flex justify-content-end mt-3">
-                {{ $customer_leads->links() }}
+            <!-- Right: Pagination -->
+            <div class="right-pagination pagination-sm">
+                {!! $customer_leads->onEachSide(0)->links() !!}
             </div>
+
         </div>
+
 
         @push('scripts')
             <script>
@@ -263,28 +272,66 @@
 
     @push('styles')
         <style>
+            /* Dropdown Show Per Page */
             #per_page {
                 min-width: 80px;
                 border-radius: 8px;
                 padding: 5px 10px;
-                z-index: 10;
-                position: relative;
                 background-color: #fff;
+                position: relative;
+                z-index: 10;
             }
 
             #perPageForm {
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                margin: 0;
             }
 
-            .pagination {
-                margin-bottom: 0;
-            }
-
-            .d-flex.flex-wrap.gap-2 {
+            /* Wrapper */
+            .pagination-wrapper {
                 gap: 10px !important;
             }
+
+            /* Showing text kecil dan rapi */
+            .showing-text {
+                white-space: nowrap;
+                font-size: 0.85rem;
+            }
+
+            /* Kecilkan pagination */
+            .pagination-sm .page-link {
+                font-size: 0.78rem;
+                padding: 4px 10px;
+                line-height: 1;
+                border-radius: 6px;
+            }
+
+            .pagination-sm .page-item {
+                margin: 0 2px;
+            }
+
+            /* Kecilkan icon SVG prev/next */
+            .pagination-sm svg {
+                width: 12px !important;
+                height: 12px !important;
+            }
+
+            /* Perbaiki posisi biar tidak turun-naik */
+            .right-pagination {
+                display: flex;
+                align-items: center;
+            }
+
+            /* Responsif */
+            @media (max-width: 480px) {
+                .pagination-sm .page-link {
+                    padding: 3px 6px;
+                }
+            }
+        </style>
+
         </style>
         <!-- Leaflet CSS -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

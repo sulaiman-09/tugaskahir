@@ -98,10 +98,44 @@
                 </div>
             </div>
 
-            {{-- Pagination --}}
-            <div class="d-flex justify-content-end mt-3 px-3 pb-3">
-                {{ $permissions->links() }}
+            {{-- Footer: Show per page + Showing results + Pagination --}}
+            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
+
+                {{-- Left: Show per page + Showing results --}}
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                    {{-- Show per page --}}
+                    <form method="GET" action="{{ route('permissions.index') }}" class="d-flex align-items-center gap-2">
+                        @if (request('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+                        <label for="per_page" class="mb-0">Show</label>
+                        <select name="per_page" id="per_page" class="form-select form-select-sm"
+                            onchange="this.form.submit()">
+                            @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                <option value="{{ $size }}"
+                                    {{ request('per_page', 15) == $size ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+
+                    {{-- Showing results --}}
+                    <small class="text-muted">
+                        Showing {{ $permissions->firstItem() ?? 0 }} to {{ $permissions->lastItem() ?? 0 }}
+                        of {{ $permissions->total() }} Results
+                    </small>
+
+                </div>
+
+                {{-- Right: Pagination --}}
+                <div>
+                    {{ $permissions->links() }}
+                </div>
+
             </div>
+
         </div>
     </div>
 
@@ -115,7 +149,7 @@
                         const name = form.dataset.name || 'this permission';
                         if (confirm(
                                 `Are you sure you want to delete "${name}"? This action cannot be undone.`
-                                )) {
+                            )) {
                             form.submit();
                         }
                     });
@@ -139,7 +173,7 @@
                     }
                     if (!confirm(
                             `Are you sure you want to delete ${selectedIds.length} selected permissions? This cannot be undone.`
-                            )) return;
+                        )) return;
 
                     fetch("{{ route('permissions.bulkDelete') }}", {
                             method: 'POST',

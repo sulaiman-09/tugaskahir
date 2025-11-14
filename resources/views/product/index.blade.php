@@ -132,26 +132,44 @@
                     </table>
                 </div>
 
-                {{-- Show Per Page Category --}}
-                <div class="d-flex justify-content-start mt-3">
-                    <form method="GET" action="{{ route('product.index') }}" class="d-flex align-items-center gap-2">
-                        <label for="category_per_page" class="mb-0">Show</label>
-                        <select name="category_per_page" id="category_per_page" class="form-select form-select-sm"
-                            onchange="this.form.submit()">
-                            @foreach ([10, 25, 50, 100, 'All'] as $size)
-                                <option value="{{ $size }}"
-                                    {{ strtolower(request('category_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
-                                    {{ $size }}
-                                </option>
-                            @endforeach
-                        </select>
+                <div class="pagination-wrapper d-flex justify-content-between align-items-center mt-3 flex-wrap">
 
-                        {{-- Keep other query params (except product_per_page & page) --}}
-                        @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endforeach
-                    </form>
+                    {{-- Left: Show per page + showing text --}}
+                    <div class="d-flex align-items-center flex-wrap gap-3">
+
+                        {{-- Show Per Page Category --}}
+                        <form method="GET" action="{{ route('product.index') }}" class="d-flex align-items-center gap-2">
+                            <label for="category_per_page" class="mb-0 small text-muted">Show</label>
+
+                            <select name="category_per_page" id="category_per_page" class="form-select form-select-sm"
+                                onchange="this.form.submit()">
+                                @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                    <option value="{{ $size }}"
+                                        {{ strtolower(request('category_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
+                                        {{ $size }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            {{-- Keep other query params --}}
+                            @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
+                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                            @endforeach
+                        </form>
+
+                        {{-- Showing text --}}
+                        <div class="showing-text small text-muted">
+                            Showing {{ $categories->firstItem() }} to {{ $categories->lastItem() }}
+                            of {{ $categories->total() }} results
+                        </div>
+                    </div>
+
+                    {{-- Right: Pagination --}}
+                    <div class="right-pagination pagination-sm">
+                        {{ $categories->appends(request()->query())->onEachSide(0)->links() }}
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -300,29 +318,93 @@
                     </table>
                 </div>
 
-                {{-- Show Per Page Product --}}
-                <div class="d-flex justify-content-start mt-3">
-                    <form method="GET" action="{{ route('product.index') }}" class="d-flex align-items-center gap-2">
-                        <label for="product_per_page" class="mb-0">Show</label>
-                        <select name="product_per_page" id="product_per_page" class="form-select form-select-sm"
-                            onchange="this.form.submit()">
-                            @foreach ([10, 25, 50, 100, 'All'] as $size)
-                                <option value="{{ $size }}"
-                                    {{ strtolower(request('product_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
-                                    {{ $size }}
-                                </option>
-                            @endforeach
-                        </select>
+                <div
+                    class="pagination-wrapper product-pagination d-flex justify-content-between align-items-center mt-3 flex-wrap">
 
-                        {{-- Keep other query params (except category_per_page & page) --}}
-                        @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endforeach
-                    </form>
+                    {{-- Left: Show Per Page + Showing --}}
+                    <div class="d-flex align-items-center flex-wrap gap-3">
+
+                        <form method="GET" action="{{ route('product.index') }}"
+                            class="d-flex align-items-center gap-2" id="productPageForm">
+
+                            <label for="product_per_page" class="mb-0 small text-muted">Show</label>
+
+                            <select name="product_per_page" id="product_per_page" class="form-select form-select-sm"
+                                onchange="this.form.submit()">
+                                @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                    <option value="{{ $size }}"
+                                        {{ strtolower(request('product_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
+                                        {{ $size }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
+                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                            @endforeach
+                        </form>
+
+                        <div class="showing-text small text-muted">
+                            Showing {{ $products->firstItem() }} to {{ $products->lastItem() }}
+                            of {{ $products->total() }} results
+                        </div>
+                    </div>
+
+                    {{-- Right pagination --}}
+                    <div class="right-pagination pagination-sm">
+                        {{ $products->appends(request()->query())->onEachSide(0)->links() }}
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+
+    @push('styles')
+        <style>
+            /* Wrapper pagination */
+            .product-pagination {
+                gap: 10px !important;
+            }
+
+            /* Styling dropdown show per page */
+            .product-pagination #product_per_page {
+                min-width: 80px;
+                border-radius: 8px;
+                padding: 5px 10px;
+                background-color: #fff;
+            }
+
+            .product-pagination .showing-text {
+                white-space: nowrap;
+                font-size: 0.85rem;
+            }
+
+            /* ======== FIX PANAH PREVIOUS/NEXT ======== */
+            /* Kecilkan tombol */
+            .product-pagination .pagination .page-link {
+                padding: 4px 8px !important;
+                font-size: 10px !important;
+                line-height: 1 !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+            }
+
+            /* Kecilkan ikon SVG bawaan Laravel pagination */
+            .product-pagination .pagination .page-link svg {
+                width: 10px !important;
+                height: 10px !important;
+            }
+
+            /* Untuk tombol Prev / Next (karena isinya SVG saja) */
+            .product-pagination .pagination .page-item .page-link[rel="prev"],
+            .product-pagination .pagination .page-item .page-link[rel="next"] {
+                padding: 4px 8px !important;
+            }
+        </style>
+    @endpush
 
     @push('scripts')
         <script>

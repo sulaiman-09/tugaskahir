@@ -125,43 +125,44 @@
             </div>
 
             {{-- Footer --}}
-            <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-2">
-                {{-- Records per page --}}
-                <div class="d-flex align-items-center">
-                    <form method="GET" action="{{ route('banner.index') }}" id="perPageForm"
-                        class="d-flex align-items-center gap-2">
-                        <label for="per_page" class="mb-0">Show</label>
-                        <select name="per_page" id="per_page" class="form-select form-select-sm"
-                            onchange="this.form.submit()">
-                            @foreach ([10, 25, 50, 100, 'All'] as $size)
-                                <option value="{{ $size }}"
-                                    {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
-                                    {{ $size }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @foreach (request()->except('per_page', 'page') as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            <div class="d-flex align-items-center flex-wrap gap-3 mt-3">
+
+                {{-- Show Per Page --}}
+                <form method="GET" action="{{ route('banner.index') }}" class="d-flex align-items-center gap-2">
+                    <label for="per_page" class="mb-0 small text-muted">Show</label>
+
+                    <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                        @foreach ([10, 25, 50, 100, 'All'] as $size)
+                            <option value="{{ $size }}"
+                                {{ strtolower(request('per_page', 15)) == strtolower($size) ? 'selected' : '' }}>
+                                {{ $size }}
+                            </option>
                         @endforeach
-                    </form>
+                    </select>
+
+                    {{-- Keep other filters --}}
+                    @foreach (request()->except('per_page', 'page') as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                </form>
+
+                {{-- Showing text — DIPINDAH KE SAMPING SHOW PER PAGE --}}
+                <div class="small text-muted">
+                    @if ($banners instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                        Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }}
+                        of {{ $banners->total() }} Results
+                    @else
+                        Showing 1 to {{ $banners->count() }} of {{ $banners->count() }} Results
+                    @endif
                 </div>
 
-                {{-- Pagination --}}
-                <div>
-                    <small class="text-muted">
-                        @if ($banners instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                            Showing {{ $banners->firstItem() ?? 0 }} to {{ $banners->lastItem() ?? 0 }}
-                            of {{ $banners->total() }} Results
-                        @else
-                            Showing 1 to {{ $banners->count() }} of {{ $banners->count() }} Results
-                        @endif
-                    </small>
-                    <div>
-                        @if ($banners instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                            {{ $banners->links() }}
-                        @endif
-                    </div>
+                {{-- Pagination tetap di kanan --}}
+                <div class="ms-auto">
+                    @if ($banners instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                        {{ $banners->links() }}
+                    @endif
                 </div>
+
             </div>
         </div>
     </div>
