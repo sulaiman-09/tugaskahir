@@ -90,7 +90,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">No permissions found.</td>
+                                    <td colspan="6" class="text-center text-muted py-4">No permission data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -8,7 +8,7 @@
 
         {{-- Header --}}
         <div class="card-header bg-white border-bottom py-3">
-            <h5 class="mb-0 fw-semibold text-dark">Create New Permission</h5>
+            <h5 class="mb-0 fw-semibold text-dark">Add New Permission</h5>
         </div>
 
         {{-- Body --}}
@@ -40,7 +40,7 @@
                         Cancel
                     </a>
                     <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                        Save Permission
+                        Create Permission
                     </button>
                 </div>
             </form>

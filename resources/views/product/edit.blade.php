@@ -82,12 +82,12 @@
     </div>
 
     <div class="mt-4">
+        <a href="{{ route('product.index') }}" class="btn btn-secondary ms-2">
+            <i class="fa fa-arrow-left me-1"></i> Cancel
+        </a>
         <button type="submit" class="btn btn-primary">
             <i class="fa fa-save me-1"></i> Update Product
         </button>
-        <a href="{{ route('product.index') }}" class="btn btn-secondary ms-2">
-            <i class="fa fa-arrow-left me-1"></i> Back
-        </a>
     </div>
     </form>
 

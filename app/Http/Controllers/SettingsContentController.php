@@ -60,16 +60,17 @@ class SettingsContentController extends Controller
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('content/images', 'public');
+            $data['image_path'] = $request->file('image')->store('content/images', 'public');
         }
 
         if ($request->hasFile('icon')) {
-            $data['icon'] = $request->file('icon')->store('content/icons', 'public');
+            $data['icon_path'] = $request->file('icon')->store('content/icons', 'public');
         }
 
         SettingsContent::create($data);
 
-        return redirect()->route('settings-content.index')->with('success', 'Content created successfully!');
+        return redirect()->route('settings-content.index')
+            ->with('success', 'Content created successfully!');
     }
 
     // EDIT FORM
@@ -96,23 +97,28 @@ class SettingsContentController extends Controller
         $data = $request->only(['content_type_id', 'title', 'name', 'description', 'order']);
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
 
+        // Update Image
         if ($request->hasFile('image')) {
-            if ($content->image && Storage::disk('public')->exists($content->image)) {
-                Storage::disk('public')->delete($content->image);
+            if ($content->image_path && Storage::disk('public')->exists($content->image_path)) {
+                Storage::disk('public')->delete($content->image_path);
             }
-            $data['image'] = $request->file('image')->store('content/images', 'public');
+
+            $data['image_path'] = $request->file('image')->store('content/images', 'public');
         }
 
+        // Update Icon
         if ($request->hasFile('icon')) {
-            if ($content->icon && Storage::disk('public')->exists($content->icon)) {
-                Storage::disk('public')->delete($content->icon);
+            if ($content->icon_path && Storage::disk('public')->exists($content->icon_path)) {
+                Storage::disk('public')->delete($content->icon_path);
             }
-            $data['icon'] = $request->file('icon')->store('content/icons', 'public');
+
+            $data['icon_path'] = $request->file('icon')->store('content/icons', 'public');
         }
 
         $content->update($data);
 
-        return redirect()->route('settings-content.index')->with('success', 'Content updated successfully!');
+        return redirect()->route('settings-content.index')
+            ->with('success', 'Content updated successfully!');
     }
 
     // DELETE

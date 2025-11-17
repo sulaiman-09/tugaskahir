@@ -8,7 +8,7 @@
 
         {{-- Header --}}
         <div class="card-header bg-white border-bottom py-3">
-            <h5 class="mb-0 fw-semibold text-dark">Edit Data Customer</h5>
+            <h5 class="mb-0 fw-semibold text-dark">Edit Customer Data</h5>
         </div>
 
         {{-- Body --}}
@@ -19,30 +19,30 @@
 
                 {{-- Data Utama --}}
                 <div class="mb-4">
-                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Utama</h6>
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Main Data</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Nama Pelanggan <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold small">Customer Name <span class="text-danger">*</span></label>
                         <input type="text" name="customer_name" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('customer_name', $customer->customer_name) }}" required>
                         </div>
                         <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Nomor Telepon <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold small">Telephone Number <span class="text-danger">*</span></label>
                         <input type="text" name="customer_phone" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('customer_phone', $customer->customer_phone) }}" required>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label fw-semibold small">Alamat Lengkap <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Full Address <span class="text-danger">*</span></label>
                             <textarea name="address" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="2" required>{{ old('address', $customer->address) }}</textarea>
                         </div>
                         <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Email</label>
+                        <label class="form-label fw-semibold small">Email </label>
                         <input type="email" name="email" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('email', $customer->email) }}">
                         </div>
                         <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Kode Referral</label>
+                        <label class="form-label fw-semibold small">Referral Code </label>
                         <input type="text" name="referral_code" class="form-control rounded-3 shadow-sm border-0 bg-white" value="{{ old('referral_code', $customer->referral_code) }}">
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label fw-semibold small">Customer Address</label>
+                            <label class="form-label fw-semibold small">Customer Address </label>
                             <textarea name="customer_address" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="2">{{ old('customer_address', $customer->customer_address) }}</textarea>
                         </div>
                         <div class="col-md-6">
@@ -62,28 +62,28 @@
 
                 {{-- Data Wilayah --}}
                 <div class="mb-4">
-                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Wilayah</h6>
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Regional Data</h6>
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Provinsi <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Province <span class="text-danger">*</span></label>
                             <select id="province" name="province" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
                                 <option value="{{ $customer->province }}" selected>{{ $customer->province ?? 'Pilih Provinsi' }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Kota/Kabupaten</label>
+                            <label class="form-label fw-semibold small">City/District</label>
                             <select id="city" name="city" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                 <option value="{{ $customer->city }}" selected>{{ $customer->city ?? 'Pilih Kota/Kabupaten' }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Kecamatan</label>
+                            <label class="form-label fw-semibold small">Sub - district</label>
                             <select id="district" name="district" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                 <option value="{{ $customer->district }}" selected>{{ $customer->district ?? 'Pilih Kecamatan' }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Kelurahan/Desa</label>
+                            <label class="form-label fw-semibold small">Village/District</label>
                             <select id="village" name="village" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                 <option value="{{ $customer->village }}" selected>{{ $customer->village ?? 'Pilih Kelurahan/Desa' }}</option>
                             </select>
@@ -93,7 +93,7 @@
 
                 {{-- Data Tambahan --}}
                 <div class="mb-4">
-                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Tambahan</h6>
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Additional Data</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
                         <label class="form-label fw-semibold small">Division</label>
@@ -104,9 +104,9 @@
                         </select>
                         </div>
                         <div class="col-md-4">
-                        <label class="form-label fw-semibold small">Kategori Produk</label>
+                        <label class="form-label fw-semibold small">Product Category</label>
                         <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                        <option value="">Pilih Kategori</option>
+                        <option value="">Select Category</option>
                         <option value="Broadband Internet" {{ $customer->product_category == 'Broadband Internet' ? 'selected' : '' }}>Broadband Internet</option>
                         <option value="Business Solutions" {{ $customer->product_category == 'Business Solutions' ? 'selected' : '' }}>Business Solutions</option>
                         <option value="Promo Spesial Jepara" {{ $customer->product_category == 'Promo Spesial Jepara' ? 'selected' : '' }}>Promo Spesial Jepara</option>
@@ -115,9 +115,9 @@
                         </select>
                         </div>
                         <div class="col-md-4">
-                        <label class="form-label fw-semibold small">Produk</label>
+                        <label class="form-label fw-semibold small">Product</label>
                         <select name="product" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                        <option value="">Pilih Produk</option>
+                        <option value="">Select product</option>
                         @foreach($products as $prod)
                             <option value="{{ $prod->id }}" {{ $customer->product_id == $prod->id ? 'selected' : '' }}>{{ $prod->name }}</option>
                             @endforeach
@@ -126,7 +126,7 @@
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">Coverage</label>
                             <select name="coverage" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Pilih Coverage</option>
+                                <option value="">Select Coverage</option>
                                 <option value="Cover" {{ $customer->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
                                 <option value="Uncover" {{ $customer->coverage == 'Uncover' ? 'selected' : '' }}>Uncover</option>
                             </select>
@@ -137,10 +137,10 @@
                 {{-- Tombol Aksi --}}
                 <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
                     <a href="{{ route('customer.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                        <i class="bi bi-arrow-left me-1"></i> Batal
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
                     </a>
                     <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                        <i class="bi bi-save2 me-1"></i> Simpan Perubahan
+                        <i class="bi bi-save2 me-1"></i> Update Customer
                     </button>
                 </div>
             </form>

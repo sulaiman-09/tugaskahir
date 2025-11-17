@@ -6,7 +6,7 @@
     <div class="page-header mb-4 d-flex justify-content-between align-items-center">
         <h1 class="page-title mb-0">Edit Homepass - Sudirman Park</h1>
         <a href="{{ route('sudirmanpark.alamat') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Kembali
+            <i class="bi bi-arrow-left"></i> Back
         </a>
     </div>
 

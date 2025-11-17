@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container py-4">
-        <h2 class="mb-4">Create New Product</h2>
+        <h2 class="mb-4">Add New Product</h2>
 
         {{-- Pesan sukses --}}
         @if (session('success'))
@@ -80,12 +80,12 @@
 
             {{-- Tombol Aksi --}}
             <div class="mt-4">
+                <a href="{{ route('product.index') }}" class="btn btn-secondary ms-2">
+                    <i class="fa fa-arrow-left me-1"></i> Cancel
+                </a>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save me-1"></i> Create Product
                 </button>
-                <a href="{{ route('product.index') }}" class="btn btn-secondary ms-2">
-                    <i class="fa fa-arrow-left me-1"></i> Back
-                </a>
             </div>
         </form>
     </div>

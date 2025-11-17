@@ -34,7 +34,7 @@
 
                         <a href="{{ route('product.category.create') }}"
                             class="btn btn-primary btn-sm d-flex align-items-center">
-                            <i class="fa fa-plus me-2"></i> Tambah Category Baru
+                            <i class="bi bi-plus-circle me-1"></i> Add New Category
                         </a>
 
                         <button type="button" id="deleteSelectedCategories" class="btn btn-danger btn-sm">
@@ -125,7 +125,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-muted text-center py-4">Belum ada kategori.</td>
+                                    <td colspan="8" class="text-muted text-center py-4">No category data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -193,7 +193,7 @@
                     </div>
 
                     <a href="{{ route('product.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
-                        <i class="fa fa-plus me-2"></i> Tambah Product Baru
+                        <i class="bi bi-plus-circle me-1"></i> Add New Product
                     </a>
 
                     <button type="button" id="deleteSelectedProducts" class="btn btn-danger btn-sm">
@@ -311,7 +311,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-muted text-center py-4">Belum ada produk.</td>
+                                    <td colspan="10" class="text-muted text-center py-4">No category data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

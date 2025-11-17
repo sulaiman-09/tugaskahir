@@ -17,10 +17,11 @@ class SettingsContent extends Model
         'name',
         'description',
         'order',
-        'image',
-        'icon',
+        'image_path',
+        'icon_path',
         'is_active',
     ];
+
 
     protected $casts = [
         'is_active' => 'boolean',

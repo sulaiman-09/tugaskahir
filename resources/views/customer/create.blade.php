@@ -8,7 +8,7 @@
 
         {{-- Header --}}
         <div class="card-header bg-white border-bottom py-3">
-            <h5 class="mb-0 fw-semibold text-dark">Tambah Lead Baru</h5>
+            <h5 class="mb-0 fw-semibold text-dark">Add New Lead</h5>
         </div>
 
         {{-- Body --}}
@@ -19,7 +19,7 @@
                 {{-- Display Validation Errors --}}
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
-                        <h6 class="fw-semibold mb-2">Terdapat kesalahan:</h6>
+                        <h6 class="fw-semibold mb-2">There is a mistake:</h6>
                         <ul class="mb-0 ps-3">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -31,18 +31,18 @@
 
                 {{-- Data Utama --}}
                 <div class="mb-4">
-                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Utama</h6>
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Main Data</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Nama Pelanggan <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Customer Name <span class="text-danger">*</span></label>
                             <input type="text" name="customer_name" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Masukkan nama pelanggan" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Nomor Telepon <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Telephone Number <span class="text-danger">*</span></label>
                             <input type="text" name="customer_phone" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Contoh: 08123456789" required>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label fw-semibold small">Alamat Lengkap <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Full Address <span class="text-danger">*</span></label>
                             <textarea name="address" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="2" placeholder="Masukkan alamat lengkap" required></textarea>
                         </div>
                         <div class="col-md-6">
@@ -50,7 +50,7 @@
                             <input type="email" name="email" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="email@example.com">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Kode Referral</label>
+                            <label class="form-label fw-semibold small">Referral Code </label>
                             <input type="text" name="referral_code" class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Opsional">
                         </div>
                     </div>
@@ -58,30 +58,30 @@
 
                 {{-- Data Wilayah --}}
                 <div class="mb-4">
-                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Wilayah</h6>
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Regional Data</h6>
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Provinsi <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Province <span class="text-danger">*</span></label>
                             <select id="province" name="province" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                                <option value="">Pilih Provinsi</option>
+                                <option value="">Select Province</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Kota/Kabupaten</label>
+                            <label class="form-label fw-semibold small">City/District</label>
                             <select id="city" name="city" class="form-select rounded-3 shadow-sm border-0 bg-white" disabled>
-                                <option value="">Pilih Kota/Kabupaten</option>
+                                <option value="">Select City/District</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Kecamatan</label>
+                            <label class="form-label fw-semibold small">Sub - district</label>
                             <select id="district" name="district" class="form-select rounded-3 shadow-sm border-0 bg-white" disabled>
-                                <option value="">Pilih Kecamatan</option>
+                                <option value="">Select Sub - district</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold small">Kelurahan/Desa</label>
+                            <label class="form-label fw-semibold small">Village/District</label>
                             <select id="village" name="village" class="form-select rounded-3 shadow-sm border-0 bg-white" disabled>
-                                <option value="">Pilih Kelurahan/Desa</option>
+                                <option value="">Select Village/District</option>
                             </select>
                         </div>
                     </div>
@@ -89,20 +89,20 @@
 
                 {{-- Data Tambahan --}}
                 <div class="mb-4">
-                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Data Tambahan</h6>
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Additional Data</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">Division</label>
                             <select name="division" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Pilih Division</option>
+                                <option value="">Select Division</option>
                                 <option value="Marketing">Marketing</option>
                                 <option value="Sales Retail">Sales Retail</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Kategori Produk</label>
+                            <label class="form-label fw-semibold small">Product Category</label>
                             <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Pilih Kategori</option>
+                                <option value="">Select Category</option>
                                 <option value="Broadband Internet">Broadband Internet</option>
                                 <option value="Business Solutions">Business Solutions</option>
                                 <option value="Promo Spesial Jepara">Promo Spesial Jepara</option>
@@ -113,7 +113,7 @@
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">Coverage</label>
                             <select name="coverage" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Pilih Coverage</option>
+                                <option value="">Select Coverage</option>
                                 <option value="Cover">Cover</option>
                                 <option value="Uncover">Uncover</option>
                             </select>
@@ -124,10 +124,10 @@
                 {{-- Tombol Aksi --}}
                 <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
                     <a href="{{ route('customer.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                        <i class="bi bi-arrow-left me-1"></i> Batal
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
                     </a>
                     <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                        <i class="bi bi-save2 me-1"></i> Simpan Customer
+                        <i class="bi bi-save2 me-1"></i> Create Customer
                     </button>
                 </div>
             </form>

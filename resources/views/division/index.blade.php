@@ -25,7 +25,7 @@
                         </ul>
                     </div>
                     <a href="{{ route('division.create') }}" class="btn btn-primary btn-sm">
-                        + Add Division
+                        <i class="bi bi-plus-circle me-1"></i> Add Division
                     </a>
                     <button type="button" id="deleteSelected" class="btn btn-danger btn-sm">
                         <i class="fa fa-trash me-1"></i> Delete Selected
@@ -98,7 +98,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-muted text-center py-4">No data found.</td>
+                                    <td colspan="8" class="text-muted text-center py-4">No division data available.</td>
                                 </tr>
                             @endforelse
                         </tbody>

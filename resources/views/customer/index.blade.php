@@ -83,14 +83,14 @@
                         </ul>
                     </div>
                     <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm">
-                        + Tambah Lead Baru
+                        <i class="bi bi-plus-circle me-1"></i> Add New Lead
                     </a>
                     {{-- 🔹 Tombol toggle latitude/longitude --}}
                     <button type="button" id="deleteSelected" class="btn btn-danger btn-sm">
                         <i class="fa fa-trash me-1"></i> Delete Selected
                     </button>
                     <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm">
-                        Tampilkan Koordinat
+                        Show Coordinats
                     </button>
                 </div>
                 <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
@@ -113,18 +113,18 @@
                             <tr class="fw-semibold text-dark">
                                 <th><input type="checkbox" id="selectAll"></th>
                                 <th style="width: 40px;">No</th>
-                                <th>Nama Pelanggan</th>
-                                <th>Nomor Telepon</th>
+                                <th>Customer Name</th>
+                                <th>Phone Number</th>
                                 <th>Email</th>
-                                <th>Alamat</th>
+                                <th>Address</th>
                                 <th>Latitude</th>
                                 <th>Longitude</th>
                                 <th>Coverage</th>
-                                <th>Produk</th>
+                                <th>Product</th>
                                 <th>Division</th>
-                                <th>Dibuat</th>
-                                <th>Detail</th>
-                                <th style="width: 110px;">Aksi</th>
+                                <th>Created At</th>
+                                <th>Details</th>
+                                <th style="width: 110px;">Actions</th>
                             </tr>
                         </thead>
 
@@ -178,7 +178,7 @@
                                             data-lat="{{ $customer_lead->latitude }}"
                                             data-lng="{{ $customer_lead->longitude }}"
                                             data-address="{{ e($customer_lead->customer_address) }}">
-                                            Detail
+                                            Details
                                         </button>
                                     </td>
 
@@ -205,7 +205,7 @@
                             @empty
                                 <tr>
                                     <td colspan="14" class="text-muted text-center py-4">
-                                        Belum ada data customer
+                                        No customer data available.
                                     </td>
                                 </tr>
                             @endforelse
@@ -333,13 +333,13 @@
                     let visible = false;
                     latitudeCols.forEach(col => col.style.display = 'none');
                     longitudeCols.forEach(col => col.style.display = 'none');
-                    toggleButton.textContent = 'Tampilkan Koordinat';
+                    toggleButton.textContent = 'Show Coordinats';
 
                     toggleButton.addEventListener('click', function() {
                         visible = !visible;
                         latitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
                         longitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
-                        toggleButton.textContent = visible ? 'Sembunyikan Koordinat' : 'Tampilkan Koordinat';
+                        toggleButton.textContent = visible ? 'Hide Coordinats' : 'Show Coordinats';
                     });
                 });
             </script>

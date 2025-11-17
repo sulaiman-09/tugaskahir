@@ -27,17 +27,17 @@
 
                 <a href="{{ route('sudirmanpark.create') }}"
                     class="btn btn-sm {{ request()->routeIs('sudirmanpark.create') ? 'btn-primary text-white' : 'btn-outline-primary' }}">
-                    + Tambah Customer Baru
+                    <i class="bi bi-plus-circle me-1"></i> Add New Customer
                 </a>
 
                 <a href="{{ route('sudirmanpark.alamat') }}"
                     class="btn btn-sm {{ request()->routeIs('sudirmanpark.alamat') ? 'btn-primary text-white' : 'btn-outline-primary' }}">
-                    Kelola Alamat Tower
+                    Manage Tower Address
                 </a>
 
                 <a href="{{ route('product.index') }}"
                     class="btn btn-sm {{ request()->routeIs('product.*') ? 'btn-primary text-white' : 'btn-outline-primary' }}">
-                    Kelola Produk
+                    Manage Product
                 </a>
 
                 <div class="d-flex align-items-center gap-2">
@@ -70,17 +70,17 @@
                             <tr class="fw-semibold text-dark">
                                 <th><input type="checkbox" id="selectAllCustomers"></th>
                                 <th style="width: 40px;">No</th>
-                                <th>Nama Customer</th>
-                                <th>No. Telepon</th>
+                                <th>Customer Name</th>
+                                <th>Phone Number</th>
                                 <th>Email</th>
-                                <th>Alamat Tower</th>
-                                <th>Paket</th>
+                                <th>Tower Address</th>
+                                <th>Package</th>
                                 <th>ID Card</th>
                                 <th>Status</th>
                                 <th>Change Status</th>
                                 <th>Status Update Info</th>
-                                <th>Tanggal Dibuat</th>
-                                <th style="width: 110px;">Aksi</th>
+                                <th>Created At</th>
+                                <th style="width: 110px;">Actions</th>
                             </tr>
                         </thead>
 
@@ -172,7 +172,7 @@
                             @empty
                                 <tr>
                                     <td colspan="13" class="text-muted text-center py-4">
-                                        Belum ada data customer
+                                        No customer data available.
                                     </td>
                                 </tr>
                             @endforelse

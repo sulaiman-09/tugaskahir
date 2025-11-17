@@ -47,7 +47,7 @@
                 {{-- Tambah Alamat --}}
                 <a href="{{ route('sudirmanpark.createHomepass') }}"
                     class="btn btn-sm {{ request()->routeIs('sudirmanpark.createHomepass') ? 'btn-primary text-white' : 'btn-outline-primary' }}">
-                    + Tambah Homepass
+                    <i class="bi bi-plus-circle me-1"></i> Add Homepass
                 </a>
 
                 <div class="d-flex align-items-center gap-2">
@@ -82,11 +82,11 @@
                                 <th>Tower</th>
                                 <th>Floor</th>
                                 <th>Unit</th>
-                                <th>Alamat Lengkap</th>
-                                <th>Jumlah Customer</th>
+                                <th>Full Address</th>
+                                <th>Total Customers</th>
                                 <th>Status</th>
-                                <th>Tanggal Dibuat</th>
-                                <th style="width: 110px;">Aksi</th>
+                                <th>Created At</th>
+                                <th style="width: 110px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -125,7 +125,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-muted text-center py-4">Belum ada data alamat</td>
+                                    <td colspan="9" class="text-muted text-center py-4">No address data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -182,7 +182,7 @@
             <div class="modal-dialog modal-md">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="homepassModalLabel">Tambah Homepass</h5>
+                        <h5 class="modal-title" id="homepassModalLabel">+ Add Homepass</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="homepassForm">
@@ -192,26 +192,29 @@
                                 <label class="form-label">Tower</label>
                                 <input type="text" name="tower" id="hp_tower" class="form-control" required>
                             </div>
+
                             <div class="mb-3">
                                 <label class="form-label">Floor</label>
                                 <input type="text" name="floor" id="hp_floor" class="form-control" required>
                             </div>
+
                             <div class="mb-3">
                                 <label class="form-label">Unit</label>
                                 <input type="text" name="unit" id="hp_unit" class="form-control" required>
                             </div>
+
                             <div class="mb-3">
                                 <label class="form-label">Status</label>
                                 <select name="status" id="hp_status" class="form-select">
-                                    <option value="Aktif">Aktif</option>
-                                    <option value="Nonaktif">Nonaktif</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary" id="hpSaveBtn">Simpan</button>
-                        </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary" id="hpSaveBtn">Create Homepass</button>
+                            </div>
                     </form>
                 </div>
             </div>

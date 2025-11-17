@@ -60,7 +60,7 @@
                             Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Save Division
+                            Create Division
                         </button>
                     </div>
                 </form>

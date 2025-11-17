@@ -28,7 +28,9 @@
                     </div>
 
                     {{-- Tambah Career --}}
-                    <a href="{{ route('career.create') }}" class="btn btn-primary btn-sm">+ Add Career</a>
+                    <a href="{{ route('career.create') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Add Career
+                    </a>
 
                     {{-- Hapus Terpilih --}}
                     <button type="button" id="deleteSelected" class="btn btn-danger btn-sm ms-2">
@@ -111,7 +113,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-muted text-center py-4">No data found.</td>
+                                    <td colspan="10" class="text-muted text-center py-4">No career data available.</td>
                                 </tr>
                             @endforelse
                         </tbody>

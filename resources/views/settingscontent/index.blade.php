@@ -27,7 +27,7 @@
                         </ul>
                     </div>
                     <a href="{{ route('settings-content.create') }}" class="btn btn-primary btn-sm">
-                        + Add Content
+                       <i class="bi bi-plus-circle me-1"></i> Add Content
                     </a>
                     <button type="button" id="deleteSelectedContents" class="btn btn-danger btn-sm">
                         <i class="fa fa-trash me-1"></i> Delete Selected
@@ -92,17 +92,24 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($content->image)
-                                            <img src="{{ asset('storage/' . $content->image) }}" width="50"
-                                                height="50" class="rounded">
+                                        @if ($content->image_path)
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-secondary content-preview-btn"
+                                                data-preview-url="{{ asset('storage/' . $content->image_path) }}">
+                                                View Image
+                                            </button>
                                         @else
                                             <span class="text-muted">No Image</span>
                                         @endif
                                     </td>
+
                                     <td>
-                                        @if ($content->icon)
-                                            <img src="{{ asset('storage/' . $content->icon) }}" width="40"
-                                                height="40" class="rounded">
+                                        @if ($content->icon_path)
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-secondary content-preview-btn"
+                                                data-preview-url="{{ asset('storage/' . $content->icon_path) }}">
+                                                View Icon
+                                            </button>
                                         @else
                                             <span class="text-muted">No Icon</span>
                                         @endif
@@ -130,6 +137,25 @@
                                 </tr>
                             @endforelse
                         </tbody>
+
+                        <!-- Modal Preview Content -->
+                        <div class="modal fade" id="contentPreviewModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="contentPreviewTitle">Preview</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body text-center">
+                                        <img id="contentPreviewImage" src="" class="img-fluid rounded shadow"
+                                            alt="Preview">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </table>
                 </div>
             </div>
@@ -228,6 +254,23 @@
                         })
                         .catch(() => alert('Terjadi kesalahan.'));
                 });
+            });
+        </script>
+
+        <script>
+            document.addEventListener("click", function(e) {
+                const btn = e.target.closest(".content-preview-btn");
+                if (!btn) return;
+
+                // Ambil URL preview
+                const fileUrl = btn.dataset.previewUrl;
+
+                // Set gambar ke dalam modal
+                document.getElementById("contentPreviewImage").src = fileUrl;
+
+                // Tampilkan modal
+                const modal = new bootstrap.Modal(document.getElementById("contentPreviewModal"));
+                modal.show();
             });
         </script>
     @endpush

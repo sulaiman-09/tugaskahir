@@ -74,7 +74,7 @@
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
                         <a href="{{ route('news.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                            <i class="fa fa-arrow-left me-1"></i> Back
+                            <i class="fa fa-arrow-left me-1"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
                             <i class="fa fa-save me-1"></i> Update News

@@ -30,7 +30,7 @@
                         </ul>
                     </div>
                     <a href="{{ route('banner.create') }}" class="btn btn-primary btn-sm">
-                        + Add Banner
+                        <i class="bi bi-plus-circle me-1"></i> Add Banner
                     </a>
                     <button type="button" id="deleteSelected" class="btn btn-danger btn-sm ms-2">
                         <i class="fa fa-trash me-1"></i> Delete Selected
@@ -116,7 +116,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-muted text-center py-4">Tidak ada data banner.</td>
+                                    <td colspan="6" class="text-muted text-center py-4">No banner data available.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -173,7 +173,7 @@
             aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body" id="successToastMessage">
-                    Data berhasil dihapus!
+                    Data successfully deleted!
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
                     aria-label="Close"></button>

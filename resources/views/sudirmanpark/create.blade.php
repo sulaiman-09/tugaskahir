@@ -8,7 +8,7 @@
 
             {{-- Header --}}
             <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-semibold text-dark">Tambah Customer Baru</h5>
+                <h5 class="mb-0 fw-semibold text-dark">Add New Customer</h5>
             </div>
 
             {{-- Body --}}
@@ -18,44 +18,48 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            {{-- Nama Customer --}}
+                            {{-- Customer Name --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Nama Customer</label>
-                                <input type="text" name="name" class="form-control rounded-3 shadow-sm border-0 bg-white" required>
+                                <label class="form-label fw-semibold text-primary">Customer Name</label>
+                                <input type="text" name="name"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" required>
                             </div>
 
-                            {{-- Nomor Telepon --}}
+                            {{-- Phone Number --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Nomor Telepon</label>
-                                <input type="text" name="phone" class="form-control rounded-3 shadow-sm border-0 bg-white" required>
+                                <label class="form-label fw-semibold text-primary">Phone Number</label>
+                                <input type="text" name="phone"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" required>
                             </div>
 
                             {{-- Email --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-primary">Email</label>
-                                <input type="email" name="email" class="form-control rounded-3 shadow-sm border-0 bg-white">
+                                <input type="email" name="email"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
 
                             {{-- Status --}}
                             <div class="mb-3">
                                 <label class="form-label fw-semibold text-primary">Status</label>
                                 <select name="status" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                                    <option value="registration">Registrasi</option>
+                                    <option value="registration">Registration</option>
                                     <option value="processed">Processed</option>
                                     <option value="approved">Approved</option>
                                     <option value="cancelled">Cancelled</option>
                                 </select>
                             </div>
 
-                            {{-- Paket (dropdown dari Product) --}}
+                            {{-- Package --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Paket</label>
+                                <label class="form-label fw-semibold text-primary">Package</label>
                                 <select name="package" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                                    <option value="">Pilih Paket</option>
-                                    @if(isset($products))
-                                        @foreach($products as $p)
-                                            <option value="{{ $p->name }} - Rp {{ number_format($p->price,0,',','.') }}">
-                                                {{ $p->name }} - Rp {{ number_format($p->price,0,',','.') }}
+                                    <option value="">Select Package</option>
+                                    @if (isset($products))
+                                        @foreach ($products as $p)
+                                            <option
+                                                value="{{ $p->name }} - Rp {{ number_format($p->price, 0, ',', '.') }}">
+                                                {{ $p->name }} - Rp {{ number_format($p->price, 0, ',', '.') }}
                                             </option>
                                         @endforeach
                                     @endif
@@ -64,18 +68,17 @@
                         </div>
 
                         <div class="col-md-6">
-                            {{-- Alamat Tower (dropdown dari sudirman_tower_addresses aktif) --}}
+                            {{-- Tower Address --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Alamat Tower</label>
+                                <label class="form-label fw-semibold text-primary">Tower Address</label>
                                 <select name="tower" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                                    <option value="">Pilih Alamat Tower</option>
-                                    @if(isset($addresses))
-                                        @foreach($addresses as $id => $full_address)
+                                    <option value="">Select Tower Address</option>
+                                    @if (isset($addresses))
+                                        @foreach ($addresses as $id => $full_address)
                                             @php
-                                                // Transformasi sederhana: GF -> 01, hapus digit trailing seperti '1'
                                                 $display = preg_replace('/GF/', '01', $full_address);
                                                 $display = preg_replace('/(\d+)$/', '', $display);
-                                                $display = trim($display, "- ");
+                                                $display = trim($display, '- ');
                                             @endphp
                                             <option value="{{ $display }}">{{ $display }}</option>
                                         @endforeach
@@ -83,34 +86,36 @@
                                 </select>
                             </div>
 
-                            {{-- Foto KTP --}}
+                            {{-- ID Card Photo --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Foto KTP</label>
-                                <input type="file" name="ktp" class="form-control rounded-3 shadow-sm border-0 bg-white" accept="image/*,.pdf">
+                                <label class="form-label fw-semibold text-primary">ID Card Photo</label>
+                                <input type="file" name="ktp"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" accept="image/*,.pdf">
                             </div>
 
-                            {{-- Bukti Pembayaran --}}
+                            {{-- Payment Proof --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Bukti Pembayaran</label>
-                                <input type="file" name="payment_proof" class="form-control rounded-3 shadow-sm border-0 bg-white" accept="image/*,.pdf">
+                                <label class="form-label fw-semibold text-primary">Payment Proof</label>
+                                <input type="file" name="payment_proof"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white" accept="image/*,.pdf">
                             </div>
 
-                            {{-- Catatan --}}
+                            {{-- Notes --}}
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-primary">Catatan</label>
+                                <label class="form-label fw-semibold text-primary">Notes</label>
                                 <textarea name="note" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="4"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Tombol Aksi --}}
+                    {{-- Action Buttons --}}
                     <div class="d-flex justify-content-end mt-3">
-                        <a href="{{ route('sudirmanpark.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold me-2">Batal</a>
-                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">Simpan</button>
+                        <a href="{{ route('sudirmanpark.index') }}"
+                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">Create</button>
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 

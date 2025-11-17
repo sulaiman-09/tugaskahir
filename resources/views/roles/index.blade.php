@@ -87,7 +87,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">No roles found.</td>
+                                    <td colspan="6" class="text-center text-muted py-4">No role data found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

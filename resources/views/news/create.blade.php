@@ -8,7 +8,7 @@
 
             {{-- Header --}}
             <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-semibold text-dark">Create News</h5>
+                <h5 class="mb-0 fw-semibold text-dark">Add New News</h5>
             </div>
 
             {{-- Body --}}

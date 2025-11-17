@@ -73,7 +73,7 @@
                         </a>
                         <button type="submit"
                             class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Save Banner
+                            Create Banner
                         </button>
                     </div>
                 </form>

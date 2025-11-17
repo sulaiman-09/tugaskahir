@@ -1,24 +1,24 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Customer Sudirman Park')
+@section('title', 'Edit Customer - Sudirman Park')
 
 @section('content')
-<div class="page-header mb-4">
-<h1 class="page-title">Edit Customer - Sudirman Park</h1>
-</div>
+    <div class="page-header mb-4">
+        <h1 class="page-title">Edit Customer - Sudirman Park</h1>
+    </div>
 
-{{-- Success Message --}}
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-<i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
+    {{-- Success Message --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-{{-- Error Messages --}}
-@if ($errors->any())
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Terjadi kesalahan:</strong>
+    {{-- Error Messages --}}
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Errors occurred:</strong>
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -33,16 +33,16 @@
             @csrf
             @method('PUT')
 
-            {{-- Nama Customer --}}
+            {{-- Customer Name --}}
             <div class="mb-3">
-                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Nama Customer</h6>
+                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Customer Name</h6>
                 <input type="text" name="name" class="form-control rounded-3 shadow-sm border-0 bg-white"
                     value="{{ old('name', $customer->name) }}" required>
             </div>
 
-            {{-- Nomor Telepon --}}
+            {{-- Phone Number --}}
             <div class="mb-3">
-                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Nomor Telepon</h6>
+                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Phone Number</h6>
                 <input type="text" name="phone" class="form-control rounded-3 shadow-sm border-0 bg-white"
                     value="{{ old('phone', $customer->phone) }}" required>
             </div>
@@ -54,18 +54,18 @@
                     value="{{ old('email', $customer->email) }}">
             </div>
 
-            {{-- Alamat Tower --}}
+            {{-- Tower Address --}}
             <div class="mb-3">
-                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Alamat Tower</h6>
+                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Tower Address</h6>
                 <input type="text" name="tower" class="form-control rounded-3 shadow-sm border-0 bg-white"
                     value="{{ old('tower', $customer->tower) }}" required>
             </div>
 
-            {{-- Paket --}}
+            {{-- Package --}}
             <div class="mb-3">
-                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Paket</h6>
+                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Package</h6>
                 <select name="package" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
-                    <option value="">Pilih Paket</option>
+                    <option value="">Select Package</option>
                     <option value="Test Package - Rp 500.000"
                         {{ old('package', $customer->package) == 'Test Package - Rp 500.000' ? 'selected' : '' }}>
                         Test Package - Rp 500.000
@@ -81,25 +81,26 @@
                         Registration</option>
                     <option value="processed" {{ old('status', $customer->status) == 'processed' ? 'selected' : '' }}>
                         Processed</option>
-                    <option value="approved" {{ old('status', $customer->status) == 'approved' ? 'selected' : '' }}>Approved
-                    </option>
+                    <option value="approved" {{ old('status', $customer->status) == 'approved' ? 'selected' : '' }}>
+                        Approved</option>
                     <option value="cancelled" {{ old('status', $customer->status) == 'cancelled' ? 'selected' : '' }}>
                         Cancelled</option>
                 </select>
             </div>
 
-            {{-- Foto KTP --}}
+            {{-- KTP Photo --}}
             <div class="mb-3">
-                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Foto KTP</h6>
+                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">KTP Photo</h6>
                 @if ($customer->ktp)
                     <div class="mb-2">
                         <a href="{{ asset('storage/ktp/' . $customer->ktp) }}" target="_blank" class="text-primary">
-                            Lihat KTP saat ini
+                            View current KTP
                         </a>
-                        <form action="{{ route('sudirmanpark.removeKtp', $customer->id) }}" method="POST" class="d-inline ms-2">
+                        <form action="{{ route('sudirmanpark.removeKtp', $customer->id) }}" method="POST"
+                            class="d-inline ms-2">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus KTP</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove KTP</button>
                         </form>
                     </div>
                 @endif
@@ -107,44 +108,46 @@
                     accept="image/*,.pdf">
             </div>
 
-            {{-- Tampilkan di daftar --}}
+            {{-- Visible in List --}}
             @if (Schema::hasColumn('sudirman_parks', 'visible'))
                 <div class="mb-3 form-check">
                     <input type="checkbox" name="visible" class="form-check-input" id="visibleCheck"
                         {{ old('visible', $customer->visible) ? 'checked' : '' }}>
-                    <label class="form-check-label fw-semibold small" for="visibleCheck">Tampilkan di daftar</label>
+                    <label class="form-check-label fw-semibold small" for="visibleCheck">Show in list</label>
                 </div>
             @endif
 
-            {{-- Catatan --}}
+            {{-- Notes --}}
             <div class="mb-3">
-                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Catatan</h6>
+                <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-2">Notes</h6>
                 <textarea name="note" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="3">{{ old('note', $customer->note) }}</textarea>
             </div>
 
-            {{-- Tombol --}}
+            {{-- Buttons --}}
             <div class="d-flex justify-content-end">
                 <a href="{{ route('sudirmanpark.index') }}"
-                    class="btn btn-outline-secondary px-4 rounded-3 fw-semibold me-2">Batal</a>
-                <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">Perbarui</button>
+                    class="btn btn-outline-secondary px-4 rounded-3 fw-semibold me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">Update</button>
             </div>
         </form>
     </div>
 
     @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Konfirmasi hapus KTP
-            const removeKtpForm = document.querySelector('form[action*="/remove-ktp"]');
-            if (removeKtpForm) {
-                removeKtpForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (confirm('Yakin ingin menghapus file KTP? Aksi ini tidak dapat dibatalkan.')) {
-                        removeKtpForm.submit();
-                    }
-                });
-            }
-        });
-    </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Confirm remove KTP
+                const removeKtpForm = document.querySelector('form[action*="/remove-ktp"]');
+                if (removeKtpForm) {
+                    removeKtpForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        if (confirm(
+                                'Are you sure you want to remove the KTP file? This action cannot be undone.'
+                                )) {
+                            removeKtpForm.submit();
+                        }
+                    });
+                }
+            });
+        </script>
     @endpush
 @endsection

@@ -13,7 +13,8 @@
 
             {{-- Body --}}
             <div class="card-body bg-light-subtle p-4">
-                <form action="{{ route('settings-content.update', $content->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('settings-content.update', $content->id) }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -22,7 +23,8 @@
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Main Data</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Content Type <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small">Content Type <span
+                                        class="text-danger">*</span></label>
                                 <input type="number" name="content_type_id"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     value="{{ old('content_type_id', $content->content_type_id) }}" required>
@@ -59,18 +61,31 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Media</h6>
                         <div class="row g-3">
+                            {{-- Image --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Image</label>
-                                <input type="file" name="image" class="form-control rounded-3 shadow-sm border-0 bg-white">
-                                @if ($content->image)
-                                    <small class="text-muted">Current: {{ $content->image }}</small>
+                                <input type="file" name="image"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white">
+                                @if ($content->image_path)
+                                    <div class="mt-2">
+                                        <p class="mb-1 small text-muted">Current Image:</p>
+                                        <img src="{{ Storage::url($content->image_path) }}" alt="Current Image"
+                                            class="img-thumbnail" style="max-height: 150px;">
+                                    </div>
                                 @endif
                             </div>
+
+                            {{-- Icon --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Icon</label>
-                                <input type="file" name="icon" class="form-control rounded-3 shadow-sm border-0 bg-white">
-                                @if ($content->icon)
-                                    <small class="text-muted">Current: {{ $content->icon }}</small>
+                                <input type="file" name="icon"
+                                    class="form-control rounded-3 shadow-sm border-0 bg-white">
+                                @if ($content->icon_path)
+                                    <div class="mt-2">
+                                        <p class="mb-1 small text-muted">Current Icon:</p>
+                                        <img src="{{ Storage::url($content->icon_path) }}" alt="Current Icon"
+                                            class="img-thumbnail" style="max-height: 100px;">
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -132,6 +147,11 @@
 
         h6 {
             font-size: 0.95rem;
+        }
+
+        .img-thumbnail {
+            display: block;
+            margin-top: 0.25rem;
         }
     </style>
 @endsection

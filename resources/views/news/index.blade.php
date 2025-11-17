@@ -23,7 +23,7 @@
                         </ul>
                     </div>
                     <a href="{{ route('news.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
-                        <i class="fa fa-plus me-2"></i> Add News
+                        <i class="bi bi-plus-circle me-1"></i> Add News
                     </a>
                     <button type="button" id="deleteSelectedNews" class="btn btn-danger btn-sm">
                         <i class="fa fa-trash me-1"></i> Delete Selected
@@ -42,7 +42,7 @@
 
             {{-- Table --}}
             <div class="card-body p-0">
-                <div style="overflow-x:auto;">
+                <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless"
                         style="min-width: 1300px; table-layout: fixed;">
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
@@ -114,32 +114,16 @@
                                         </div>
                                     </td>
                                 </tr>
-
-                                {{-- Modal Full Content --}}
-                                <div class="modal fade" id="newsContentModal{{ $item->news_id }}" tabindex="-1"
-                                    aria-labelledby="newsContentModalLabel{{ $item->news_id }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">{{ $item->news_title }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                {!! $item->news_content !!}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-muted text-center py-4">No news data available</td>
+                                    <td colspan="10" class="text-muted text-center py-4">No news data available.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
+
 
             {{-- Modal Preview Gambar --}}
             <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
