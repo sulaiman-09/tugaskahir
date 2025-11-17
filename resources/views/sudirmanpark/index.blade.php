@@ -62,11 +62,13 @@
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
+                <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless"
+                        style="white-space: nowrap; width: max-content; min-width: 100%;">
+
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
-                                <th><input type="checkbox" id="selectAllCustomers"></th> {{-- Checkbox select all --}}
+                                <th><input type="checkbox" id="selectAllCustomers"></th>
                                 <th style="width: 40px;">No</th>
                                 <th>Nama Customer</th>
                                 <th>No. Telepon</th>
@@ -81,16 +83,24 @@
                                 <th style="width: 110px;">Aksi</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse($customers as $index => $customer)
                                 <tr>
                                     <td><input type="checkbox" class="customer-checkbox" value="{{ $customer->id }}"></td>
+
                                     <td>{{ $customers->firstItem() + $index }}</td>
+
                                     <td class="text-start ps-3">{{ $customer->name }}</td>
+
                                     <td>{{ $customer->phone }}</td>
+
                                     <td>{{ $customer->email }}</td>
+
                                     <td>{{ $customer->tower }}</td>
+
                                     <td>{{ $customer->package }}</td>
+
                                     <td>
                                         @if ($customer->ktp)
                                             <button type="button" class="btn btn-sm btn-outline-secondary ktp-preview-btn"
@@ -102,38 +112,51 @@
                                             <span class="text-muted">No File</span>
                                         @endif
                                     </td>
+
                                     <td>
                                         <span
-                                            class="badge 
-                    @if ($customer->status == 'approved') bg-success
-                    @elseif($customer->status == 'processed') bg-warning
-                    @elseif($customer->status == 'registration') bg-info
-                    @elseif($customer->status == 'cancelled') bg-danger @endif">
+                                            class="badge
+                                @if ($customer->status == 'approved') bg-success
+                                @elseif ($customer->status == 'processed') bg-warning
+                                @elseif ($customer->status == 'registration') bg-info
+                                @elseif ($customer->status == 'cancelled') bg-danger @endif">
                                             {{ ucfirst($customer->status) }}
                                         </span>
                                     </td>
+
                                     <td>
                                         <select class="form-select form-select-sm status-change"
                                             data-id="{{ $customer->id }}">
                                             <option value="registration"
-                                                {{ $customer->status == 'registration' ? 'selected' : '' }}>Registration
+                                                {{ $customer->status == 'registration' ? 'selected' : '' }}>
+                                                Registration
                                             </option>
                                             <option value="processed"
-                                                {{ $customer->status == 'processed' ? 'selected' : '' }}>Processed</option>
+                                                {{ $customer->status == 'processed' ? 'selected' : '' }}>
+                                                Processed
+                                            </option>
                                             <option value="approved"
-                                                {{ $customer->status == 'approved' ? 'selected' : '' }}>Approved</option>
+                                                {{ $customer->status == 'approved' ? 'selected' : '' }}>
+                                                Approved
+                                            </option>
                                             <option value="cancelled"
-                                                {{ $customer->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                {{ $customer->status == 'cancelled' ? 'selected' : '' }}>
+                                                Cancelled
+                                            </option>
                                         </select>
                                     </td>
+
                                     <td>{{ $customer->status_change ?? '-' }}</td>
+
                                     <td>{{ $customer->created_at->format('d-m-Y') }}</td>
+
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
                                             <button type="button" class="btn btn-warning btn-sm btn-edit-ajax"
                                                 title="Edit" data-id="{{ $customer->id }}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
+
                                             <form action="{{ route('sudirmanpark.destroy', $customer->id) }}"
                                                 method="POST" class="delete-form" data-name="{{ $customer->name }}">
                                                 @csrf
@@ -145,14 +168,19 @@
                                         </div>
                                     </td>
                                 </tr>
+
                             @empty
                                 <tr>
-                                    <td colspan="13" class="text-muted text-center py-4">Belum ada data customer</td>
+                                    <td colspan="13" class="text-muted text-center py-4">
+                                        Belum ada data customer
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
+
                     </table>
                 </div>
+
             </div>
         </div>
 
@@ -241,8 +269,8 @@
             }
 
             /* ============================================
-           PAGINATION KECIL — (AMAN & NON-INTRUSIVE)
-           ============================================ */
+                   PAGINATION KECIL — (AMAN & NON-INTRUSIVE)
+                   ============================================ */
 
             /* Wrapper agar tidak berantakan */
             .pagination-wrapper {

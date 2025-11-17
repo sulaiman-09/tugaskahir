@@ -105,11 +105,13 @@
             </div>
 
             <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="table table-hover align-middle mb-0 text-center table-striped table-borderless"
+                        style="white-space: nowrap; min-width: 100%;">
+
                         <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                             <tr class="fw-semibold text-dark">
-                                <th><input type="checkbox" id="selectAll"></th> <!-- Tambahan checkbox select all -->
+                                <th><input type="checkbox" id="selectAll"></th>
                                 <th style="width: 40px;">No</th>
                                 <th>Nama Pelanggan</th>
                                 <th>Nomor Telepon</th>
@@ -125,19 +127,28 @@
                                 <th style="width: 110px;">Aksi</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse($customer_leads as $index => $customer_lead)
                                 <tr>
                                     <td>
                                         <input type="checkbox" class="customer-checkbox" value="{{ $customer_lead->id }}">
                                     </td>
+
                                     <td>{{ $customer_leads->firstItem() + $index }}</td>
+
                                     <td class="text-start ps-3">{{ $customer_lead->customer_name }}</td>
+
                                     <td>{{ $customer_lead->customer_phone }}</td>
+
                                     <td>{{ $customer_lead->email }}</td>
+
                                     <td class="text-start">{{ $customer_lead->customer_address }}</td>
+
                                     <td>{{ $customer_lead->latitude }}</td>
+
                                     <td>{{ $customer_lead->longitude }}</td>
+
                                     <td>
                                         <select class="form-select form-select-sm coverage-dropdown"
                                             data-id="{{ $customer_lead->id }}">
@@ -149,12 +160,19 @@
                                             </option>
                                         </select>
                                     </td>
+
                                     <td class="text-start">
-                                        {{ $customer_lead->product ? $customer_lead->product->name : '-' }}</td>
-                                    <td>{{ $customer_lead->productCategory ? $customer_lead->productCategory->name : '-' }}
+                                        {{ $customer_lead->product?->name ?? '-' }}
                                     </td>
-                                    <td>{{ $customer_lead->created_at ? $customer_lead->created_at->format('d M Y H:i') : '-' }}
+
+                                    <td>
+                                        {{ $customer_lead->productCategory?->name ?? '-' }}
                                     </td>
+
+                                    <td>
+                                        {{ $customer_lead->created_at ? $customer_lead->created_at->format('d M Y H:i') : '-' }}
+                                    </td>
+
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-info btn-detail-map"
                                             data-lat="{{ $customer_lead->latitude }}"
@@ -163,12 +181,14 @@
                                             Detail
                                         </button>
                                     </td>
+
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
                                             <button type="button" class="btn btn-warning btn-sm btn-edit-customer"
                                                 title="Edit" data-id="{{ $customer_lead->id }}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
+
                                             <form action="{{ route('customer.destroy', $customer_lead->id) }}"
                                                 method="POST" class="delete-form"
                                                 data-name="{{ $customer_lead->customer_name }}">
@@ -181,15 +201,19 @@
                                         </div>
                                     </td>
                                 </tr>
+
                             @empty
                                 <tr>
-                                    <td colspan="14" class="text-muted text-center py-4">Belum ada data customer</td>
+                                    <td colspan="14" class="text-muted text-center py-4">
+                                        Belum ada data customer
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
 
                     </table>
                 </div>
+
             </div>
         </div>
 

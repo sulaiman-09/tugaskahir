@@ -6,7 +6,7 @@
     <div class="page-header">
         <h1 class="page-title">Dashboard</h1>
         <button class="refresh-btn" onclick="location.reload()"
-            style="background: linear-gradient(90deg, #ef4444, #f59e0b); border-radius: 9999px; padding: 10px 18px; font-weight:600; gap:0;">
+            style="background: linear-gradient(90deg, #37393b, #333332); border-radius: 9999px; padding: 10px 18px; font-weight:600; gap:0;">
             Refresh
         </button>
 

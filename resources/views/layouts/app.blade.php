@@ -265,7 +265,6 @@
         ul {
             padding-left: 0 !important;
         }
-        
     </style>
 
     {{-- Tempat CSS tambahan dari setiap halaman --}}
@@ -398,20 +397,17 @@
 
                     {{-- Trigger --}}
                     <a class="sidebar-item d-flex justify-content-between align-items-center
-            {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}"
+        {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}"
                         data-bs-toggle="collapse" href="#userMenu" role="button"
                         aria-expanded="{{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'true' : 'false' }}"
                         aria-controls="userMenu">
-
                         <span><i class="fa-solid fa-user-gear me-2"></i> User Management</span>
                         <i class="fa-solid fa-chevron-down small transition rotate-icon"></i>
                     </a>
 
                     {{-- Submenu --}}
                     <ul id="userMenu"
-                        class="collapse submenu ps-4 ms-2
-            {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}">
-
+                        class="collapse submenu ps-4 ms-2 {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'show' : '' }}">
                         <li>
                             <a href="{{ route('users.index') }}"
                                 class="submenu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
@@ -432,13 +428,12 @@
                                 <i class="fa-solid fa-lock me-2"></i> Permission
                             </a>
                         </li>
-
                     </ul>
                 </li>
             @endif
+
         </ul>
     </nav>
-
 
     <main class="main-content">
         @if (session('error') && !session('success'))
@@ -455,44 +450,45 @@
 
     <!-- ✅ SweetAlert2 & Script Efek fade-out -->
     <script>
-        // SweetAlert2 Notifications
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        @endif
+        // --- Fix Dropdown Sidebar Tidak Bisa Dibuka ---
+        document.querySelectorAll('a').forEach(link => {
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: '{{ session('error') }}',
-                timer: 5000,
-                showConfirmButton: true
-            });
-        @endif
-
-        // Efek fade-out halus sebelum pindah halaman
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', e => {
-                // Hanya fade out main content, jangan sentuh sidebar
+
+                // 1️⃣ Jangan fade / redirect kalau ini pemicu dropdown
+                if (link.getAttribute('data-bs-toggle') === 'collapse') {
+                    return; // izinkan bootstrap untuk buka dropdown
+                }
+
+                // 2️⃣ Jangan fade-out link dalam submenu (User, Role, Permission)
+                if (link.closest('.submenu')) {
+                    return; // biarkan default tanpa menghilangkan dropdown
+                }
+
+                // 3️⃣ Pastikan link punya href valid
+                if (!link.href || link.href === '#' || link.href.includes('javascript')) {
+                    return;
+                }
+
+                // 4️⃣ Lakukan fade-out untuk link menu utama saja
                 const main = document.querySelector('.main-content');
-                main.style.transition = 'opacity 0.15s ease-in-out';
+                if (!main) return;
+
+                e.preventDefault();
+
+                main.style.transition = "opacity 0.15s ease-in-out";
                 main.style.opacity = 0;
 
-                // Biarkan link normal tetap jalan setelah delay
                 setTimeout(() => {
                     window.location.href = link.href;
                 }, 150);
 
-                e.preventDefault();
             });
+
         });
     </script>
+
+
     <script src="{{ asset('js/admin-ui.js') }}"></script>
 </body>
 

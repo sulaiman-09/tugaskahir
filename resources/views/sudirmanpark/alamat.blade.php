@@ -282,6 +282,21 @@
             .right-pagination .page-item {
                 margin: 0 2px !important;
             }
+
+            /* Wajib: agar column tidak memaksa mengecil */
+            .table-responsive table {
+                min-width: 1200px;
+                /* boleh dinaikkan sesuai kebutuhan */
+                white-space: nowrap;
+                /* biar teks tidak turun ke bawah */
+            }
+
+            /* Boleh: agar cell lebih rapi */
+            .table td,
+            .table th {
+                vertical-align: middle;
+                padding: 8px 12px;
+            }
         </style>
     @endpush
 
