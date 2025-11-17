@@ -246,8 +246,61 @@
             </div>
 
             <!-- Right: Pagination -->
-            <div class="right-pagination pagination-sm">
-                {!! $customer_leads->onEachSide(0)->links() !!}
+            <div class="right-pagination">
+                @if ($customer_leads->hasPages())
+                    {{-- Variabel untuk kemudahan --}}
+                    @php
+                        $current = $customer_leads->currentPage();
+                        $last = $customer_leads->lastPage();
+                        
+                        // Logika sliding window: 2 halaman sebelum dan 2 sesudah halaman aktif
+                        $start = max(1, $current - 2);
+                        $end = min($last, $current + 2);
+                    @endphp
+
+                    <div class="flex justify-end mt-4">
+                        <nav class="inline-flex items-center space-x-1 text-sm">
+                            {{-- Tombol Previous --}}
+                            @if ($customer_leads->onFirstPage())
+                                <span class="px-3 py-1 border rounded-md opacity-40 cursor-not-allowed">‹</span>
+                            @else
+                                <a href="{{ $customer_leads->previousPageUrl() }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">‹</a>
+                            @endif
+
+                            {{-- Halaman Pertama dan Ellipsis (jika perlu) --}}
+                            @if ($start > 1)
+                                <a href="{{ $customer_leads->url(1) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">1</a>
+                                @if ($start > 2)
+                                    <span class="px-3 py-1 border rounded-md opacity-60">…</span>
+                                @endif
+                            @endif
+
+                            {{-- Loop Angka Halaman (Sliding Window) --}}
+                            @for ($page = $start; $page <= $end; $page++)
+                                @if ($page == $current)
+                                    <span class="px-3 py-1 border rounded-md bg-blue-600 text-white border-blue-600">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $customer_leads->url($page) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $page }}</a>
+                                @endif
+                            @endfor
+
+                            {{-- Ellipsis dan Halaman Terakhir (jika perlu) --}}
+                            @if ($end < $last)
+                                @if ($end < $last - 1)
+                                    <span class="px-3 py-1 border rounded-md opacity-60">…</span>
+                                @endif
+                                <a href="{{ $customer_leads->url($last) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $last }}</a>
+                            @endif
+
+                            {{-- Tombol Next --}}
+                            @if ($customer_leads->hasMorePages())
+                                <a href="{{ $customer_leads->nextPageUrl() }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">›</a>
+                            @else
+                                <span class="px-3 py-1 border rounded-md opacity-40 cursor-not-allowed">›</span>
+                            @endif
+                        </nav>
+                    </div>
+                @endif
             </div>
 
         </div>
