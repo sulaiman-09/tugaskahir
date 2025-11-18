@@ -36,12 +36,14 @@
             <div class="card-body py-3">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                     @foreach ($filters as $key => $label)
+                        @php $isActive = $currentFilter == $key; @endphp
                         <a href="{{ route('customer.index', ['filter' => $key]) }}"
-                            class="btn btn-sm {{ $currentFilter == $key ? 'btn-primary' : 'btn-outline-primary' }}">
+                            class="filter-btn btn-sm {{ $isActive ? 'active' : '' }}"
+                            aria-current="{{ $isActive ? 'page' : 'false' }}">
                             {{ $label }}
                         </a>
                     @endforeach
-                    <button type="button" class="btn btn-outline-primary btn-sm ms-1" data-bs-toggle="collapse"
+                    <button type="button" class="filter-btn btn-sm ms-1" data-bs-toggle="collapse"
                         data-bs-target="#customRange">
                         Custom Range
                     </button>
@@ -73,7 +75,7 @@
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle toolbar-btn toolbar-btn-ghost" type="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-print me-2"></i> Export
                         </button>
@@ -82,14 +84,14 @@
                             <li><a class="dropdown-item" href="{{ route('customer.export.pdf') }}">Export PDF</a></li>
                         </ul>
                     </div>
-                    <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm toolbar-btn toolbar-btn-primary">
                         <i class="bi bi-plus-circle me-1"></i> Add New Lead
                     </a>
                     {{-- 🔹 Tombol toggle latitude/longitude --}}
-                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm">
+                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm toolbar-btn toolbar-btn-danger">
                         <i class="fa fa-trash me-1"></i> Delete Selected
                     </button>
-                    <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm">
+                    <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm toolbar-btn toolbar-btn-ghost">
                         Show Coordinats
                     </button>
                 </div>
@@ -210,7 +212,6 @@
                                 </tr>
                             @endforelse
                         </tbody>
-
                     </table>
                 </div>
 
@@ -406,6 +407,101 @@
                 .pagination-sm .page-link {
                     padding: 3px 6px;
                 }
+            }
+
+            /* Filter button styles - clean, interactive, no color noise */
+            .filter-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.28rem 0.65rem;
+                border-radius: 8px;
+                font-size: 0.86rem;
+                color: #6b7280; /* slate-500 */
+                background: transparent;
+                border: 1px solid transparent;
+                text-decoration: none;
+                transition: all 0.12s ease-in-out;
+            }
+
+            .filter-btn:hover {
+                color: #374151; /* slate-700 */
+                background: #ffffff;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+                transform: translateY(-1px);
+            }
+
+            .filter-btn:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+            }
+
+            .filter-btn.active {
+                background: #ffffff;
+                color: #0f172a; /* slate-900 */
+                box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+                border-color: rgba(15, 23, 42, 0.04);
+            }
+
+            /* Toolbar buttons (Export, Add, Delete, Show Coordinates) */
+            .toolbar-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.35rem 0.7rem;
+                border-radius: 10px;
+                font-size: 0.88rem;
+                color: #334155; /* slate-700 */
+                background: transparent;
+                border: 1px solid rgba(15, 23, 42, 0.04);
+                transition: all 0.12s ease-in-out;
+            }
+
+            .toolbar-btn:hover {
+                background: #ffffff;
+                box-shadow: 0 4px 12px rgba(2,6,23,0.06);
+                transform: translateY(-1px);
+                color: #0f172a;
+            }
+
+            .toolbar-btn:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+            }
+
+            /* primary (Add New) - subtle, elegant */
+            .toolbar-btn-primary {
+                background: linear-gradient(180deg, #1f2937, #111827);
+                color: #ffffff !important;
+                border-color: rgba(0,0,0,0.08);
+                box-shadow: 0 8px 20px rgba(17,24,39,0.12);
+            }
+
+            .toolbar-btn-primary:hover {
+                transform: translateY(-1px);
+                filter: brightness(1.03);
+                background: linear-gradient(180deg,#111827,#0b1220);
+                color: #ffffff !important;
+                box-shadow: 0 10px 24px rgba(17,24,39,0.16);
+            }
+
+            /* ghost / neutral (export, show coords) */
+            .toolbar-btn-ghost {
+                background: transparent;
+                color: #374151;
+            }
+
+            /* danger (delete) - muted red */
+            .toolbar-btn-danger {
+                background: transparent;
+                color: #b91c1c;
+                border-color: rgba(185,28,28,0.08);
+            }
+
+            .toolbar-btn-danger:hover {
+                background: #b91c1c;
+                color: #fff !important;
+                box-shadow: 0 6px 18px rgba(185,28,28,0.12);
             }
         </style>
 

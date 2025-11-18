@@ -90,18 +90,43 @@
         </div>
 
         <!-- Main Chart -->
-        <div class="mt-8 bg-white p-6 rounded-xl shadow-md chart-card">
-            <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
-                <h3 class="text-lg font-semibold text-gray-700">Customer Growth Over Time</h3>
-                <div id="growth-chart-filters" class="flex space-x-1 bg-gray-200 p-1 rounded-lg">
-                    <button data-period="yearly" class="filter-btn px-3 py-1 text-sm font-medium rounded-md">Yearly</button>
+        <div
+            class="mt-8 bg-gradient-to-br from-white to-gray-50 p-8 rounded-xl shadow-lg chart-card border border-gray-100">
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900">Customer Growth Over Time</h3>
+                    <p class="text-sm text-gray-500 mt-1">Track new customer acquisitions across different time periods</p>
+                </div>
+                <div id="growth-chart-filters" class="flex space-x-2 bg-gray-100 p-1.5 rounded-lg shadow-sm">
+                    <button data-period="daily"
+                        class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Daily</button>
+                    <button data-period="weekly"
+                        class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Weekly</button>
                     <button data-period="monthly"
-                        class="filter-btn active px-3 py-1 text-sm font-medium rounded-md">Monthly</button>
-                    <button data-period="weekly" class="filter-btn px-3 py-1 text-sm font-medium rounded-md">Weekly</button>
-                    <button data-period="daily" class="filter-btn px-3 py-1 text-sm font-medium rounded-md">Daily</button>
+                        class="filter-btn active px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200">Monthly</button>
+                    <button data-period="yearly"
+                        class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Yearly</button>
                 </div>
             </div>
-            <div id="customer-growth-chart"></div>
+            <div id="customer-growth-chart" class="chart-container"></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">Peak</p>
+                    <p class="text-xl font-bold text-red-500" id="growth-peak">-</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">Average</p>
+                    <p class="text-xl font-bold text-blue-500" id="growth-average">-</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">Total</p>
+                    <p class="text-xl font-bold text-green-500" id="growth-total">-</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">Data Points</p>
+                    <p class="text-xl font-bold text-purple-500" id="growth-points">-</p>
+                </div>
+            </div>
         </div>
 
         <!-- Secondary Analytics Charts -->
@@ -199,14 +224,29 @@
             color: #4B5563;
         }
 
+        .filter-btn {
+            color: #6b7280;
+            background-color: transparent;
+        }
+
         .filter-btn.active {
-            background-color: #EF4444;
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
             color: #fff;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-1px);
         }
 
         /* Ensure charts don't overflow layout container */
         .chart-card .apexcharts-canvas {
             max-width: 100%;
+        }
+
+        .chart-container {
+            position: relative;
+            min-height: 400px;
         }
 
         /* Keep existing layout spacing consistent */
@@ -257,52 +297,173 @@
         // Create fallbacks for the detailed date labels where not provided by controller
         monthlyData.x_axis_labels = monthlyData.categories;
         yearlyData.x_axis_labels = yearlyData.categories;
+        weeklyData.x_axis_labels = weeklyData.x_axis_labels || weeklyData.categories;
+        dailyData.x_axis_labels = dailyData.x_axis_labels || dailyData.categories;
 
+        let currentData = monthlyData;
         let currentXAxisLabels = monthlyData.x_axis_labels;
+
+        // Helper function to calculate statistics
+        function calculateStats(data) {
+            if (!data || !data.series || !data.series[0] || !data.series[0].data) return null;
+            const values = data.series[0].data;
+            const peak = Math.max(...values);
+            const total = values.reduce((a, b) => a + b, 0);
+            const average = Math.round(total / values.length);
+            const points = values.length;
+            return {
+                peak,
+                total,
+                average,
+                points
+            };
+        }
+
+        // Helper function to update statistics display
+        function updateStats(data) {
+            const stats = calculateStats(data);
+            if (stats) {
+                document.getElementById('growth-peak').textContent = stats.peak.toLocaleString();
+                document.getElementById('growth-average').textContent = stats.average.toLocaleString();
+                document.getElementById('growth-total').textContent = stats.total.toLocaleString();
+                document.getElementById('growth-points').textContent = stats.points;
+            }
+        }
 
         var growthOptions = {
             series: monthlyData.series,
             chart: {
-                height: 350,
+                height: 400,
                 type: 'area',
                 toolbar: {
-                    show: false
+                    show: true,
+                    tools: {
+                        download: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
+                        reset: true,
+                    },
+                    export: {
+                        csv: {
+                            filename: 'customer-growth.csv',
+                        },
+                        svg: {
+                            filename: 'customer-growth.svg',
+                        },
+                        png: {
+                            filename: 'customer-growth.png',
+                        }
+                    }
                 },
                 zoom: {
-                    enabled: false
+                    enabled: true,
+                    type: 'x',
+                    autoScaleYaxis: true
+                },
+                animations: {
+                    enabled: true,
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 150
+                    }
                 }
             },
             dataLabels: {
                 enabled: false
             },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [20, 100, 100, 100]
+                }
+            },
             stroke: {
                 curve: 'smooth',
-                width: 2
+                width: 3,
+                lineCap: 'round'
             },
             xaxis: {
-                categories: monthlyData.categories
+                categories: monthlyData.categories,
+                type: 'category',
+                tickPlacement: 'between',
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        colors: '#6b7280'
+                    },
+                    offsetY: 5
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        colors: '#6b7280'
+                    },
+                    formatter: function(val) {
+                        return Math.round(val).toLocaleString();
+                    }
+                }
+            },
+            grid: {
+                borderColor: '#e5e7eb',
+                strokeDashArray: 3,
+                padding: {
+                    bottom: 10,
+                    top: 10
+                }
             },
             tooltip: {
+                enabled: true,
+                theme: 'light',
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Inter, Arial, sans-serif'
+                },
                 custom: function({
                     series,
                     seriesIndex,
                     dataPointIndex,
                     w
                 }) {
-                    const dateLabel = currentXAxisLabels[dataPointIndex];
+                    const dateLabel = currentXAxisLabels[dataPointIndex] || 'Unknown';
                     const value = series[seriesIndex][dataPointIndex];
                     return `
-                    <div class="px-3 py-2 bg-white rounded-md shadow-lg border border-gray-200">
-                        <div class="font-bold text-gray-800">${value} New Customers</div>
-                        <div class="text-xs text-gray-500 mt-1">${dateLabel}</div>
+                    <div class="px-4 py-3 bg-white rounded-lg shadow-xl border border-gray-200" style="min-width: 180px;">
+                        <div class="font-bold text-gray-900 text-lg">${value.toLocaleString()}</div>
+                        <div class="text-sm text-gray-600 mt-1 font-medium">New Customers</div>
+                        <div class="text-xs text-gray-500 mt-2 border-t border-gray-200 pt-2">${dateLabel}</div>
                     </div>
                 `;
                 }
             },
-            colors: [brandColors[0]]
+            colors: [brandColors[0]],
+            legend: {
+                show: true,
+                position: 'top',
+                horizontalAlign: 'right',
+                fontSize: '12px',
+                fontWeight: 600,
+                labels: {
+                    colors: '#6b7280'
+                }
+            }
         };
         var growthChart = new ApexCharts(document.querySelector("#customer-growth-chart"), growthOptions);
         growthChart.render();
+        updateStats(monthlyData);
 
         const filterButtons = document.querySelectorAll('#growth-chart-filters .filter-btn');
         filterButtons.forEach(button => {
@@ -329,12 +490,14 @@
                         currentXAxisLabels = dailyData.x_axis_labels;
                         break;
                 }
+                currentData = newData;
                 growthChart.updateOptions({
                     series: newData.series,
                     xaxis: {
                         categories: newData.categories
                     }
                 });
+                updateStats(newData);
             });
         });
 

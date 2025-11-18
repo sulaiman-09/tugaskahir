@@ -15,6 +15,7 @@ use App\Http\Controllers\SettingsContentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\StatsController;
 
 // Redirect root ke login
 Route::get('/', function () {
@@ -233,4 +234,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
     Route::post('/permissions/bulk-delete', [App\Http\Controllers\PermissionController::class, 'bulkDelete'])
         ->name('permissions.bulkDelete');
+
+    // ===== Statistics Routes =====
+    Route::get('/stats/customer-growth', [StatsController::class, 'customerGrowth'])->name('stats.customer-growth');
+    Route::get('/stats/customer-growth-view', function() {
+        return view('stats.customer-growth');
+    })->name('stats.customer-growth-view');
 });
