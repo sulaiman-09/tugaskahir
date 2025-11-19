@@ -12,13 +12,10 @@
         <div class="card border-0 shadow-sm rounded-3">
 
             {{-- Header Card --}}
-            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                {{-- Kiri: Export & Add --}}
-                <div class="d-flex align-items-center gap-2">
-                    {{-- Tombol Export --}}
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                <div class="d-flex gap-2 align-items-center toolbar-scroll">
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center"
-                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-print me-2"></i> Export
                         </button>
                         <ul class="dropdown-menu">
@@ -27,26 +24,23 @@
                         </ul>
                     </div>
 
-                    {{-- Tambah Career --}}
-                    <a href="{{ route('career.create') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('career.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
                         <i class="bi bi-plus-circle me-1"></i> Add Career
                     </a>
 
-                    {{-- Hapus Terpilih --}}
-                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm ms-2">
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger">
                         <i class="fa fa-trash me-1"></i> Delete Selected
                     </button>
-                </div>
 
-                {{-- Kanan: Search --}}
-                <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center"
-                    style="min-width: 260px; max-width: 400px;">
-                    <input type="text" name="search" class="form-control form-control-sm"
-                        placeholder="Search title, type, or location..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary btn-sm ms-2">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </form>
+                    <form action="{{ route('career.index') }}" method="GET" class="ms-auto d-flex align-items-center" style="max-width:360px; width:100%">
+                        <div class="input-group input-group-sm w-100">
+                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search title, type, or location..." value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             {{-- Tabel --}}

@@ -265,6 +265,60 @@
         ul {
             padding-left: 0 !important;
         }
+
+        /* Global toolbar helpers to keep buttons readable */
+        .toolbar-scroll {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+            flex-wrap: nowrap; /* don't wrap toolbar items */
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .toolbar-scroll .input-group {
+            flex: 0 0 auto; /* don't shrink search input */
+            min-width: 180px;
+            max-width: 420px;
+        }
+
+        .toolbar-btn {
+            white-space: nowrap; /* prevent line breaks inside button */
+            flex: 0 0 auto; /* don't let buttons shrink */
+            padding: .36rem .75rem;
+            font-size: .9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            border-radius: .4rem;
+        }
+
+        /* Make sure primary buttons don't get overridden by generic hover rules */
+        .toolbar-btn-primary {
+            background: linear-gradient(180deg, #1f2937, #111827) !important;
+            color: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .toolbar-btn-primary:hover {
+            color: #ffffff !important; /* ensure contrast on hover */
+            background: linear-gradient(180deg, #111827, #0b1220) !important;
+            filter: brightness(1.03) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        /* Generic hover should NOT apply to primary buttons; only non-primary buttons get the white hover */
+        .toolbar-btn:not(.toolbar-btn-primary):hover {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(2, 6, 23, 0.06);
+            transform: translateY(-1px);
+        }
+
+        /* optional: make export button a little wider so icons + text fit */
+        .toolbar-btn.toolbar-btn-export {
+            min-width: 98px;
+        }
     </style>
 
     {{-- Tempat CSS tambahan dari setiap halaman --}}

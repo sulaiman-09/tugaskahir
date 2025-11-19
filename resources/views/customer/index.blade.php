@@ -34,7 +34,7 @@
         {{-- Filter --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
             <div class="card-body py-3">
-                <div class="d-flex flex-wrap gap-2 align-items-center">
+                <div class="d-flex gap-2 align-items-center filter-scroll">
                     @foreach ($filters as $key => $label)
                         @php $isActive = $currentFilter == $key; @endphp
                         <a href="{{ route('customer.index', ['filter' => $key]) }}"
@@ -423,6 +423,26 @@
                 text-decoration: none;
                 transition: all 0.12s ease-in-out;
             }
+
+            /* Keep filter buttons on a single horizontal line and allow scrolling */
+            .filter-scroll {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                white-space: nowrap;
+                gap: 0.5rem;
+                padding-bottom: 4px;
+            }
+
+            .filter-scroll::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .filter-scroll::-webkit-scrollbar-thumb {
+                background: rgba(15,23,42,0.06);
+                border-radius: 6px;
+            }
+
+            .filter-btn { white-space: nowrap; }
 
             .filter-btn:hover {
                 color: #374151; /* slate-700 */

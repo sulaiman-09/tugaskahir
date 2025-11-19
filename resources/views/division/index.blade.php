@@ -12,11 +12,10 @@
         <div class="card border-0 shadow-sm rounded-3">
 
             {{-- Header aksi --}}
-            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                <div class="d-flex gap-2 align-items-center toolbar-scroll">
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-print me-2"></i> Export
                         </button>
                         <ul class="dropdown-menu">
@@ -24,22 +23,20 @@
                             <li><a class="dropdown-item" href="{{ route('division.export.pdf') }}">Export PDF</a></li>
                         </ul>
                     </div>
-                    <a href="{{ route('division.create') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('division.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
                         <i class="bi bi-plus-circle me-1"></i> Add Division
                     </a>
-                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm">
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger">
                         <i class="fa fa-trash me-1"></i> Delete Selected
                     </button>
-                </div>
 
-                {{-- Search --}}
-                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
-                    <form action="{{ route('division.index') }}" method="GET" class="d-flex w-100">
-                        <input type="text" name="search" class="form-control form-control-sm"
-                            placeholder="Search name..." value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
+                    <form action="{{ route('division.index') }}" method="GET" class="ms-auto d-flex align-items-center" style="max-width:360px; width:100%">
+                        <div class="input-group input-group-sm w-100">
+                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name..." value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

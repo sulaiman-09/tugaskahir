@@ -13,40 +13,42 @@
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body">
 
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
                     <h6 class="fw-semibold mb-0 text-dark">Product Categories</h6>
 
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                data-bs-toggle="dropdown">
+                    <div class="d-flex gap-2 align-items-center toolbar-scroll">
+                        <div class="dropdown">
+                            <button
+                                class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa fa-print me-2"></i> Export
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('product.category.export.excel') }}">Export
-                                        Excel</a>
-                                </li>
+                                        Excel</a></li>
                                 <li><a class="dropdown-item" href="{{ route('product.category.export.pdf') }}">Export
                                         PDF</a></li>
                             </ul>
                         </div>
 
-
-                        <a href="{{ route('product.category.create') }}"
-                            class="btn btn-primary btn-sm d-flex align-items-center">
+                        <a href="{{ route('product.category.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
                             <i class="bi bi-plus-circle me-1"></i> Add New Category
                         </a>
 
-                        <button type="button" id="deleteSelectedCategories" class="btn btn-danger btn-sm">
+                        <button type="button" id="deleteSelectedCategories"
+                            class="btn btn-sm toolbar-btn toolbar-btn-danger">
                             <i class="fa fa-trash me-1"></i> Delete Selected
                         </button>
 
-                        <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center">
-                            <input type="text" name="category_search" class="form-control form-control-sm"
-                                placeholder="Search category name or slug" value="{{ request('category_search') }}">
-                            <button type="submit" class="btn btn-primary btn-sm ms-2">
-                                <i class="fa fa-search"></i>
-                            </button>
+                        <form action="{{ route('product.index') }}" method="GET" class="ms-auto d-flex align-items-center"
+                            style="max-width:360px; width:100%">
+                            <div class="input-group input-group-sm w-100">
+                                <input type="text" name="category_search" class="form-control form-control-sm"
+                                    placeholder="Search category name or slug" value="{{ request('category_search') }}">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -180,10 +182,11 @@
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
                 <h6 class="fw-semibold mb-0 text-dark">Product List</h6>
 
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                            data-bs-toggle="dropdown">
+                <div class="d-flex gap-2 align-items-center toolbar-scroll">
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-print me-2"></i> Export
                         </button>
                         <ul class="dropdown-menu">
@@ -192,21 +195,24 @@
                         </ul>
                     </div>
 
-                    <a href="{{ route('product.create') }}" class="btn btn-primary btn-sm d-flex align-items-center">
+                    <a href="{{ route('product.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
                         <i class="bi bi-plus-circle me-1"></i> Add New Product
                     </a>
 
-                    <button type="button" id="deleteSelectedProducts" class="btn btn-danger btn-sm">
+                    <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn toolbar-btn-danger">
                         <i class="fa fa-trash me-1"></i> Delete Selected
                     </button>
 
-                    <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center">
-                        <input type="text" name="product_search" class="form-control form-control-sm"
-                            placeholder="Search product name, speed, or category"
-                            value="{{ request('product_search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
+                    <form action="{{ route('product.index') }}" method="GET" class="ms-auto d-flex align-items-center"
+                        style="max-width:360px; width:100%">
+                        <div class="input-group input-group-sm w-100">
+                            <input type="text" name="product_search" class="form-control form-control-sm"
+                                placeholder="Search product name, speed, or category"
+                                value="{{ request('product_search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -402,6 +408,94 @@
             .product-pagination .pagination .page-item .page-link[rel="prev"],
             .product-pagination .pagination .page-item .page-link[rel="next"] {
                 padding: 4px 8px !important;
+            }
+
+            /* Toolbar button styles (re-used for consistency with Customer/SudirmanPark) */
+            .toolbar-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.35rem 0.7rem;
+                border-radius: 10px;
+                font-size: 0.88rem;
+                color: #334155;
+                /* slate-700 */
+                background: transparent;
+                border: 1px solid rgba(15, 23, 42, 0.04);
+                transition: all 0.12s ease-in-out;
+            }
+
+            .toolbar-btn:hover {
+                background: #ffffff;
+                box-shadow: 0 4px 12px rgba(2, 6, 23, 0.06);
+                transform: translateY(-1px);
+                color: #0f172a;
+            }
+
+            .toolbar-btn:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+            }
+
+            .toolbar-btn-primary {
+                background: linear-gradient(180deg, #1f2937, #111827);
+                color: #ffffff !important;
+                border-color: rgba(0, 0, 0, 0.08);
+                box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
+            }
+
+            .toolbar-btn-primary:hover {
+                transform: translateY(-1px);
+                filter: brightness(1.03);
+                color: #ffffff !important;
+                background: linear-gradient(180deg, #111827, #0b1220);
+                box-shadow: 0 10px 24px rgba(17, 24, 39, 0.16);
+            }
+
+            .toolbar-btn-ghost {
+                background: transparent;
+                color: #374151;
+            }
+
+            .toolbar-btn-danger {
+                background: transparent;
+                color: #b91c1c;
+                border-color: rgba(185, 28, 28, 0.08);
+            }
+
+            .toolbar-btn-danger:hover {
+                background: #b91c1c;
+                color: #fff !important;
+                box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
+            }
+
+            .toolbar-scroll {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                white-space: nowrap;
+                gap: 0.5rem;
+                padding-bottom: 4px;
+            }
+
+            .toolbar-scroll::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .toolbar-scroll::-webkit-scrollbar-thumb {
+                background: rgba(15, 23, 42, 0.06);
+                border-radius: 6px;
+            }
+
+            /* FIX Dropdown ketutup tabel */
+            .toolbar-scroll {
+                position: relative;
+                overflow: visible !important;
+                /* izinkan dropdown keluar */
+            }
+
+            .toolbar-scroll .dropdown-menu {
+                z-index: 9999 !important;
+                position: absolute !important;
             }
         </style>
     @endpush
