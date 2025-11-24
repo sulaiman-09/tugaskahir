@@ -12,7 +12,9 @@
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
                 <div class="d-flex gap-2 align-items-center toolbar-scroll">
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <button
+                            class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center"
+                            type="button" data-bs-toggle="dropdown">
                             <i class="fa fa-print me-2"></i> Export
                         </button>
                         <ul class="dropdown-menu">
@@ -27,9 +29,11 @@
                         <i class="fa fa-trash me-1"></i> Delete Selected
                     </button>
 
-                    <form action="{{ route('news.index') }}" method="GET" class="ms-auto d-flex align-items-center" style="max-width:360px; width:100%">
+                    <form action="{{ route('news.index') }}" method="GET" class="ms-auto d-flex align-items-center"
+                        style="max-width:360px; width:100%">
                         <div class="input-group input-group-sm w-100">
-                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search title, caption, or admin..." value="{{ request('search') }}">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search title, caption, or admin..." value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-search"></i></button>
                         </div>
                     </form>
@@ -110,6 +114,30 @@
                                         </div>
                                     </td>
                                 </tr>
+
+                                <!-- Modal Preview Isi Berita -->
+                                <div class="modal fade" id="newsContentModal{{ $item->news_id }}" tabindex="-1"
+                                    aria-labelledby="newsContentModalLabel{{ $item->news_id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content border-0 shadow-lg rounded-4">
+
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-bold"
+                                                    id="newsContentModalLabel{{ $item->news_id }}">
+                                                    {{ $item->news_title }}
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body pt-2"
+                                                style="white-space: pre-line; font-size:15px; line-height:1.7;">
+                                                {!! $item->news_content !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             @empty
                                 <tr>
                                     <td colspan="10" class="text-muted text-center py-4">No news data available.</td>
@@ -135,7 +163,6 @@
                     </div>
                 </div>
             </div>
-
 
             {{-- Footer: Records per page + Showing + Pagination --}}
             <div class="d-flex justify-content-between align-items-center mt-3 px-3 pb-3 flex-wrap gap-3">
@@ -309,6 +336,61 @@
                     });
                 });
 
+            });
+        </script>
+    @endpush
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Safe guard: pastikan bootstrap ada
+                if (typeof bootstrap === 'undefined') {
+                    console.warn('Bootstrap JS tidak ditemukan. Pastikan bootstrap.bundle.min.js sudah di-include.');
+                    return;
+                }
+
+                // Tangkap semua tombol "Read more" (yang punya data-bs-target="#newsContentModal{ID}")
+                document.querySelectorAll('button[data-bs-target^="#newsContentModal"]').forEach(btn => {
+                    // pastikan tombol bersifat button
+                    btn.setAttribute('type', 'button');
+
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // ambil target (ex: #newsContentModal123)
+                        const target = btn.getAttribute('data-bs-target');
+                        if (!target) return;
+
+                        // cari elemen modal
+                        const modalEl = document.querySelector(target);
+                        if (!modalEl) {
+                            console.warn('Modal tidak ditemukan untuk target', target);
+                            return;
+                        }
+
+                        // Gunakan API Bootstrap untuk membuka modal (getOrCreateInstance agar aman jika sudah ada)
+                        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                        modalInstance.show();
+
+                        // fokuskan tombol close agar aksesibilitas lebih baik
+                        const closeBtn = modalEl.querySelector('[data-bs-dismiss="modal"]');
+                        if (closeBtn) closeBtn.focus();
+                    });
+                });
+
+                // Optional: perbaikan z-index jika modal tertutup overlay lain
+                const styleId = 'fix-modal-zindex';
+                if (!document.getElementById(styleId)) {
+                    const s = document.createElement('style');
+                    s.id = styleId;
+                    s.textContent = `
+            /* Pastikan modal muncul di atas elemen lain */
+            .modal { z-index: 1055 !important; }
+            .modal-backdrop { z-index: 1050 !important; }
+        `;
+                    document.head.appendChild(s);
+                }
             });
         </script>
     @endpush
