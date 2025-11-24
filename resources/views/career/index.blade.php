@@ -5,18 +5,22 @@
 @section('content')
     <div class="container py-4">
 
-        {{-- Judul --}}
-        <h3 class="fw-bold mb-4">Career Management</h3>
 
         {{-- Card Utama --}}
         <div class="card border-0 shadow-sm rounded-3">
-
             {{-- Header Card --}}
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                <!-- Judul di kiri -->
+                <h3 class="fw-bold mb-0">Career Management</h3>
+
+                <!-- Toolbar di kanan -->
                 <div class="d-flex gap-2 align-items-center toolbar-scroll">
+                    <!-- Export Dropdown -->
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-print me-2"></i> Export
+                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
+                            id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('career.export.excel') }}">Export Excel</a></li>
@@ -24,17 +28,27 @@
                         </ul>
                     </div>
 
-                    <a href="{{ route('career.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Add Career
+                    <!-- Add Career -->
+                    <a href="{{ route('career.create') }}"
+                        class="btn btn-sm d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative;">
+                        <i class="bi bi-briefcase" style="color: #fff; font-size: 1rem;"></i>
+                        <i class="bi bi-plus-lg"
+                            style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
 
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    <!-- Delete Selected -->
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
-                    <form action="{{ route('career.index') }}" method="GET" class="ms-auto d-flex align-items-center" style="max-width:360px; width:100%">
+                    <!-- Search Form -->
+                    <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center ms-2"
+                        style="max-width:360px; width:100%">
                         <div class="input-group input-group-sm w-100">
-                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search title, type, or location..." value="{{ request('search') }}">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search title, type, or location..." value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="fa fa-search"></i>
                             </button>
@@ -42,6 +56,7 @@
                     </form>
                 </div>
             </div>
+
 
             {{-- Tabel --}}
             <div class="card-body p-0">

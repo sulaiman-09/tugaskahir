@@ -18,56 +18,63 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        {{-- Judul --}}
-        <h3 class="fw-bold mb-4 text-dark">Kelola Alamat Homepass - Sudirman Park</h3>
-
-        {{-- Tombol Aksi --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
-            <div class="card-body py-3 d-flex flex-wrap gap-2 align-items-center">
+            {{-- Header Card --}}
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                {{-- Judul --}}
+                <h3 class="fw-bold mb-0 text-dark">Kelola Alamat Homepass - Sudirman Park</h3>
 
-                {{-- Tombol Back --}}
-                <a href="{{ route('sudirmanpark.index') }}" class="btn btn-secondary btn-sm d-flex align-items-center">
-                    <i class="bi bi-arrow-left me-1"></i> Back
-                </a>
-
-                {{-- Export --}}
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-print me-2"></i> Export
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassExcel') }}">Export Excel</a>
-                        </li>
-                        <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">Export PDF</a>
-                        </li>
-                    </ul>
-                </div>
-
-                {{-- Tambah Alamat --}}
-                <a href="{{ route('sudirmanpark.createHomepass') }}"
-                    class="btn btn-sm {{ request()->routeIs('sudirmanpark.createHomepass') ? 'btn-primary text-white' : 'btn-outline-primary' }}">
-                    <i class="bi bi-plus-circle me-1"></i> Add Homepass
-                </a>
-
+                {{-- Toolbar --}}
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" id="deleteSelectedCustomers" class="btn btn-danger btn-sm">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
-                    </button>
-                </div>
+                    {{-- Tombol Back --}}
+                    <a href="{{ route('sudirmanpark.index') }}"
+                        class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center"
+                        style="width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
+                        <i class="bi bi-chevron-left" style="font-size: 1rem;"></i>
+                    </a>
 
-                {{-- Search --}}
-                <form action="{{ route('sudirmanpark.alamat') }}" method="GET" class="d-flex align-items-center ms-auto"
-                    style="max-width: 420px; width:100%;">
-                    <input type="text" name="q" class="form-control form-control-sm"
-                        placeholder="Search tower, floor, or unit" value="{{ $q ?? request('q') }}">
-                    <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">
-                    <button type="submit" class="btn btn-primary btn-sm ms-2">
-                        <i class="fa fa-search"></i>
+                    {{-- Export Dropdown --}}
+                    <div class="btn-group">
+                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
+                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassExcel') }}">Export
+                                    Excel</a></li>
+                            <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">Export PDF</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {{-- Tambah Alamat --}}
+                    <a href="{{ route('sudirmanpark.createHomepass') }}"
+                        class="btn btn-sm d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
+                        <i class="bi bi-building-add" style="color: #fff; font-size: 1rem;"></i>
+                    </a>
+
+                    {{-- Delete Selected --}}
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
-                </form>
+
+                    {{-- Search --}}
+                    <form action="{{ route('sudirmanpark.alamat') }}" method="GET"
+                        class="d-flex align-items-center ms-auto" style="max-width: 420px; width:100%;">
+                        <input type="text" name="q" class="form-control form-control-sm"
+                            placeholder="Search tower, floor, or unit" value="{{ $q ?? request('q') }}">
+                        <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
+
 
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">

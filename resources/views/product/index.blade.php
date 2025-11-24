@@ -5,7 +5,6 @@
 
 @section('content')
     <div class="container py-4">
-        <h3 class="fw-bold mb-4 text-dark">Product Management</h3>
 
         {{-- ======================= --}}
         {{-- TABEL 1 : PRODUCT CATEGORY --}}
@@ -14,14 +13,14 @@
             <div class="card-body">
 
                 <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
-                    <h6 class="fw-semibold mb-0 text-dark">Product Categories</h6>
+                    <h3 class="fw-bold mb-0 text-dark">Product Categories</h3>
 
                     <div class="d-flex gap-2 align-items-center toolbar-scroll">
                         <div class="dropdown">
-                            <button
-                                class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-print me-2"></i> Export
+                            <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                                type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                                <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('product.category.export.excel') }}">Export
@@ -31,13 +30,15 @@
                             </ul>
                         </div>
 
-                        <a href="{{ route('product.category.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> Add New Category
+                        <a href="{{ route('product.category.create') }}"
+                            class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                            style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px;">
+                            <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                         </a>
 
-                        <button type="button" id="deleteSelectedCategories"
-                            class="btn btn-sm toolbar-btn toolbar-btn-danger">
-                            <i class="fa fa-trash me-1"></i> Delete Selected
+                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                            style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                            <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                         </button>
 
                         <form action="{{ route('product.index') }}" method="GET" class="ms-auto d-flex align-items-center"
@@ -180,14 +181,14 @@
         {{-- ======================= --}}
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
-                <h6 class="fw-semibold mb-0 text-dark">Product List</h6>
+                <h3 class="fw-bold mb-0 text-dark">Product List</h3>
 
                 <div class="d-flex gap-2 align-items-center toolbar-scroll">
                     <div class="dropdown">
-                        <button
-                            class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center"
-                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-print me-2"></i> Export
+                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('product.export.excel') }}">Export Excel</a></li>
@@ -195,12 +196,15 @@
                         </ul>
                     </div>
 
-                    <a href="{{ route('product.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Add New Product
+                    <a href="{{ route('product.create') }}"
+                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px;">
+                        <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                     </a>
 
-                    <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn toolbar-btn-danger">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
                     <form action="{{ route('product.index') }}" method="GET" class="ms-auto d-flex align-items-center"

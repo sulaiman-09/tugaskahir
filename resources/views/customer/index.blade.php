@@ -28,10 +28,6 @@
             </div>
         @endif
 
-        {{-- Judul --}}
-        <h3 class="fw-bold mb-4">Data Customer Leads</h3>
-
-        {{-- Filter --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
             <div class="card-body py-3">
                 <div class="d-flex gap-2 align-items-center filter-scroll">
@@ -39,12 +35,13 @@
                         @php $isActive = $currentFilter == $key; @endphp
                         <a href="{{ route('customer.index', ['filter' => $key]) }}"
                             class="filter-btn btn-sm {{ $isActive ? 'active' : '' }}"
-                            aria-current="{{ $isActive ? 'page' : 'false' }}">
+                            aria-current="{{ $isActive ? 'page' : 'false' }}"
+                            style="color: #000; border: 1px solid #000; {{ $isActive ? 'background-color: #000; color: #fff;' : '' }}">
                             {{ $label }}
                         </a>
                     @endforeach
                     <button type="button" class="filter-btn btn-sm ms-1" data-bs-toggle="collapse"
-                        data-bs-target="#customRange">
+                        data-bs-target="#customRange" style="color: #000; border: 1px solid #000;">
                         Custom Range
                     </button>
                 </div>
@@ -73,30 +70,46 @@
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
+                <!-- Judul kiri -->
+                <h3 class="fw-bold mb-0">Data Customer Leads</h3>
+
+                <!-- Toolbar kanan -->
+                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1">
+                    <!-- Export Dropdown -->
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle toolbar-btn toolbar-btn-ghost" type="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-print me-2"></i> Export
+                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('customer.export.excel') }}">Export Excel</a></li>
                             <li><a class="dropdown-item" href="{{ route('customer.export.pdf') }}">Export PDF</a></li>
                         </ul>
                     </div>
-                    <a href="{{ route('customer.create') }}" class="btn btn-primary btn-sm toolbar-btn toolbar-btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Add New Lead
+
+                    <!-- Add Customer -->
+                    <a href="{{ route('customer.create') }}"
+                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px; width: 36px; height: 36px;">
+                        <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
                     </a>
-                    {{-- 🔹 Tombol toggle latitude/longitude --}}
-                    <button type="button" id="deleteSelected" class="btn btn-danger btn-sm toolbar-btn toolbar-btn-danger">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
+
+                    <!-- Delete Selected -->
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
-                    <button id="toggle-coordinates" type="button" class="btn btn-outline-dark btn-sm toolbar-btn toolbar-btn-ghost">
-                        Show Coordinats
+
+                    <!-- Toggle Coordinates -->
+                    <button id="toggle-coordinates" type="button" class="btn btn-sm toolbar-btn toolbar-btn-ghost"
+                        style="background-color: white; border: 1px solid #000; color: #000;">
+                        Show Coordinates
                     </button>
-                </div>
-                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
-                    <form action="{{ route('customer.index') }}" method="GET" class="d-flex w-100">
+
+                    <!-- Search Form -->
+                    <form action="{{ route('customer.index') }}" method="GET"
+                        class="d-flex align-items-center flex-shrink-0" style="min-width: 260px; max-width: 400px;">
                         <input type="text" name="search" class="form-control form-control-sm"
                             placeholder="Search name, phone, email or product" value="{{ request('search') }}">
                         <button type="submit" class="btn btn-primary btn-sm ms-2">
@@ -180,7 +193,7 @@
                                             data-lat="{{ $customer_lead->latitude }}"
                                             data-lng="{{ $customer_lead->longitude }}"
                                             data-address="{{ e($customer_lead->customer_address) }}">
-                                            Details
+                                            Maps
                                         </button>
                                     </td>
 
@@ -253,7 +266,7 @@
                     @php
                         $current = $customer_leads->currentPage();
                         $last = $customer_leads->lastPage();
-                        
+
                         // Logika sliding window: 2 halaman sebelum dan 2 sesudah halaman aktif
                         $start = max(1, $current - 2);
                         $end = min($last, $current + 2);
@@ -265,12 +278,14 @@
                             @if ($customer_leads->onFirstPage())
                                 <span class="px-3 py-1 border rounded-md opacity-40 cursor-not-allowed">‹</span>
                             @else
-                                <a href="{{ $customer_leads->previousPageUrl() }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">‹</a>
+                                <a href="{{ $customer_leads->previousPageUrl() }}"
+                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">‹</a>
                             @endif
 
                             {{-- Halaman Pertama dan Ellipsis (jika perlu) --}}
                             @if ($start > 1)
-                                <a href="{{ $customer_leads->url(1) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">1</a>
+                                <a href="{{ $customer_leads->url(1) }}"
+                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">1</a>
                                 @if ($start > 2)
                                     <span class="px-3 py-1 border rounded-md opacity-60">…</span>
                                 @endif
@@ -279,9 +294,11 @@
                             {{-- Loop Angka Halaman (Sliding Window) --}}
                             @for ($page = $start; $page <= $end; $page++)
                                 @if ($page == $current)
-                                    <span class="px-3 py-1 border rounded-md bg-blue-600 text-white border-blue-600">{{ $page }}</span>
+                                    <span
+                                        class="px-3 py-1 border rounded-md bg-blue-600 text-white border-blue-600">{{ $page }}</span>
                                 @else
-                                    <a href="{{ $customer_leads->url($page) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $page }}</a>
+                                    <a href="{{ $customer_leads->url($page) }}"
+                                        class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $page }}</a>
                                 @endif
                             @endfor
 
@@ -290,12 +307,14 @@
                                 @if ($end < $last - 1)
                                     <span class="px-3 py-1 border rounded-md opacity-60">…</span>
                                 @endif
-                                <a href="{{ $customer_leads->url($last) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $last }}</a>
+                                <a href="{{ $customer_leads->url($last) }}"
+                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $last }}</a>
                             @endif
 
                             {{-- Tombol Next --}}
                             @if ($customer_leads->hasMorePages())
-                                <a href="{{ $customer_leads->nextPageUrl() }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">›</a>
+                                <a href="{{ $customer_leads->nextPageUrl() }}"
+                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">›</a>
                             @else
                                 <span class="px-3 py-1 border rounded-md opacity-40 cursor-not-allowed">›</span>
                             @endif
@@ -417,7 +436,8 @@
                 padding: 0.28rem 0.65rem;
                 border-radius: 8px;
                 font-size: 0.86rem;
-                color: #6b7280; /* slate-500 */
+                color: #6b7280;
+                /* slate-500 */
                 background: transparent;
                 border: 1px solid transparent;
                 text-decoration: none;
@@ -438,14 +458,17 @@
             }
 
             .filter-scroll::-webkit-scrollbar-thumb {
-                background: rgba(15,23,42,0.06);
+                background: rgba(15, 23, 42, 0.06);
                 border-radius: 6px;
             }
 
-            .filter-btn { white-space: nowrap; }
+            .filter-btn {
+                white-space: nowrap;
+            }
 
             .filter-btn:hover {
-                color: #374151; /* slate-700 */
+                color: #374151;
+                /* slate-700 */
                 background: #ffffff;
                 box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
                 transform: translateY(-1px);
@@ -458,7 +481,8 @@
 
             .filter-btn.active {
                 background: #ffffff;
-                color: #0f172a; /* slate-900 */
+                color: #0f172a;
+                /* slate-900 */
                 box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
                 border-color: rgba(15, 23, 42, 0.04);
             }
@@ -471,7 +495,8 @@
                 padding: 0.35rem 0.7rem;
                 border-radius: 10px;
                 font-size: 0.88rem;
-                color: #334155; /* slate-700 */
+                color: #334155;
+                /* slate-700 */
                 background: transparent;
                 border: 1px solid rgba(15, 23, 42, 0.04);
                 transition: all 0.12s ease-in-out;
@@ -479,30 +504,30 @@
 
             .toolbar-btn:hover {
                 background: #ffffff;
-                box-shadow: 0 4px 12px rgba(2,6,23,0.06);
+                box-shadow: 0 4px 12px rgba(2, 6, 23, 0.06);
                 transform: translateY(-1px);
                 color: #0f172a;
             }
 
             .toolbar-btn:focus {
                 outline: none;
-                box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
             }
 
             /* primary (Add New) - subtle, elegant */
             .toolbar-btn-primary {
                 background: linear-gradient(180deg, #1f2937, #111827);
                 color: #ffffff !important;
-                border-color: rgba(0,0,0,0.08);
-                box-shadow: 0 8px 20px rgba(17,24,39,0.12);
+                border-color: rgba(0, 0, 0, 0.08);
+                box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
             }
 
             .toolbar-btn-primary:hover {
                 transform: translateY(-1px);
                 filter: brightness(1.03);
-                background: linear-gradient(180deg,#111827,#0b1220);
+                background: linear-gradient(180deg, #111827, #0b1220);
                 color: #ffffff !important;
-                box-shadow: 0 10px 24px rgba(17,24,39,0.16);
+                box-shadow: 0 10px 24px rgba(17, 24, 39, 0.16);
             }
 
             /* ghost / neutral (export, show coords) */
@@ -515,13 +540,13 @@
             .toolbar-btn-danger {
                 background: transparent;
                 color: #b91c1c;
-                border-color: rgba(185,28,28,0.08);
+                border-color: rgba(185, 28, 28, 0.08);
             }
 
             .toolbar-btn-danger:hover {
                 background: #b91c1c;
                 color: #fff !important;
-                box-shadow: 0 6px 18px rgba(185,28,28,0.12);
+                box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
             }
         </style>
 

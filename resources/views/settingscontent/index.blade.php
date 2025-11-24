@@ -5,49 +5,60 @@
 @section('content')
     <div class="container py-4">
 
-        {{-- Judul --}}
-        <h3 class="fw-bold mb-4">Settings Content</h3>
-
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                {{-- Kiri: Export & Add --}}
-                <div class="d-flex align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                <!-- Judul kiri -->
+                <h3 class="fw-bold mb-0 text-dark">Settings Content</h3>
+
+                <!-- Toolbar kanan -->
+                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1">
+                    <!-- Export Dropdown -->
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-print me-2"></i> Export
+                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
+                            id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px; border-radius: 6px;">
+                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('settings-content.export.excel') }}">Export
-                                    Excel</a>
-                            </li>
+                                    Excel</a></li>
                             <li><a class="dropdown-item" href="{{ route('settings-content.export.pdf') }}">Export PDF</a>
                             </li>
                         </ul>
                     </div>
-                    <a href="{{ route('settings-content.create') }}" class="btn btn-primary btn-sm">
-                       <i class="bi bi-plus-circle me-1"></i> Add Content
+
+                    <!-- Add Content -->
+                    <a href="{{ route('settings-content.create') }}"
+                        class="btn btn-sm d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
+                        <i class="bi bi-file-text" style="color: #fff; font-size: 1rem;"></i>
+                        <i class="bi bi-plus-lg"
+                            style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
-                    <button type="button" id="deleteSelectedContents" class="btn btn-danger btn-sm">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
+
+                    <!-- Delete Selected -->
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
-                </div>
 
-                {{-- Kanan: Search --}}
-                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
-                    <form action="{{ route('settings-content.index') }}" method="GET" class="d-flex w-100">
-                        <input type="text" name="search" class="form-control form-control-sm"
-                            placeholder="Search title or name" value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
+                    <!-- Search Form -->
+                    <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
+                        <form action="{{ route('settings-content.index') }}" method="GET" class="d-flex w-100">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search title or name" value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm ms-2">
+                                <i class="fa fa-search"></i>
+                            </button>
 
-                        {{-- Pertahankan per_page --}}
-                        <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
-                    </form>
+                            <!-- Pertahankan per_page -->
+                            <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
+                        </form>
+                    </div>
                 </div>
             </div>
+
 
             {{-- Alert sukses --}}
             @if (session('success'))

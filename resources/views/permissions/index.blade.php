@@ -5,35 +5,45 @@
 @section('content')
     <div class="container py-4">
 
-        <h3 class="fw-bold mb-4">Permission Management</h3>
-
         <div class="card border-0 shadow-sm rounded-3">
 
-            {{-- Header --}}
-            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('permissions.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle me-1"></i> Add Permission
-                    </a>
-                    <button type="button" id="deleteSelectedPermissions" class="btn btn-danger btn-sm">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
-                    </button>
-                </div>
+            {{-- Header Card --}}
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                <!-- Judul kiri -->
+                <h3 class="fw-bold mb-0 text-dark">Permission Management</h3>
 
-                {{-- Search --}}
-                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
-                    <form action="{{ route('permissions.index') }}" method="GET" class="d-flex w-100">
-                        <input type="text" name="search" class="form-control form-control-sm"
-                            placeholder="Search permission name..." value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
-                        @if (request('search'))
-                            <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary btn-sm ms-2">
-                                Clear
-                            </a>
-                        @endif
-                    </form>
+                <!-- Toolbar kanan -->
+                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1">
+                    <!-- Add Permission -->
+                    <a href="{{ route('permissions.create') }}"
+                        class="btn btn-sm d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
+                        <i class="bi bi-key" style="color: #fff; font-size: 1rem;"></i>
+                        <i class="bi bi-plus-lg"
+                            style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
+                    </a>
+
+                    <!-- Delete Selected -->
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                    </button>
+
+                    <!-- Search Form -->
+                    <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
+                        <form action="{{ route('permissions.index') }}" method="GET" class="d-flex w-100">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search permission name..." value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm ms-2">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            @if (request('search'))
+                                <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary btn-sm ms-2">
+                                    Clear
+                                </a>
+                            @endif
+                        </form>
+                    </div>
                 </div>
             </div>
 

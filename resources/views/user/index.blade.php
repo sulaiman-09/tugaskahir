@@ -16,11 +16,15 @@
 
                 {{-- Kiri --}}
                 <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle me-1"></i> Add User
+                    <a href="{{ route('users.create') }}" class="btn btn-sm d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
+                        <i class="bi bi-person" style="color: #fff; font-size: 1rem;"></i>
+                        <i class="bi bi-plus-lg"
+                            style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
-                    <button type="button" id="deleteSelectedUsers" class="btn btn-danger btn-sm ms-2">
-                        <i class="bi bi-trash me-1"></i> Delete Selected
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
                 </div>
 

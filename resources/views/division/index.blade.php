@@ -5,41 +5,58 @@
 @section('content')
     <div class="container py-4">
 
-        {{-- Judul --}}
-        <h3 class="fw-bold mb-4">Data Division</h3>
 
         {{-- Card utama --}}
         <div class="card border-0 shadow-sm rounded-3">
 
-            {{-- Header aksi --}}
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
-                <div class="d-flex gap-2 align-items-center toolbar-scroll">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-print me-2"></i> Export
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('division.export.excel') }}">Export Excel</a></li>
-                            <li><a class="dropdown-item" href="{{ route('division.export.pdf') }}">Export PDF</a></li>
-                        </ul>
-                    </div>
-                    <a href="{{ route('division.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Add Division
-                    </a>
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
-                    </button>
+<div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <!-- Judul kiri -->
+    <h3 class="fw-bold mb-0">Data Division</h3>
 
-                    <form action="{{ route('division.index') }}" method="GET" class="ms-auto d-flex align-items-center" style="max-width:360px; width:100%">
-                        <div class="input-group input-group-sm w-100">
-                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name..." value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- Toolbar kanan -->
+    <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1">
+        <!-- Export Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ route('division.export.excel') }}">Export Excel</a></li>
+                <li><a class="dropdown-item" href="{{ route('division.export.pdf') }}">Export PDF</a></li>
+            </ul>
+        </div>
+
+        <!-- Add Division -->
+        <a href="{{ route('division.create') }}"
+            class="btn btn-sm d-flex align-items-center justify-content-center"
+            style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative;">
+            <!-- Icon utama: division -->
+            <i class="bi bi-diagram-3" style="color: #fff; font-size: 1rem;"></i>
+            <!-- Overlay plus -->
+            <i class="bi bi-plus-lg"
+                style="color: #fff; font-size: 0.7rem; position: absolute; top: 0; right: 0;"></i>
+        </a>
+
+        <!-- Delete Selected -->
+        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+            style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+            <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+        </button>
+
+        <!-- Search Form -->
+        <form action="{{ route('division.index') }}" method="GET" class="d-flex align-items-center flex-shrink-0"
+            style="min-width: 260px; max-width: 400px;">
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name..."
+                value="{{ request('search') }}">
+            <button type="submit" class="btn btn-primary btn-sm ms-2">
+                <i class="fa fa-search"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
 
             {{-- Tabel --}}
             <div class="card-body p-0">

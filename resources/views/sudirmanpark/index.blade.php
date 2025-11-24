@@ -5,44 +5,64 @@
 @section('content')
     <div class="container py-4">
 
-        {{-- Judul --}}
-        <h3 class="fw-bold mb-4 text-dark">Sudirman Park - Customer Management</h3>
-
         {{-- Tombol Aksi --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
-            <div class="card-body py-3 d-flex gap-2 align-items-center toolbar-scroll">
-
-                {{-- Export CSV --}}
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm toolbar-btn toolbar-btn-ghost d-flex align-items-center"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-print me-2"></i> Export
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Export CSV</a></li>
-                    </ul>
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+                {{-- Judul --}}
+                <div class="d-flex flex-column">
+                    <h3 class="fw-bold mb-0 text-dark">Sudirman Park - </h3>
+                    <h3 class="fw-semibold mb-0 text-dark">Customer Management</h3>
                 </div>
-                <a href="{{ route('sudirmanpark.create') }}" class="btn btn-sm toolbar-btn toolbar-btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i> Add New Customer
-                </a>
 
-                <a href="{{ route('sudirmanpark.alamat') }}"
-                    class="btn btn-sm {{ request()->routeIs('sudirmanpark.alamat') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}">
-                    Manage Tower Address
-                </a>
+                {{-- Toolbar --}}
+                <div class="d-flex gap-2 align-items-center toolbar-scroll">
+                    {{-- Export --}}
+                    <div class="dropdown">
+                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
+                            id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassExcel') }}">
+                                    Export Excel
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">
+                                    Export PDF
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                <a href="{{ route('product.index') }}"
-                    class="btn btn-sm {{ request()->routeIs('product.*') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}">
-                    Manage Product
-                </a>
+                    {{-- Tambah Customer --}}
+                    <a href="{{ route('sudirmanpark.create') }}"
+                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px;">
+                        <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
+                    </a>
 
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" id="deleteSelectedCustomers"
-                        class="btn btn-danger btn-sm toolbar-btn toolbar-btn-danger">
-                        <i class="fa fa-trash me-1"></i> Delete Selected
+                    {{-- Manage Links --}}
+                    <a href="{{ route('sudirmanpark.alamat') }}"
+                        class="btn btn-sm {{ request()->routeIs('sudirmanpark.alamat') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}"
+                        style="{{ request()->routeIs('sudirmanpark.alamat') ? '' : 'background-color: white; border: 1px solid #000; color: #000;' }}">
+                        Manage Tower Address
+                    </a>
+
+                    <a href="{{ route('product.index') }}"
+                        class="btn btn-sm {{ request()->routeIs('product.*') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}"
+                        style="{{ request()->routeIs('product.*') ? '' : 'background-color: white; border: 1px solid #000; color: #000;' }}">
+                        Manage Product
+                    </a>
+
+                    {{-- Delete Selected --}}
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
-                </div>
-                <div>
+
                     {{-- Search --}}
                     <form action="{{ route('sudirmanpark.index') }}" method="GET"
                         class="ms-auto d-flex align-items-center" style="max-width:420px; width:100%;">
@@ -55,8 +75,6 @@
                         </div>
                         <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">
                     </form>
-
-
                 </div>
             </div>
 
@@ -332,8 +350,8 @@
                 }
 
                 /* ============================================
-                       PAGINATION KECIL — (AMAN & NON-INTRUSIVE)
-                       ============================================ */
+                                                               PAGINATION KECIL — (AMAN & NON-INTRUSIVE)
+                                                               ============================================ */
 
                 /* Wrapper agar tidak berantakan */
                 .pagination-wrapper {
@@ -465,20 +483,40 @@
 
         @push('scripts')
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Konfirmasi hapus
-                    document.querySelectorAll('.delete-form').forEach(form => {
-                        form.addEventListener('submit', e => {
-                            e.preventDefault();
-                            const name = form.dataset.name || 'record ini';
-                            if (confirm(
-                                    `Yakin ingin menghapus ${name}? Aksi ini tidak dapat dibatalkan.`)) {
-                                form.submit();
-                            }
-                        });
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Select all
+                    document.getElementById('selectAllCustomers').addEventListener('change', function() {
+                        document.querySelectorAll('.customer-checkbox').forEach(cb => cb.checked = this.checked);
                     });
 
-                    // Change Status (AJAX)
+                    // Bulk delete
+                    document.getElementById('deleteSelected').addEventListener('click', () => {
+                        const selected = Array.from(document.querySelectorAll('.customer-checkbox:checked')).map(
+                            cb => cb.value);
+                        if (selected.length === 0) return alert('Pilih minimal satu customer untuk dihapus.');
+                        if (!confirm(`Yakin ingin menghapus ${selected.length} customer terpilih?`)) return;
+
+                        fetch("{{ route('sudirmanpark.bulkDelete') }}", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                                },
+                                body: JSON.stringify({
+                                    ids: selected
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.message);
+                                    location.reload();
+                                } else alert(data.message);
+                            })
+                            .catch(() => alert('Terjadi kesalahan.'));
+                    });
+
+                    // Fix status badge update
                     document.querySelectorAll('.status-change').forEach(select => {
                         select.addEventListener('change', function() {
                             const id = this.dataset.id;
@@ -499,8 +537,8 @@
                                 .then(res => res.json())
                                 .then(data => {
                                     if (data.success) {
-                                        // Update status badge
-                                        const badgeCell = row.querySelector('td:nth-child(8) span');
+                                        // Update status badge (td ke-9 sesuai kolom Status)
+                                        const badgeCell = row.querySelector('td:nth-child(9) span');
                                         badgeCell.textContent = data.status.charAt(0).toUpperCase() +
                                             data.status.slice(1);
                                         badgeCell.className = 'badge ' + (
@@ -510,8 +548,8 @@
                                             status === 'cancelled' ? 'bg-danger' : ''
                                         );
 
-                                        // Update status change info cell
-                                        const statusChangeCell = row.querySelector('td:nth-child(10)');
+                                        // Update status change info (td ke-11)
+                                        const statusChangeCell = row.querySelector('td:nth-child(11)');
                                         statusChangeCell.textContent = data.status_change;
                                     } else {
                                         alert('Gagal mengubah status.');
