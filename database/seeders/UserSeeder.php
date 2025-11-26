@@ -6,51 +6,27 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
-class UserSeeder extends Seeder
+class DatabaseSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
     {
-        // Admin user
+        // Membuat User Admin
         User::create([
-            'name' => 'Admin',
-            'email' => 'admin@lifemedia.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
+            'name' => 'Admin Utama',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('123456'), // Password di-hash
+            'role' => 'admin', // Pastikan kolom role ada di tabel users
         ]);
-
-        // Sales user
+        
+        // Membuat User Sales (Contoh tambahan)
         User::create([
-            'name' => 'Sales',
-            'email' => 'sales@lifemedia.com',
-            'password' => Hash::make('sales123'),
+            'name' => 'Sales Staff',
+            'email' => 'sales@gmail.com',
+            'password' => Hash::make('123456'),
             'role' => 'sales',
         ]);
-
-        // Sudirman Park user
-        User::create([
-            'name' => 'Sudirman Park',
-            'email' => 'sudirmanpark@lifemedia.com',
-            'password' => Hash::make('sudirman123'),
-            'role' => 'sudirman park',
-        ]);
-
-        // Report user
-        User::create([
-            'name' => 'Report',
-            'email' => 'report@lifemedia.com',
-            'password' => Hash::make('report123'),
-            'role' => 'report',
-        ]);
-
-        // Test user
-        // Removed duplicate test user to avoid unique constraint violation
-        /*
-         User::create([
-            'name' => 'Test',
-            'email' => 'test@lifemedia.com',
-            'password' => Hash::make('qwerty'),
-            'role' => 'admin',
-        ]);
-        */
     }
 }

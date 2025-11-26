@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -34,17 +35,29 @@ class AuthController extends Controller
             
             $user = Auth::user();
             $role = $user->role;
+
+            Log::info("User logged in successfully", ['email'=> $user->email, 'role'=> $role]);
             
             switch ($role) {
                 case 'admin':
+                    return redirect()->intended('/dashboard');
                 case 'report':
                     return redirect()->intended('/dashboard');
                 case 'sales':
                     return redirect('/customer');
+                case 'sudirmanpark':
                 case 'sudirman park':
                     return redirect('/sudirmanpark');
                 default:
                     return redirect('/dashboard');
+            }
+        } else {
+            // Logging failed login attempt
+            $user = User::where('email', $request->email)->first();
+            if (!$user) {
+                Log::warning("Login gagal: user tidak ditemukan", ['email' => $request->email]);
+            } else {
+                Log::warning("Login gagal: password salah", ['email' => $request->email]);
             }
         }
 

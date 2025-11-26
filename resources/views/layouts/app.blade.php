@@ -369,7 +369,11 @@
             @endif
 
             {{-- Sudirman Park --}}
-            @if (auth()->user()->role == 'admin' || auth()->user()->role == 'sudirman park')
+            @php
+                $role = auth()->user()->role ?? '';
+            @endphp
+
+            @if ($role == 'admin' || in_array($role, ['sudirmanpark', 'sudirman park']))
                 <li>
                     <a href="{{ route('sudirmanpark.index') }}"
                         class="sidebar-item {{ request()->routeIs('sudirmanpark.*') ? 'active' : '' }}">
