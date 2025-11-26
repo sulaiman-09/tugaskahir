@@ -15,8 +15,11 @@ class ProductCategory extends Model
         'name',
         'slug',
         'short_description',
-        'benefit',
+        'long_description',
         'show_price',
+        'background_image',
+        'banner_products',
+        'is_price',
     ];
 
     public $timestamps = true; // sesuaikan jika tabel punya created_at dan updated_at

@@ -79,6 +79,13 @@ class CareerController extends Controller
     {
         $career = Career::findOrFail($id);
         $career->status = $career->is_active ? 'Active' : 'Inactive';
+        if (request()->ajax() || request()->query('modal')) {
+            return view('career.partials.form', [
+                'career' => $career,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('career.edit', compact('career'));
     }
 
@@ -114,6 +121,10 @@ class CareerController extends Controller
         }
 
         $career->update($validated);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('career.index')->with('success', 'Career updated successfully');
     }

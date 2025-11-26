@@ -106,6 +106,13 @@ class DivisionController extends Controller
     // Menampilkan form edit
     public function edit(Division $division)
     {
+        if (request()->ajax() || request()->query('modal')) {
+            return view('division.partials.form', [
+                'division' => $division,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('division.edit', compact('division'));
     }
 
@@ -120,6 +127,10 @@ class DivisionController extends Controller
         ]);
 
         $division->update($validated);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('division.index')
             ->with('success', 'Division berhasil diperbarui.');

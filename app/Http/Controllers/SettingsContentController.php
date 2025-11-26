@@ -77,6 +77,13 @@ class SettingsContentController extends Controller
     public function edit($id)
     {
         $content = SettingsContent::findOrFail($id);
+        if (request()->ajax() || request()->query('modal')) {
+            return view('settingscontent.partials.form', [
+                'content' => $content,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('settingscontent.edit', compact('content'));
     }
 
@@ -116,6 +123,10 @@ class SettingsContentController extends Controller
         }
 
         $content->update($data);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('settings-content.index')
             ->with('success', 'Content updated successfully!');

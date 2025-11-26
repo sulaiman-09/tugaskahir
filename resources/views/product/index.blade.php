@@ -36,7 +36,7 @@
                             <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                         </a>
 
-                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        <button type="button" id="deleteSelectedCategories" class="btn btn-sm toolbar-btn"
                             style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                             <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                         </button>
@@ -109,10 +109,10 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('product.category.edit', $cat->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-category-btn"
+                                                data-url="{{ route('product.category.edit', $cat->id) }}" title="Edit">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('product.category.destroy', $cat->id) }}" method="POST"
                                                 class="d-inline">
                                                 @csrf
@@ -202,7 +202,7 @@
                         <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                     </a>
 
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                    <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
@@ -276,10 +276,10 @@
                                     <td>{{ $prod->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('product.edit', $prod->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-product-btn"
+                                                data-url="{{ route('product.edit', $prod->id) }}" title="Edit">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('product.togglePrice', $prod->id) }}" method="POST"
                                                 class="d-inline">
                                                 @csrf
@@ -366,6 +366,21 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal edit global --}}
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalTitle">Edit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editModalBody">
+                    <div class="text-center py-4">Loading...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -505,6 +520,101 @@
     @endpush
 
     @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalEl = document.getElementById('editModal');
+                const modalBody = document.getElementById('editModalBody');
+                const modalTitle = document.getElementById('editModalTitle');
+                const editModal = new bootstrap.Modal(modalEl);
+
+                function wireModalForm(container) {
+                    const form = container.querySelector('form');
+                    if (!form) return;
+
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const submitBtn = form.querySelector('[type="submit"]');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        const errorBox = form.querySelector('[data-error-box]');
+                        if (errorBox) {
+                            errorBox.classList.add('d-none');
+                            errorBox.innerHTML = '';
+                        }
+
+                        fetch(form.action, {
+                                method: form.method || 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                },
+                                body: new FormData(form)
+                            })
+                            .then(async res => {
+                                if (submitBtn) submitBtn.disabled = false;
+
+                                if (res.ok) {
+                                    editModal.hide();
+                                    window.location.reload();
+                                    return;
+                                }
+
+                                if (res.status === 422) {
+                                    const data = await res.json();
+                                    const messages = Object.values(data.errors || {}).flat();
+                                    if (errorBox) {
+                                        errorBox.classList.remove('d-none');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                    }
+                                    return;
+                                }
+
+                                alert('Gagal menyimpan data. Silakan coba lagi.');
+                            })
+                            .catch(() => {
+                                if (submitBtn) submitBtn.disabled = false;
+                                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                            });
+                    });
+                }
+
+                function loadEditForm(url, titleText) {
+                    modalTitle.textContent = titleText;
+                    modalBody.innerHTML = '<div class="text-center py-4">Loading...</div>';
+                    editModal.show();
+
+                    fetch(url + (url.includes('?') ? '&' : '?') + 'modal=1', {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            modalBody.innerHTML = html;
+                            wireModalForm(modalBody);
+                        })
+                        .catch(() => {
+                            modalBody.innerHTML = '<div class="text-danger">Gagal memuat form.</div>';
+                        });
+                }
+
+                document.querySelectorAll('.edit-category-btn').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        loadEditForm(btn.dataset.url, 'Edit Category');
+                    });
+                });
+
+                document.querySelectorAll('.edit-product-btn').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        loadEditForm(btn.dataset.url, 'Edit Product');
+                    });
+                });
+            });
+        </script>
+
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // ================= Bulk Delete Category =================

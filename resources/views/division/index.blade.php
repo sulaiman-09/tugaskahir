@@ -95,10 +95,10 @@
                                     <td>{{ $division->created_at->format('d-m-Y H:i:s') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('division.edit', $division->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-division-btn"
+                                                data-url="{{ route('division.edit', $division->id) }}" title="Edit">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('division.destroy', $division->id) }}" method="POST"
                                                 class="delete-form" data-name="{{ $division->name }}">
                                                 @csrf
@@ -171,11 +171,111 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal edit Division --}}
+    <div class="modal fade" id="editDivisionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDivisionModalTitle">Edit Division</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editDivisionModalBody">
+                    <div class="text-center py-4">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Modal edit Division (AJAX)
+            const editModalEl = document.getElementById('editDivisionModal');
+            const editModalBody = document.getElementById('editDivisionModalBody');
+            const editModalTitle = document.getElementById('editDivisionModalTitle');
+            const editModal = new bootstrap.Modal(editModalEl);
+
+            function wireDivisionForm(container) {
+                const form = container.querySelector('form');
+                if (!form) return;
+
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const submitBtn = form.querySelector('[type="submit"]');
+                    if (submitBtn) submitBtn.disabled = true;
+
+                    const errorBox = form.querySelector('[data-error-box]');
+                    if (errorBox) {
+                        errorBox.classList.add('d-none');
+                        errorBox.innerHTML = '';
+                    }
+
+                    fetch(form.action, {
+                            method: form.method || 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: new FormData(form)
+                        })
+                        .then(async res => {
+                            if (submitBtn) submitBtn.disabled = false;
+
+                            if (res.ok) {
+                                editModal.hide();
+                                window.location.reload();
+                                return;
+                            }
+
+                            if (res.status === 422) {
+                                const data = await res.json();
+                                const messages = Object.values(data.errors || {}).flat();
+                                if (errorBox) {
+                                    errorBox.classList.remove('d-none');
+                                    errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                }
+                                return;
+                            }
+
+                            alert('Gagal menyimpan data. Silakan coba lagi.');
+                        })
+                        .catch(() => {
+                            if (submitBtn) submitBtn.disabled = false;
+                            alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                        });
+                });
+            }
+
+            function loadDivisionForm(url) {
+                editModalTitle.textContent = 'Edit Division';
+                editModalBody.innerHTML = '<div class="text-center py-4">Loading...</div>';
+                editModal.show();
+
+                fetch(url + (url.includes('?') ? '&' : '?') + 'modal=1', {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(res => res.text())
+                    .then(html => {
+                        editModalBody.innerHTML = html;
+                        wireDivisionForm(editModalBody);
+                    })
+                    .catch(() => {
+                        editModalBody.innerHTML = '<div class="text-danger">Gagal memuat form.</div>';
+                    });
+            }
+
+            document.querySelectorAll('.edit-division-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    loadDivisionForm(btn.dataset.url);
+                });
+            });
+
             // Toggle status
             document.querySelectorAll('.status-toggle').forEach(cb => {
                 cb.addEventListener('change', function() {

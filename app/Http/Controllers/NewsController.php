@@ -87,6 +87,13 @@ class NewsController extends Controller
     public function edit($id)
     {
         $news = News::where('news_id', $id)->firstOrFail();
+        if (request()->ajax() || request()->query('modal')) {
+            return view('news.partials.form', [
+                'news' => $news,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('news.edit', compact('news'));
     }
 
@@ -128,6 +135,10 @@ class NewsController extends Controller
         $validated['news_created_date'] = $news->news_created_date; // jangan diubah
 
         $news->update($validated);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('news.index')->with('success', 'News updated successfully!');
     }

@@ -127,10 +127,11 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('settings-content.edit', $content->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-content-btn"
+                                                data-url="{{ route('settings-content.edit', $content->id) }}"
+                                                title="Edit">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('settings-content.destroy', $content->id) }}"
                                                 method="POST" class="delete-form" data-name="{{ $content->title }}">
                                                 @csrf
@@ -213,10 +214,110 @@
             </div>
         </div>
     </div>
+    
+    {{-- Modal edit Settings Content --}}
+    <div class="modal fade" id="editContentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editContentModalTitle">Edit Content</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editContentModalBody">
+                    <div class="text-center py-4">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Modal edit Content (AJAX)
+                const editModalEl = document.getElementById('editContentModal');
+                const editModalBody = document.getElementById('editContentModalBody');
+                const editModalTitle = document.getElementById('editContentModalTitle');
+                const editModal = new bootstrap.Modal(editModalEl);
+
+                function wireContentForm(container) {
+                    const form = container.querySelector('form');
+                    if (!form) return;
+
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const submitBtn = form.querySelector('[type="submit"]');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        const errorBox = form.querySelector('[data-error-box]');
+                        if (errorBox) {
+                            errorBox.classList.add('d-none');
+                            errorBox.innerHTML = '';
+                        }
+
+                        fetch(form.action, {
+                                method: form.method || 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: new FormData(form)
+                            })
+                            .then(async res => {
+                                if (submitBtn) submitBtn.disabled = false;
+
+                                if (res.ok) {
+                                    editModal.hide();
+                                    window.location.reload();
+                                    return;
+                                }
+
+                                if (res.status === 422) {
+                                    const data = await res.json();
+                                    const messages = Object.values(data.errors || {}).flat();
+                                    if (errorBox) {
+                                        errorBox.classList.remove('d-none');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                    }
+                                    return;
+                                }
+
+                                alert('Gagal menyimpan data. Silakan coba lagi.');
+                            })
+                            .catch(() => {
+                                if (submitBtn) submitBtn.disabled = false;
+                                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                            });
+                    });
+                }
+
+                function loadContentForm(url) {
+                    editModalTitle.textContent = 'Edit Content';
+                    editModalBody.innerHTML = '<div class="text-center py-4">Loading...</div>';
+                    editModal.show();
+
+                    fetch(url + (url.includes('?') ? '&' : '?') + 'modal=1', {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            editModalBody.innerHTML = html;
+                            wireContentForm(editModalBody);
+                        })
+                        .catch(() => {
+                            editModalBody.innerHTML = '<div class="text-danger">Gagal memuat form.</div>';
+                        });
+                }
+
+                document.querySelectorAll('.edit-content-btn').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        loadContentForm(btn.dataset.url);
+                    });
+                });
+
                 // Konfirmasi hapus
                 document.querySelectorAll('.delete-form').forEach(form => {
                     form.addEventListener('submit', e => {

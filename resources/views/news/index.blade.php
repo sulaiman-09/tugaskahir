@@ -112,10 +112,10 @@
                                     <td>{{ $item->user ? $item->user->name : '-' }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('news.edit', $item->news_id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-news-btn"
+                                                data-url="{{ route('news.edit', $item->news_id) }}" title="Edit">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('news.destroy', $item->news_id) }}" method="POST"
                                                 class="delete-form" data-title="{{ $item->news_title }}">
                                                 @csrf
@@ -219,13 +219,138 @@
                 <div class="right-pagination pagination-sm">
                     {{ $news->links() }}
                 </div>
+    </div>
+    </div>
+    </div>
+
+    {{-- Modal edit News --}}
+    <div class="modal fade" id="editNewsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editNewsModalTitle">Edit News</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editNewsModalBody">
+                    <div class="text-center py-4">Loading...</div>
+                </div>
             </div>
         </div>
     </div>
 
     @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+
+                // Modal edit News (AJAX)
+                const editModalEl = document.getElementById('editNewsModal');
+                const editModalBody = document.getElementById('editNewsModalBody');
+                const editModalTitle = document.getElementById('editNewsModalTitle');
+                const editModal = new bootstrap.Modal(editModalEl);
+
+                function initTinyMce() {
+                    if (typeof tinymce === 'undefined') return;
+                    const existing = tinymce.get('news_content');
+                    if (existing) {
+                        tinymce.remove('#news_content');
+                    }
+                    tinymce.init({
+                        selector: '#news_content',
+                        height: 400,
+                        menubar: false,
+                        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+                        toolbar: 'undo redo | blocks | bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | code fullscreen help',
+                        branding: false,
+                        promotion: false,
+                        setup: function(editor) {
+                            editor.on('change', function() {
+                                editor.save();
+                            });
+                        }
+                    });
+                }
+
+                function wireNewsForm(container) {
+                    const form = container.querySelector('form');
+                    if (!form) return;
+
+                    initTinyMce();
+
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const submitBtn = form.querySelector('[type="submit"]');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        const errorBox = form.querySelector('[data-error-box]');
+                        if (errorBox) {
+                            errorBox.classList.add('d-none');
+                            errorBox.innerHTML = '';
+                        }
+
+                        fetch(form.action, {
+                                method: form.method || 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: new FormData(form)
+                            })
+                            .then(async res => {
+                                if (submitBtn) submitBtn.disabled = false;
+
+                                if (res.ok) {
+                                    editModal.hide();
+                                    window.location.reload();
+                                    return;
+                                }
+
+                                if (res.status === 422) {
+                                    const data = await res.json();
+                                    const messages = Object.values(data.errors || {}).flat();
+                                    if (errorBox) {
+                                        errorBox.classList.remove('d-none');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                    }
+                                    return;
+                                }
+
+                                alert('Gagal menyimpan data. Silakan coba lagi.');
+                            })
+                            .catch(() => {
+                                if (submitBtn) submitBtn.disabled = false;
+                                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                            });
+                    });
+                }
+
+                function loadNewsForm(url) {
+                    editModalTitle.textContent = 'Edit News';
+                    editModalBody.innerHTML = '<div class="text-center py-4">Loading...</div>';
+                    editModal.show();
+
+                    fetch(url + (url.includes('?') ? '&' : '?') + 'modal=1', {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            editModalBody.innerHTML = html;
+                            wireNewsForm(editModalBody);
+                        })
+                        .catch(() => {
+                            editModalBody.innerHTML = '<div class="text-danger">Gagal memuat form.</div>';
+                        });
+                }
+
+                document.querySelectorAll('.edit-news-btn').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        loadNewsForm(btn.dataset.url);
+                    });
+                });
 
                 const selectAll = document.getElementById('selectAllNews');
                 const checkboxes = document.querySelectorAll('.select-news');

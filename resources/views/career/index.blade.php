@@ -104,10 +104,10 @@
                                     <td>{{ \Carbon\Carbon::parse($career->created_at)->format('d M Y') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('career.edit', $career->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-career-btn"
+                                                data-url="{{ route('career.edit', $career->id) }}" title="Edit">
                                                 <i class="fa fa-edit"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('career.destroy', $career->id) }}" method="POST"
                                                 class="d-inline"
                                                 onsubmit="return confirm('Yakin ingin menghapus data ini?')">
@@ -180,6 +180,21 @@
         </div>
     </div>
 
+    {{-- Modal edit Career --}}
+    <div class="modal fade" id="editCareerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCareerModalTitle">Edit Career</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editCareerModalBody">
+                    <div class="text-center py-4">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Toast notifikasi --}}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert"
@@ -196,9 +211,94 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Modal edit Career (AJAX)
+            const editModalEl = document.getElementById('editCareerModal');
+            const editModalBody = document.getElementById('editCareerModalBody');
+            const editModalTitle = document.getElementById('editCareerModalTitle');
+            const editModal = new bootstrap.Modal(editModalEl);
+
+            function wireCareerForm(container) {
+                const form = container.querySelector('form');
+                if (!form) return;
+
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const submitBtn = form.querySelector('[type="submit"]');
+                    if (submitBtn) submitBtn.disabled = true;
+
+                    const errorBox = form.querySelector('[data-error-box]');
+                    if (errorBox) {
+                        errorBox.classList.add('d-none');
+                        errorBox.innerHTML = '';
+                    }
+
+                    fetch(form.action, {
+                            method: form.method || 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: new FormData(form)
+                        })
+                        .then(async res => {
+                            if (submitBtn) submitBtn.disabled = false;
+
+                            if (res.ok) {
+                                editModal.hide();
+                                window.location.reload();
+                                return;
+                            }
+
+                            if (res.status === 422) {
+                                const data = await res.json();
+                                const messages = Object.values(data.errors || {}).flat();
+                                if (errorBox) {
+                                    errorBox.classList.remove('d-none');
+                                    errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                }
+                                return;
+                            }
+
+                            alert('Gagal menyimpan data. Silakan coba lagi.');
+                        })
+                        .catch(() => {
+                            if (submitBtn) submitBtn.disabled = false;
+                            alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                        });
+                });
+            }
+
+            function loadCareerForm(url) {
+                editModalTitle.textContent = 'Edit Career';
+                editModalBody.innerHTML = '<div class="text-center py-4">Loading...</div>';
+                editModal.show();
+
+                fetch(url + (url.includes('?') ? '&' : '?') + 'modal=1', {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(res => res.text())
+                    .then(html => {
+                        editModalBody.innerHTML = html;
+                        wireCareerForm(editModalBody);
+                    })
+                    .catch(() => {
+                        editModalBody.innerHTML = '<div class="text-danger">Gagal memuat form.</div>';
+                    });
+            }
+
+            document.querySelectorAll('.edit-career-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    loadCareerForm(btn.dataset.url);
+                });
+            });
+
             // Modal preview
             const modalHtml = `
-    <div class="modal fade" id="careerPreviewModal" tabindex="-1">
+                <div class="modal fade" id="careerPreviewModal" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">

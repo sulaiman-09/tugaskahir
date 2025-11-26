@@ -113,10 +113,10 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('banner.edit', $banner->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit">
+                                            <button type="button" class="btn btn-warning btn-sm edit-banner-btn"
+                                                data-url="{{ route('banner.edit', $banner->id) }}" title="Edit">
                                                 <i class="fa fa-edit"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('banner.destroy', $banner->id) }}" method="POST"
                                                 class="delete-form" data-name="{{ $banner->name }}">
                                                 @csrf
@@ -181,6 +181,21 @@
         </div>
     </div>
 
+    {{-- Modal edit banner --}}
+    <div class="modal fade" id="editBannerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editBannerModalTitle">Edit Banner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editBannerModalBody">
+                    <div class="text-center py-4">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Toast notifikasi --}}
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert"
@@ -198,6 +213,91 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+                // Modal edit banner (AJAX)
+                const editModalEl = document.getElementById('editBannerModal');
+                const editModalBody = document.getElementById('editBannerModalBody');
+                const editModalTitle = document.getElementById('editBannerModalTitle');
+                const editModal = new bootstrap.Modal(editModalEl);
+
+                function wireBannerForm(container) {
+                    const form = container.querySelector('form');
+                    if (!form) return;
+
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const submitBtn = form.querySelector('[type="submit"]');
+                        if (submitBtn) submitBtn.disabled = true;
+
+                        const errorBox = form.querySelector('[data-error-box]');
+                        if (errorBox) {
+                            errorBox.classList.add('d-none');
+                            errorBox.innerHTML = '';
+                        }
+
+                        fetch(form.action, {
+                                method: form.method || 'POST',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: new FormData(form)
+                            })
+                            .then(async res => {
+                                if (submitBtn) submitBtn.disabled = false;
+
+                                if (res.ok) {
+                                    editModal.hide();
+                                    window.location.reload();
+                                    return;
+                                }
+
+                                if (res.status === 422) {
+                                    const data = await res.json();
+                                    const messages = Object.values(data.errors || {}).flat();
+                                    if (errorBox) {
+                                        errorBox.classList.remove('d-none');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                    }
+                                    return;
+                                }
+
+                                alert('Gagal menyimpan data. Silakan coba lagi.');
+                            })
+                            .catch(() => {
+                                if (submitBtn) submitBtn.disabled = false;
+                                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                            });
+                    });
+                }
+
+                function loadBannerForm(url) {
+                    editModalTitle.textContent = 'Edit Banner';
+                    editModalBody.innerHTML = '<div class="text-center py-4">Loading...</div>';
+                    editModal.show();
+
+                    fetch(url + (url.includes('?') ? '&' : '?') + 'modal=1', {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            editModalBody.innerHTML = html;
+                            wireBannerForm(editModalBody);
+                        })
+                        .catch(() => {
+                            editModalBody.innerHTML = '<div class="text-danger">Gagal memuat form.</div>';
+                        });
+                }
+
+                document.querySelectorAll('.edit-banner-btn').forEach(btn => {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        loadBannerForm(btn.dataset.url);
+                    });
+                });
+
                 // Modal preview
                 const bannerModalEl = document.getElementById('bannerPreviewModal');
                 const bannerModal = new bootstrap.Modal(bannerModalEl);

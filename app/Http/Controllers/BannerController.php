@@ -79,6 +79,13 @@ class BannerController extends Controller
     public function edit($id)
     {
         $banner = Banner::findOrFail($id);
+        if (request()->ajax() || request()->query('modal')) {
+            return view('banner.partials.form', [
+                'banner' => $banner,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('banner.edit', compact('banner'));
     }
 
@@ -109,6 +116,10 @@ class BannerController extends Controller
         }
 
         $banner->save();
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('banner.index')->with('success', 'Banner berhasil diperbarui.');
     }

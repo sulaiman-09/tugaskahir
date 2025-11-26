@@ -83,7 +83,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:product_categories',
             'short_description' => 'nullable|string',
-            'benefit' => 'nullable|string',
+            'long_description' => 'nullable|string',
             'show_price' => 'nullable|boolean',
         ]);
 
@@ -92,6 +92,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'short_description' => $request->short_description,
+            'long_description' => $request->long_description,
             'show_price' => $request->has('show_price') ? 1 : 0,
         ]);
 
@@ -118,6 +119,13 @@ class ProductController extends Controller
     public function editCategory($id)
     {
         $category = ProductCategory::findOrFail($id);
+        if (request()->ajax() || request()->query('modal')) {
+            return view('product.partials.category-form', [
+                'category' => $category,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('product.edit_category', compact('category'));
     }
 
@@ -130,7 +138,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:product_categories,slug,' . $category->id,
             'short_description' => 'nullable|string',
-            'benefit' => 'nullable|string',
+            'long_description' => 'nullable|string',
             'show_price' => 'nullable|boolean',
         ]);
 
@@ -138,9 +146,13 @@ class ProductController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'short_description' => $request->short_description,
-            'benefit' => $request->benefit,
+            'long_description' => $request->long_description,
             'show_price' => $request->has('show_price') ? 1 : 0,
         ]);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('product.index')->with('success', 'Category updated successfully!');
     }
@@ -214,6 +226,14 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $categories = ProductCategory::all();
+        if (request()->ajax() || request()->query('modal')) {
+            return view('product.partials.product-form', [
+                'product' => $product,
+                'categories' => $categories,
+                'hideCancel' => true,
+            ]);
+        }
+
         return view('product.edit', compact('product', 'categories'));
     }
 
@@ -263,6 +283,10 @@ class ProductController extends Controller
 
         // Update data produk
         $product->update($data);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('product.index')->with('success', 'Product updated successfully!');
     }
