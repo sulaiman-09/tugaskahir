@@ -18,7 +18,7 @@
         $currentFilter = request('filter', 'all');
     @endphp
 
-    <div class="container py-4 customer-page">
+    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 customer-page">
 
         {{-- Alert --}}
         @if (session('success'))
@@ -30,18 +30,61 @@
 
         <div class="card border-0 shadow-sm rounded-3 mb-3">
             <div class="card-body py-3">
-                <div class="d-flex gap-2 align-items-center filter-scroll">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-filter"></i> Filters
+                    </h5>
+
+                    {{-- Dropdown (mobile/compact) --}}
+                    <div class="dropdown d-md-none">
+                        <button class="btn btn-outline-dark btn-sm d-inline-flex align-items-center gap-2 filter-toggle"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-sliders"></i> <span class="btn-label">Pilih Filter</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-3 filter-dropdown">
+                            <div class="small text-muted mb-2">Quick Filters</div>
+                            @foreach ($filters as $key => $label)
+                                @php $isActive = $currentFilter == $key; @endphp
+                                <a class="dropdown-item d-flex justify-content-between align-items-center {{ $isActive ? 'active' : '' }}"
+                                    href="{{ route('customer.index', ['filter' => $key]) }}">
+                                    <span>{{ $label }}</span>
+                                    @if ($isActive)
+                                        <i class="fa-solid fa-check text-success"></i>
+                                    @endif
+                                </a>
+                            @endforeach
+                            <div class="dropdown-divider my-2"></div>
+                            <div class="small text-muted mb-2">Custom Range</div>
+                            <form method="GET" action="{{ route('customer.index') }}" class="filter-range-form">
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1">From</label>
+                                    <input type="date" name="from" value="{{ request('from') }}"
+                                        class="form-control form-control-sm">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small mb-1">To</label>
+                                    <input type="date" name="to" value="{{ request('to') }}"
+                                        class="form-control form-control-sm">
+                                </div>
+                                <button type="submit" name="filter" value="custom"
+                                    class="btn btn-dark w-100 btn-sm">Apply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Filter chips (desktop/tablet) --}}
+                <div class="d-none d-md-flex gap-2 align-items-center filter-scroll mt-3">
                     @foreach ($filters as $key => $label)
                         @php $isActive = $currentFilter == $key; @endphp
                         <a href="{{ route('customer.index', ['filter' => $key]) }}"
                             class="filter-btn btn-sm {{ $isActive ? 'active' : '' }}"
-                            aria-current="{{ $isActive ? 'page' : 'false' }}"
-                            style="color: #000; border: 1px solid #000; {{ $isActive ? 'background-color: #000; color: #fff;' : '' }}">
+                            aria-current="{{ $isActive ? 'page' : 'false' }}">
                             {{ $label }}
                         </a>
                     @endforeach
                     <button type="button" class="filter-btn btn-sm ms-1" data-bs-toggle="collapse"
-                        data-bs-target="#customRange" style="color: #000; border: 1px solid #000;">
+                        data-bs-target="#customRange">
                         Custom Range
                     </button>
                 </div>
@@ -74,13 +117,14 @@
                 <h3 class="fw-bold mb-0">Data Customer Leads</h3>
 
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1">
+                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1 customer-toolbar">
                     <!-- Export Dropdown -->
                     <div class="dropdown">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
                             type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; min-width: 44px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                            <span class="btn-label ms-1">Export</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('customer.export.excel') }}">Export Excel</a></li>
@@ -90,29 +134,32 @@
 
                     <!-- Add Customer -->
                     <a href="{{ route('customer.create') }}"
-                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px; width: 36px; height: 36px;">
+                        class="btn btn-sm toolbar-btn toolbar-btn-primary d-flex align-items-center justify-content-center"
+                        title="Tambah Customer">
                         <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
+                        <span class="btn-label ms-1">Add</span>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
-                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger"
+                        title="Delete selected">
+                        <i class="fa-solid fa-list-check" style="color: #b91c1c;"></i>
+                        <span class="btn-label ms-1">Delete Selected</span>
                     </button>
 
                     <!-- Toggle Coordinates -->
-                    <button id="toggle-coordinates" type="button" class="btn btn-sm toolbar-btn toolbar-btn-ghost"
-                        style="background-color: white; border: 1px solid #000; color: #000;">
-                        Show Coordinates
+                    <button id="toggle-coordinates" type="button"
+                        class="btn btn-sm toolbar-btn toolbar-btn-ghost" title="Toggle coordinates">
+                        <i class="bi bi-geo-alt"></i>
+                        <span class="btn-label ms-1">Show Coordinates</span>
                     </button>
 
                     <!-- Search Form -->
                     <form action="{{ route('customer.index') }}" method="GET"
-                        class="d-flex align-items-center flex-shrink-0" style="min-width: 260px; max-width: 400px;">
+                        class="d-flex align-items-center flex-shrink-0 customer-search">
                         <input type="text" name="search" class="form-control form-control-sm"
                             placeholder="Search name, phone, email or product" value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                        <button type="submit" class="btn btn-primary btn-sm ms-2 search-btn">
                             <i class="fa fa-search"></i>
                         </button>
                     </form>
@@ -199,7 +246,7 @@
 
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <button type="button" class="btn btn-warning btn-sm btn-edit-customer"
+                                        <button type="button" class="btn btn-warning btn-sm btn-edit-customer"
                                                 title="Edit" data-id="{{ $customer_lead->id }}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
@@ -210,7 +257,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="btn btn-danger btn-sm" title="Hapus">
-                                                    <i class="bi bi-trash"></i>
+                                                    <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -296,13 +343,13 @@
                     let visible = false;
                     latitudeCols.forEach(col => col.style.display = 'none');
                     longitudeCols.forEach(col => col.style.display = 'none');
-                    toggleButton.textContent = 'Show Coordinats';
+                    toggleButton.textContent = 'Show Coordinates';
 
                     toggleButton.addEventListener('click', function() {
                         visible = !visible;
                         latitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
                         longitudeCols.forEach(col => col.style.display = visible ? '' : 'none');
-                        toggleButton.textContent = visible ? 'Hide Coordinats' : 'Show Coordinats';
+                        toggleButton.textContent = visible ? 'Hide Coordinates' : 'Show Coordinates';
                     });
                 });
             </script>

@@ -22,6 +22,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -35,21 +40,40 @@
 
         /* --- HEADER --- */
         .header {
-            background: #2c3e50;
+            background: #000000;
             color: white;
-            padding: 15px 20px;
+            padding: 0 20px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             position: fixed;
             top: 0;
-            left: 250px;
-            /* tetap 250px */
+            left: var(--sidebar-width);
             right: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            height: 70px;
+            z-index: 1100;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            min-height: var(--header-height);
             transition: all 0.3s ease-in-out;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+            background: #0b0b0b;
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: #161616;
+            transform: translateY(-1px);
         }
 
         .user-menu {
@@ -74,25 +98,48 @@
             background: #c0392b;
         }
 
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+            gap: 2px;
+            text-align: right;
+        }
+
         /* --- SIDEBAR --- */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            /* tetap di kiri */
             bottom: 0;
-            width: 250px;
+            width: var(--sidebar-width);
             height: 100vh;
-            background: #34495e;
+            background: #000000;
             overflow-y: auto;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 1001;
             transition: all 0.3s ease-in-out;
         }
 
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease;
+        }
+
+        body.sidebar-open .sidebar-backdrop {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .sidebar-header {
             padding: 20px;
-            background: #2c3e50;
+            background: #000000;
             color: white;
             font-weight: bold;
             display: flex;
@@ -115,7 +162,7 @@
             align-items: center;
             gap: 12px;
             padding: 15px 20px;
-            color: #bdc3c7;
+            color: #ffffff;
             text-decoration: none;
             transition: all 0.2s ease-in-out;
         }
@@ -143,11 +190,10 @@
 
         /* --- KONTEN UTAMA --- */
         .main-content {
-            margin-left: 250px;
-            /* tetap 250px agar sesuai sidebar */
-            margin-top: 70px;
-            padding: 30px;
-            min-height: calc(100vh - 70px);
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 18px 18px 24px;
+            min-height: calc(100vh - var(--header-height));
             transition: all 0.3s ease-in-out;
             animation: fadeIn 0.25s ease-in;
         }
@@ -164,7 +210,7 @@
         .page-title {
             font-size: 32px;
             font-weight: bold;
-            color: #2c3e50;
+            color: #010101;
         }
 
         .refresh-btn {
@@ -226,6 +272,10 @@
             overflow-x: hidden;
         }
 
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -241,21 +291,95 @@
 
 
         /* ===== Media Query ===== */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
+        @media (max-width: 1200px) {
+            .main-content {
+                padding: 26px 24px;
             }
+        }
 
+        @media (max-width: 992px) {
             .header {
                 left: 0;
+                padding: 0 16px;
+            }
+
+            .sidebar-toggle {
+                display: inline-flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 82%;
+                max-width: 320px;
+                box-shadow: 6px 0 24px rgba(0, 0, 0, 0.3);
+            }
+
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
             }
 
             .main-content {
                 margin-left: 0;
+                margin-top: calc(var(--header-height) + 6px);
+                padding: 22px 18px 28px;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 14px;
+                gap: 10px;
+            }
+
+            .user-menu {
+                gap: 10px;
+            }
+
+            .logout-btn {
+                padding: 8px 12px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .toolbar-scroll {
+                flex-wrap: wrap;
+                overflow-x: visible;
+            }
+
+            .toolbar-scroll .input-group {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            .toolbar-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header {
+                align-items: flex-start;
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+
+            .user-menu {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .logout-btn {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -384,6 +508,9 @@
 
 <body>
     <header class="header">
+        <button class="sidebar-toggle" type="button" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
         <div class="user-menu">
             <div class="user-info">
                 <span>{{ auth()->user()->name ?? 'Admin User' }}</span>
@@ -395,6 +522,8 @@
             </form>
         </div>
     </header>
+
+    <div class="sidebar-backdrop" aria-hidden="true"></div>
 
     <nav class="sidebar shadow-sm">
         <div class="sidebar-header text-center py-3">
@@ -562,6 +691,35 @@
 
     <!-- ✅ Tambahkan Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sidebar toggle for mobile/tablet
+        (() => {
+            const body = document.body;
+            const toggleBtn = document.querySelector('.sidebar-toggle');
+            const backdrop = document.querySelector('.sidebar-backdrop');
+
+            const closeSidebar = () => body.classList.remove('sidebar-open');
+            const toggleSidebar = () => body.classList.toggle('sidebar-open');
+
+            toggleBtn?.addEventListener('click', toggleSidebar);
+            backdrop?.addEventListener('click', closeSidebar);
+
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992 && !link.dataset.bsToggle) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 992) {
+                    closeSidebar();
+                }
+            });
+        })();
+    </script>
 
     <!-- ✅ SweetAlert2 & Script Efek fade-out -->
     <script>
