@@ -22,7 +22,7 @@
             {{-- Header Card --}}
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
                 {{-- Judul --}}
-                <h3 class="fw-bold mb-0 text-dark">Kelola Alamat Homepass - Sudirman Park</h3>
+                <h3 class="fw-bold mb-0 text-dark">Kelola Alamat Homepass</h3>
 
                 {{-- Toolbar --}}
                 <div class="d-flex align-items-center gap-2 sudirman-toolbar">

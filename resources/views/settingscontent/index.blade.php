@@ -7,12 +7,17 @@
 
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex align-items-center">
+
                 <!-- Judul kiri -->
                 <h3 class="fw-bold mb-0 text-dark">Settings Content</h3>
 
+                <!-- Spacer -->
+                <div class="flex-grow-1"></div>
+
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1 settings-toolbar toolbar-scroll">
+                <div class="d-flex align-items-center gap-2 flex-nowrap" style="white-space: nowrap;">
+
                     <!-- Export Dropdown -->
                     <div class="btn-group toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
@@ -44,18 +49,16 @@
                     </button>
 
                     <!-- Search Form -->
-                    <div class="d-flex align-items-center toolbar-search" style="min-width: 260px; max-width: 400px;">
-                        <form action="{{ route('settings-content.index') }}" method="GET" class="d-flex w-100">
-                            <input type="text" name="search" class="form-control form-control-sm"
-                                placeholder="Search title or name" value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary btn-sm ms-2">
-                                <i class="fa fa-search"></i>
-                            </button>
+                    <form action="{{ route('settings-content.index') }}" method="GET" class="d-flex align-items-center"
+                        style="max-width:280px; width:100%;">
+                        <input type="text" name="search" class="form-control form-control-sm"
+                            placeholder="Search title or name" value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
+                    </form>
 
-                            <!-- Pertahankan per_page -->
-                            <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
-                        </form>
-                    </div>
                 </div>
             </div>
 
@@ -104,25 +107,25 @@
                                     </td>
                                     <td>
                                         @if ($content->image_path)
-                                            <button type="button"
-                                                class="btn btn-sm btn-outline-secondary content-preview-btn"
+                                            <button type="button" class="btn btn-outline-secondary content-preview-btn"
+                                                style="height: 28px; padding: 2px 6px; font-size: 0.75rem;"
                                                 data-preview-url="{{ asset('storage/' . $content->image_path) }}">
                                                 View Image
                                             </button>
                                         @else
-                                            <span class="text-muted">No Image</span>
+                                            <span class="text-muted" style="font-size: 0.75rem;">No Image</span>
                                         @endif
                                     </td>
 
                                     <td>
                                         @if ($content->icon_path)
-                                            <button type="button"
-                                                class="btn btn-sm btn-outline-secondary content-preview-btn"
+                                            <button type="button" class="btn btn-outline-secondary content-preview-btn"
+                                                style="height: 28px; padding: 2px 6px; font-size: 0.75rem;"
                                                 data-preview-url="{{ asset('storage/' . $content->icon_path) }}">
                                                 View Icon
                                             </button>
                                         @else
-                                            <span class="text-muted">No Icon</span>
+                                            <span class="text-muted" style="font-size: 0.75rem;">No Icon</span>
                                         @endif
                                     </td>
                                     <td>
@@ -214,7 +217,7 @@
             </div>
         </div>
     </div>
-    
+
     {{-- Modal edit Settings Content --}}
     <div class="modal fade" id="editContentModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -230,9 +233,9 @@
         </div>
     </div>
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
                 // Modal edit Content (AJAX)
                 const editModalEl = document.getElementById('editContentModal');
                 const editModalBody = document.getElementById('editContentModalBody');
@@ -259,7 +262,8 @@
                                 headers: {
                                     'X-Requested-With': 'XMLHttpRequest',
                                     'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .content
                                 },
                                 body: new FormData(form)
                             })
@@ -277,7 +281,8 @@
                                     const messages = Object.values(data.errors || {}).flat();
                                     if (errorBox) {
                                         errorBox.classList.remove('d-none');
-                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join(
+                                            '');
                                     }
                                     return;
                                 }

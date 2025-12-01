@@ -22,7 +22,6 @@
                     <div class="d-flex align-items-center gap-2">
 
                         {{-- Tombol Add --}}
-                        {{-- Tombol Add --}}
                         <a href="{{ route('users.create') }}" class="btn btn-sm d-flex align-items-center gap-1"
                             style="background-color: #000; border: 1px solid #000; color: #fff; padding: 5px 6px; border-radius: 6px;">
                             <i class="bi bi-person" style="color: #fff; font-size: 1rem;"></i>
@@ -49,7 +48,6 @@
                                 <input type="hidden" name="per_page" value="{{ request('per_page', 15) }}">
                             </form>
                         </div>
-
                     </div>
                 </div>
 

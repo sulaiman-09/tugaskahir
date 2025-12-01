@@ -12,10 +12,17 @@
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body">
 
-                <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+                <div class="d-flex align-items-center mb-3">
+
+                    {{-- Judul di kiri --}}
                     <h3 class="fw-bold mb-0 text-dark">Product Categories</h3>
 
-                    <div class="d-flex gap-2 align-items-center toolbar-scroll product-toolbar">
+                    {{-- Spacer --}}
+                    <div class="flex-grow-1"></div>
+
+                    {{-- Toolbar di kanan --}}
+                    <div class="d-flex align-items-center gap-2 flex-nowrap" style="white-space: nowrap;">
+
                         <div class="dropdown toolbar-item">
                             <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
                                 type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
@@ -41,8 +48,8 @@
                             <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                         </button>
 
-                        <form action="{{ route('product.index') }}" method="GET"
-                            class="ms-auto d-flex align-items-center toolbar-search" style="max-width:360px; width:100%">
+                        <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center"
+                            style="max-width:300px; width:100%;">
                             <div class="input-group input-group-sm w-100">
                                 <input type="text" name="category_search" class="form-control form-control-sm"
                                     placeholder="Search category name or slug" value="{{ request('category_search') }}">
@@ -51,8 +58,10 @@
                                 </button>
                             </div>
                         </form>
+
                     </div>
                 </div>
+
 
                 @if (session('success'))
                     <div class="alert alert-success py-2">{{ session('success') }}</div>
@@ -142,10 +151,17 @@
         {{-- TABEL 2 : PRODUCT LIST --}}
         {{-- ======================= --}}
         <div class="card border-0 shadow-sm rounded-3 mb-4">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex align-items-center">
+
+                {{-- Judul di kiri --}}
                 <h3 class="fw-bold mb-0 text-dark">Product List</h3>
 
-                <div class="d-flex gap-2 align-items-center toolbar-scroll product-toolbar">
+                {{-- Spacer agar tombol pindah ke kanan --}}
+                <div class="flex-grow-1"></div>
+
+                {{-- Toolbar di kanan --}}
+                <div class="d-flex gap-2 align-items-center flex-nowrap" style="white-space: nowrap;">
+
                     <div class="dropdown toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
                             type="button" id="exportProductDropdown" data-bs-toggle="dropdown" aria-expanded="false"
@@ -169,8 +185,8 @@
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
-                    <form action="{{ route('product.index') }}" method="GET"
-                        class="ms-auto d-flex align-items-center toolbar-search" style="max-width:360px; width:100%">
+                    <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center"
+                        style="max-width:300px; width:100%">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="product_search" class="form-control form-control-sm"
                                 placeholder="Search product name, speed, or category"
@@ -180,8 +196,11 @@
                             </button>
                         </div>
                     </form>
+
                 </div>
+
             </div>
+
 
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -279,12 +298,14 @@
                 @endphp
                 @if ($isProductPaginated)
                     <div class="product-footer border-top bg-light-subtle px-3 py-3 rounded-bottom-3">
-                        <div class="pagination-wrapper product-pagination d-flex justify-content-between align-items-center flex-wrap">
+                        <div
+                            class="pagination-wrapper product-pagination d-flex justify-content-between align-items-center flex-wrap">
                             <div class="d-flex align-items-center flex-wrap gap-3">
-                                <form method="GET" action="{{ route('product.index') }}" class="d-flex align-items-center gap-2" id="productPageForm">
+                                <form method="GET" action="{{ route('product.index') }}"
+                                    class="d-flex align-items-center gap-2" id="productPageForm">
                                     <label for="product_per_page" class="mb-0 small text-muted">Show</label>
-                                    <select name="product_per_page" id="product_per_page" class="form-select form-select-sm"
-                                        onchange="this.form.submit()">
+                                    <select name="product_per_page" id="product_per_page"
+                                        class="form-select form-select-sm" onchange="this.form.submit()">
                                         @foreach ([10, 25, 50, 100, 'All'] as $size)
                                             <option value="{{ $size }}"
                                                 {{ strtolower(request('product_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
@@ -297,7 +318,8 @@
                                     @endforeach
                                 </form>
                                 <div class="showing-text small text-muted">
-                                    Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} results
+                                    Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of
+                                    {{ $products->total() }} results
                                 </div>
                             </div>
 
@@ -311,11 +333,13 @@
                             <nav class="pagination-sm" aria-label="Product pagination">
                                 <ul class="pagination mb-0">
                                     <li class="page-item {{ $products->onFirstPage() ? 'disabled' : '' }}">
-                                        <a class="page-link" href="{{ $products->previousPageUrl() ?? '#' }}" aria-label="Previous">&lsaquo;</a>
+                                        <a class="page-link" href="{{ $products->previousPageUrl() ?? '#' }}"
+                                            aria-label="Previous">&lsaquo;</a>
                                     </li>
 
                                     @if ($prodStart > 1)
-                                        <li class="page-item"><a class="page-link" href="{{ $products->url(1) }}">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="{{ $products->url(1) }}">1</a>
+                                        </li>
                                         @if ($prodStart > 2)
                                             <li class="page-item disabled"><span class="page-link">…</span></li>
                                         @endif
@@ -326,7 +350,8 @@
                                             @if ($page === $prodCurrent)
                                                 <span class="page-link">{{ $page }}</span>
                                             @else
-                                                <a class="page-link" href="{{ $products->url($page) }}">{{ $page }}</a>
+                                                <a class="page-link"
+                                                    href="{{ $products->url($page) }}">{{ $page }}</a>
                                             @endif
                                         </li>
                                     @endfor
@@ -335,11 +360,13 @@
                                         @if ($prodEnd < $prodLast - 1)
                                             <li class="page-item disabled"><span class="page-link">…</span></li>
                                         @endif
-                                        <li class="page-item"><a class="page-link" href="{{ $products->url($prodLast) }}">{{ $prodLast }}</a></li>
+                                        <li class="page-item"><a class="page-link"
+                                                href="{{ $products->url($prodLast) }}">{{ $prodLast }}</a></li>
                                     @endif
 
                                     <li class="page-item {{ $products->hasMorePages() ? '' : 'disabled' }}">
-                                        <a class="page-link" href="{{ $products->nextPageUrl() ?? '#' }}" aria-label="Next">&rsaquo;</a>
+                                        <a class="page-link" href="{{ $products->nextPageUrl() ?? '#' }}"
+                                            aria-label="Next">&rsaquo;</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -413,7 +440,8 @@
                                 headers: {
                                     'X-Requested-With': 'XMLHttpRequest',
                                     'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
                                 },
                                 body: new FormData(form)
                             })
@@ -431,7 +459,8 @@
                                     const messages = Object.values(data.errors || {}).flat();
                                     if (errorBox) {
                                         errorBox.classList.remove('d-none');
-                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join(
+                                            '');
                                     }
                                     return;
                                 }

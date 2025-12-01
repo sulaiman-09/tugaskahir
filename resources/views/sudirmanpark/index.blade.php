@@ -7,16 +7,17 @@
 
         {{-- Tombol Aksi --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
-            <div class="card-header bg-white py-3 d-flex flex-column gap-3">
-                {{-- Judul --}}
-                <div class="d-flex flex-column">
-                    <h3 class="fw-bold mb-0 text-dark">Sudirman Park -</h3>
-                    <h3 class="fw-semibold mb-0 text-dark">Customer Management</h3>
-                </div>
+            <div class="card-header bg-white py-3 d-flex align-items-center">
 
-                {{-- Toolbar --}}
-                <div class="d-flex gap-2 align-items-center toolbar-scroll sudirman-toolbar">
-                    {{-- Export --}}
+                {{-- Judul di kiri --}}
+                <h3 class="fw-semibold mb-0 text-dark">Customer Management</h3>
+
+                <div class="flex-grow-1"></div>
+
+                {{-- Toolbar di kanan --}}
+                <div class="d-flex align-items-center gap-2 flex-nowrap justify-content-end" style="white-space: nowrap;">
+
+                    {{-- Export (ASLI) --}}
                     <div class="dropdown toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
                             id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
@@ -37,14 +38,14 @@
                         </ul>
                     </div>
 
-                    {{-- Tambah Customer --}}
+                    {{-- Tambah Customer (ASLI) --}}
                     <a href="{{ route('sudirmanpark.create') }}"
                         class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px;">
                         <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
                     </a>
 
-                    {{-- Manage Links --}}
+                    {{-- Manage Links (ASLI) --}}
                     <a href="{{ route('sudirmanpark.alamat') }}"
                         class="btn btn-sm toolbar-item {{ request()->routeIs('sudirmanpark.alamat') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}"
                         style="{{ request()->routeIs('sudirmanpark.alamat') ? '' : 'background-color: white; border: 1px solid #000; color: #000;' }}">
@@ -57,26 +58,28 @@
                         Manage Product
                     </a>
 
-                    {{-- Delete Selected --}}
+                    {{-- Delete Selected (ASLI) --}}
                     <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
-                    {{-- Search --}}
-                    <form action="{{ route('sudirmanpark.index') }}" method="GET"
-                        class="ms-auto d-flex align-items-center toolbar-search" style="max-width:420px; width:100%;">
+                    {{-- Search (SEJAJAR) --}}
+                    <form action="{{ route('sudirmanpark.index') }}" method="GET" class="d-flex align-items-center"
+                        style="max-width:240px; width:100%;">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="q" class="form-control form-control-sm"
-                                placeholder="Search name, phone or email" value="{{ $q ?? request('q') }}">
-                            <button class="btn btn-primary btn-sm" type="submit" title="Search">
+                                placeholder="Search..." value="{{ $q ?? request('q') }}">
+                            <button class="btn btn-primary btn-sm" type="submit">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
                         <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">
                     </form>
+
                 </div>
             </div>
+
 
             {{-- Card Tabel --}}
             <div class="card border-0 shadow-sm rounded-3">
@@ -338,7 +341,8 @@
         <div class="modal fade" id="sudirmanEditModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
+                    <div class="modal-header sticky-top bg-white"
+                        style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
                         <h5 class="modal-title mb-0">Edit Customer</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
@@ -411,7 +415,8 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="modal-footer sticky-bottom bg-white" style="z-index: 2; border-top: 1px solid #f1f5f9;">
+                        <div class="modal-footer sticky-bottom bg-white"
+                            style="z-index: 2; border-top: 1px solid #f1f5f9;">
                             <button type="button" class="btn btn-secondary btn-sm"
                                 data-bs-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>

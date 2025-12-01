@@ -7,12 +7,17 @@
 
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header Card --}}
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex align-items-center">
+
                 <!-- Judul di kiri -->
                 <h3 class="fw-bold mb-0">Data Banner</h3>
 
+                <!-- Spacer agar tombol pindah ke kanan -->
+                <div class="flex-grow-1"></div>
+
                 <!-- Toolbar di kanan -->
-                <div class="d-flex gap-2 align-items-center toolbar-scroll banner-toolbar">
+                <div class="d-flex gap-2 align-items-center flex-nowrap" style="white-space: nowrap;">
+
                     <!-- Export Dropdown -->
                     <div class="dropdown toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
@@ -49,8 +54,8 @@
                     </button>
 
                     <!-- Search Form -->
-                    <form action="{{ route('banner.index') }}" method="GET"
-                        class="d-flex align-items-center ms-2 toolbar-search" style="max-width:360px; width:100%">
+                    <form action="{{ route('banner.index') }}" method="GET" class="d-flex align-items-center"
+                        style="max-width:300px; width:100%">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="search" class="form-control form-control-sm"
                                 placeholder="Search name" value="{{ request('search') }}">
@@ -59,8 +64,11 @@
                             </button>
                         </div>
                     </form>
+
                 </div>
+
             </div>
+
 
             {{-- Tabel --}}
             <div class="card-body p-0">
@@ -239,7 +247,8 @@
                                 headers: {
                                     'X-Requested-With': 'XMLHttpRequest',
                                     'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .content
                                 },
                                 body: new FormData(form)
                             })
@@ -257,7 +266,8 @@
                                     const messages = Object.values(data.errors || {}).flat();
                                     if (errorBox) {
                                         errorBox.classList.remove('d-none');
-                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                                        errorBox.innerHTML = messages.map(m => `<div>${m}</div>`).join(
+                                            '');
                                     }
                                     return;
                                 }
