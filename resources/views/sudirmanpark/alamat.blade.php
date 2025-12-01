@@ -49,11 +49,11 @@
                     </div>
 
                     {{-- Tambah Alamat --}}
-                    <a href="{{ route('sudirmanpark.createHomepass') }}"
+                    <button type="button" id="addHomepassBtn"
                         class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
                         <i class="bi bi-building-add" style="color: #fff; font-size: 1rem;"></i>
-                    </a>
+                    </button>
 
                     {{-- Delete Selected --}}
                     <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
@@ -115,16 +115,15 @@
                                     <td>{{ $address->created_at->format('d-m-Y') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="#"
-                                                class="btn btn-warning btn-sm edit-homepass-btn"
-                                                data-edit-url="{{ route('sudirmanpark.editHomepass', $address->id) }}"
+                                            <button type="button" class="btn btn-warning btn-sm edit-homepass-btn"
+                                                data-id="{{ $address->id }}"
                                                 data-tower="{{ $address->tower }}"
                                                 data-floor="{{ $address->floor }}"
                                                 data-unit="{{ $address->unit }}"
                                                 data-status="{{ $address->is_active ? 'Active' : 'Inactive' }}"
-                                                data-id="{{ $address->id }}">
+                                                data-update-url="{{ route('sudirmanpark.updateHomepass', $address->id) }}">
                                                 <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('sudirmanpark.destroyHomepass', $address->id) }}"
                                                 method="POST" class="delete-form">
                                                 @csrf
@@ -198,7 +197,9 @@
                         <h5 class="modal-title" id="homepassModalLabel">+ Add Homepass</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="homepassForm">
+                    <form id="homepassForm" method="POST" action="{{ route('sudirmanpark.storeHomepass') }}">
+                        @csrf
+                        <input type="hidden" name="_method" id="hp_method" value="POST">
                         <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding-top: 1rem;">
                             <input type="hidden" name="id" id="hp_id">
                             <div class="mb-3">
@@ -223,11 +224,11 @@
                                     <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-primary" id="hpSaveBtn">Create Homepass</button>
-                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="hpSaveBtn">Create Homepass</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -254,6 +255,112 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Modal setup for create/edit
+                const homepassModalEl = document.getElementById('homepassModal');
+                const homepassModal = new bootstrap.Modal(homepassModalEl);
+                const homepassForm = document.getElementById('homepassForm');
+                const hpId = document.getElementById('hp_id');
+                const hpMethod = document.getElementById('hp_method');
+                const hpTower = document.getElementById('hp_tower');
+                const hpFloor = document.getElementById('hp_floor');
+                const hpUnit = document.getElementById('hp_unit');
+                const hpStatus = document.getElementById('hp_status');
+                const hpSaveBtn = document.getElementById('hpSaveBtn');
+                const modalLabel = document.getElementById('homepassModalLabel');
+                const addBtn = document.getElementById('addHomepassBtn');
+
+                const storeUrl = "{{ route('sudirmanpark.storeHomepass') }}";
+
+                function setCreateMode() {
+                    homepassForm.action = storeUrl;
+                    hpMethod.value = 'POST';
+                    homepassForm.reset();
+                    hpId.value = '';
+                    hpStatus.value = 'Active';
+                    hpSaveBtn.textContent = 'Create Homepass';
+                    modalLabel.textContent = 'Tambah Homepass';
+                }
+
+                function setEditMode(btn) {
+                    homepassForm.action = btn.dataset.updateUrl;
+                    hpMethod.value = 'PUT';
+                    hpId.value = btn.dataset.id || '';
+                    hpTower.value = (btn.dataset.tower || '').toUpperCase();
+                    hpFloor.value = (btn.dataset.floor || '').toUpperCase();
+                    hpUnit.value = (btn.dataset.unit || '').toUpperCase();
+                    hpStatus.value = btn.dataset.status || 'Active';
+                    hpSaveBtn.textContent = 'Update Homepass';
+                    modalLabel.textContent = 'Edit Homepass';
+                }
+
+                if (addBtn) {
+                    addBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        setCreateMode();
+                        homepassModal.show();
+                    });
+                }
+
+                document.querySelectorAll('.edit-homepass-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        setEditMode(btn);
+                        homepassModal.show();
+                    });
+                });
+
+                // uppercase on input
+                [hpTower, hpFloor, hpUnit].forEach(el => {
+                    el.addEventListener('input', () => {
+                        el.value = el.value.toUpperCase();
+                    });
+                });
+
+                homepassForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    hpSaveBtn.disabled = true;
+                    const formData = new FormData(homepassForm);
+
+                    if (hpMethod.value === 'PUT') {
+                        formData.set('_method', 'PUT');
+                    } else {
+                        formData.delete('_method');
+                    }
+
+                    fetch(homepassForm.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        })
+                        .then(async res => {
+                            hpSaveBtn.disabled = false;
+                            if (!res.ok) {
+                                let msg = 'Gagal menyimpan homepass';
+                                try {
+                                    const errJson = await res.json();
+                                    if (errJson && errJson.message) msg = errJson.message;
+                                } catch (err) {}
+                                alert(msg);
+                                return null;
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (!data) return;
+                            homepassModal.hide();
+                            showToast(data.message || 'Berhasil disimpan');
+                            setTimeout(() => location.reload(), 500);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            hpSaveBtn.disabled = false;
+                            alert('Terjadi kesalahan saat menyimpan.');
+                        });
+                });
+
                 // Konfirmasi hapus
                 document.querySelectorAll('.delete-form').forEach(form => {
                     form.addEventListener('submit', e => {
@@ -264,108 +371,6 @@
                             form.submit();
                         }
                     });
-                });
-
-                // Homepass modal handlers
-                const homepassModalEl = document.getElementById('homepassModal');
-                const homepassModal = new bootstrap.Modal(homepassModalEl);
-                const homepassForm = document.getElementById('homepassForm');
-                const hpSaveBtn = document.getElementById('hpSaveBtn');
-                const hpModalBody = homepassModalEl.querySelector('.modal-body');
-
-                // Open create modal
-                document.querySelectorAll('a[href$="createHomepass"]').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        document.getElementById('homepassModalLabel').textContent = 'Tambah Homepass';
-                        homepassForm.reset();
-                        document.getElementById('hp_id').value = '';
-                        homepassModal.show();
-                    });
-                });
-
-                // Open edit modal from edit button (use data attributes to avoid full page load)
-                document.querySelectorAll('.edit-homepass-btn').forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        homepassForm.reset();
-
-                        document.getElementById('hp_id').value = link.dataset.id || '';
-                        document.getElementById('hp_tower').value = link.dataset.tower || '';
-                        document.getElementById('hp_floor').value = link.dataset.floor || '';
-                        document.getElementById('hp_unit').value = link.dataset.unit || '';
-                        document.getElementById('hp_status').value = link.dataset.status || 'Active';
-                        document.getElementById('homepassModalLabel').textContent = 'Edit Homepass';
-
-                        hpModalBody.querySelectorAll('input, select').forEach(el => el.disabled = false);
-                        const loading = document.getElementById('hp-loading');
-                        if (loading) loading.remove();
-
-                        homepassModal.show();
-
-                        // jika modal gagal tampil (misal ada error JS), fallback redirect ke halaman edit
-                        setTimeout(() => {
-                            if (!homepassModalEl.classList.contains('show')) {
-                                window.location.href = link.dataset.editUrl;
-                            }
-                        }, 250);
-                    });
-                });
-
-                // Submit create/edit via AJAX
-                homepassForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    hpSaveBtn.disabled = true;
-                    const id = document.getElementById('hp_id').value;
-                    // Use FormData and POST with _method override when updating to avoid blocked HTTP verbs
-                    const formData = new FormData();
-                    formData.append('tower', document.getElementById('hp_tower').value);
-                    formData.append('floor', document.getElementById('hp_floor').value);
-                    formData.append('unit', document.getElementById('hp_unit').value);
-                    formData.append('status', document.getElementById('hp_status').value);
-                    formData.append('_token', '{{ csrf_token() }}');
-
-                    let url = `{{ route('sudirmanpark.storeHomepass') }}`;
-                    if (id) {
-                        url = `/sudirmanpark/homepass/${id}`;
-                        formData.append('_method', 'PUT');
-                    }
-
-                    fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json'
-                            },
-                            body: formData,
-                        })
-                        .then(async res => {
-                            hpSaveBtn.disabled = false;
-                            if (!res.ok) {
-                                // try to parse error message
-                                let msg = 'Gagal menyimpan homepass';
-                                try {
-                                    const errJson = await res.json();
-                                    if (errJson && errJson.message) msg = errJson.message;
-                                } catch (e) {
-                                    // ignore parse error
-                                }
-                                alert(msg);
-                                return;
-                            }
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (!data) return;
-                            homepassModal.hide();
-                            showToast(data.success ? 'Berhasil disimpan' : 'Gagal');
-                            setTimeout(() => location.reload(), 600);
-                        })
-                        .catch(err => {
-                            hpSaveBtn.disabled = false;
-                            alert('Error saving homepass');
-                            console.error(err);
-                        });
                 });
 
                 // Delete homepass via AJAX

@@ -444,7 +444,7 @@ class SudirmanParkController extends Controller
             $address->update($data);
         } catch (\Throwable $e) {
             \Log::error('updateHomepass failed: ' . $e->getMessage());
-            if ($request->ajax() || $request->wentsJson() || $request->expectsJson()) {
+            if ($request->ajax() || $request->wantsJson() || $request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => 'Gagal memperbarui homepass: ' . $e->getMessage()], 500);
             }
             return back()->withErrors(['error' => 'Gagal memperbarui homepass. Silakan cek log.']);
