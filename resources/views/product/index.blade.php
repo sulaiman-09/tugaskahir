@@ -4,7 +4,7 @@
 @section('title', 'Product Management')
 
 @section('content')
-    <div class="container py-4 product-page">
+    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 product-page">
 
         {{-- ======================= --}}
         {{-- TABEL 1 : PRODUCT CATEGORY --}}
@@ -15,8 +15,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
                     <h3 class="fw-bold mb-0 text-dark">Product Categories</h3>
 
-                    <div class="d-flex gap-2 align-items-center toolbar-scroll">
-                        <div class="dropdown">
+                    <div class="d-flex gap-2 align-items-center toolbar-scroll product-toolbar">
+                        <div class="dropdown toolbar-item">
                             <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
                                 type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                                 style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
@@ -31,18 +31,18 @@
                         </div>
 
                         <a href="{{ route('product.category.create') }}"
-                            class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                            class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
                             style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px;">
                             <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                         </a>
 
-                        <button type="button" id="deleteSelectedCategories" class="btn btn-sm toolbar-btn"
+                        <button type="button" id="deleteSelectedCategories" class="btn btn-sm toolbar-btn toolbar-item"
                             style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                             <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                         </button>
 
-                        <form action="{{ route('product.index') }}" method="GET" class="ms-auto d-flex align-items-center"
-                            style="max-width:360px; width:100%">
+                        <form action="{{ route('product.index') }}" method="GET"
+                            class="ms-auto d-flex align-items-center toolbar-search" style="max-width:360px; width:100%">
                             <div class="input-group input-group-sm w-100">
                                 <input type="text" name="category_search" class="form-control form-control-sm"
                                     placeholder="Search category name or slug" value="{{ request('category_search') }}">
@@ -145,8 +145,8 @@
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
                 <h3 class="fw-bold mb-0 text-dark">Product List</h3>
 
-                <div class="d-flex gap-2 align-items-center toolbar-scroll">
-                    <div class="dropdown">
+                <div class="d-flex gap-2 align-items-center toolbar-scroll product-toolbar">
+                    <div class="dropdown toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
                             type="button" id="exportProductDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
@@ -159,18 +159,18 @@
                     </div>
 
                     <a href="{{ route('product.create') }}"
-                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px;">
                         <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                     </a>
 
-                    <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn"
+                    <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
-                    <form action="{{ route('product.index') }}" method="GET" class="ms-auto d-flex align-items-center"
-                        style="max-width:360px; width:100%">
+                    <form action="{{ route('product.index') }}" method="GET"
+                        class="ms-auto d-flex align-items-center toolbar-search" style="max-width:360px; width:100%">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="product_search" class="form-control form-control-sm"
                                 placeholder="Search product name, speed, or category"

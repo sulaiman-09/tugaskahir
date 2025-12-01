@@ -1,0 +1,59 @@
+.settingscontent-page .toolbar-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    gap: 0.5rem;
+    padding-bottom: 4px;
+    overflow-y: visible;
+}
+
+.settingscontent-page .settings-toolbar {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.settingscontent-page .toolbar-item {
+    flex: 0 1 auto;
+}
+
+.settingscontent-page .toolbar-search {
+    min-width: 260px;
+    max-width: 420px;
+}
+
+@media (max-width: 992px) {
+    .settingscontent-page .settings-toolbar {
+        justify-content: flex-start;
+        gap: 0.6rem;
+    }
+
+    .settingscontent-page .toolbar-item {
+        flex: 1 1 auto;
+    }
+
+    .settingscontent-page .toolbar-search {
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .settingscontent-page .settings-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+        align-items: stretch;
+    }
+
+    .settingscontent-page .toolbar-item {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .settingscontent-page .toolbar-search {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 100%;
+        margin-top: 0.25rem;
+    }
+}

@@ -3,7 +3,7 @@
 @section('title', 'Role Management')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 role-page">
         {{-- Card Utama --}}
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header Card --}}
@@ -12,9 +12,10 @@
                 <h3 class="fw-bold mb-0 text-dark">Role Management</h3>
 
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1">
+                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1 role-toolbar toolbar-scroll">
                     <!-- Add Role -->
-                    <a href="{{ route('roles.create') }}" class="btn btn-sm d-flex align-items-center justify-content-center"
+                    <a href="{{ route('roles.create') }}"
+                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
                         <i class="bi bi-person-check" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
@@ -22,13 +23,13 @@
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                    <button type="button" id="deleteSelectedRoles" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
                     <!-- Search Form -->
-                    <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
+                    <div class="d-flex align-items-center toolbar-search" style="min-width: 260px; max-width: 400px;">
                         <form action="{{ route('roles.index') }}" method="GET" class="d-flex w-100">
                             <input type="text" name="search" class="form-control form-control-sm"
                                 placeholder="Search role name..." value="{{ request('search') }}">
@@ -189,3 +190,7 @@
         </script>
     @endpush
 @endsection
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/role.css') }}">
+@endpush

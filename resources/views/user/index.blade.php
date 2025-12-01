@@ -3,7 +3,7 @@
 @section('title', 'User Management')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 user-page">
 
         {{-- Judul --}}
         <h3 class="fw-bold mb-4">User Management</h3>
@@ -15,30 +15,31 @@
             <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
 
                 {{-- Kiri --}}
-                <div class="d-flex align-items-center gap-2">
-                    <a href="{{ route('users.create') }}" class="btn btn-sm d-flex align-items-center justify-content-center"
+                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1 user-toolbar toolbar-scroll">
+                    <a href="{{ route('users.create') }}"
+                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
                         <i class="bi bi-person" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
                             style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                    <button type="button" id="deleteSelectedUsers" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
-                </div>
 
-                {{-- Kanan: Search --}}
-                <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
-                    <form action="{{ route('users.index') }}" method="GET" class="d-flex w-100">
-                        <input type="text" name="search" class="form-control form-control-sm"
-                            placeholder="Search name or email..." value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2"><i class="fa fa-search"></i></button>
-                        @if (request('search'))
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm ms-2">Clear</a>
-                        @endif
-                        <input type="hidden" name="per_page" value="{{ request('per_page', 15) }}">
-                    </form>
+                    {{-- Kanan: Search --}}
+                    <div class="d-flex align-items-center toolbar-search" style="min-width: 260px; max-width: 400px;">
+                        <form action="{{ route('users.index') }}" method="GET" class="d-flex w-100">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search name or email..." value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm ms-2"><i class="fa fa-search"></i></button>
+                            @if (request('search'))
+                                <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm ms-2">Clear</a>
+                            @endif
+                            <input type="hidden" name="per_page" value="{{ request('per_page', 15) }}">
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -189,3 +190,7 @@
         </script>
     @endpush
 @endsection
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/user.css') }}">
+@endpush

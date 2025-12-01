@@ -125,6 +125,7 @@
     white-space: nowrap;
     gap: 0.5rem;
     padding-bottom: 4px;
+    overflow-y: visible;
 }
 
 .sudirmanpark-page .toolbar-scroll::-webkit-scrollbar {
@@ -151,4 +152,55 @@
     background: #b91c1c;
     color: #fff !important;
     box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
+}
+
+.sudirmanpark-page .sudirman-toolbar {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.sudirmanpark-page .toolbar-item {
+    flex: 0 1 auto;
+}
+
+.sudirmanpark-page .toolbar-search {
+    min-width: 260px;
+    max-width: 420px;
+}
+
+@media (max-width: 992px) {
+    .sudirmanpark-page .sudirman-toolbar {
+        justify-content: flex-start;
+        gap: 0.6rem;
+    }
+
+    .sudirmanpark-page .toolbar-item {
+        flex: 1 1 auto;
+    }
+
+    .sudirmanpark-page .toolbar-search {
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .sudirmanpark-page .sudirman-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+        align-items: stretch;
+    }
+
+    .sudirmanpark-page .toolbar-item {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .sudirmanpark-page .toolbar-search {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 100%;
+        margin-top: 0.25rem;
+    }
 }

@@ -55,9 +55,32 @@
     min-width: 980px;
 }
 
+.career-page .career-toolbar {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.career-page .toolbar-item {
+    flex: 0 1 auto;
+}
+
+.career-page .toolbar-search {
+    min-width: 260px;
+    max-width: 420px;
+}
+
 @media (max-width: 992px) {
     .career-page .toolbar-scroll {
         justify-content: flex-start;
+    }
+
+    .career-page .career-toolbar {
+        gap: 0.6rem;
+    }
+
+    .career-page .career-toolbar .toolbar-btn,
+    .career-page .career-toolbar .btn {
+        flex: 1 1 auto;
     }
 
     .career-page .table-responsive table {
@@ -70,8 +93,28 @@
         gap: .5rem;
     }
 
-    .career-page .toolbar-scroll .input-group {
+    .career-page .career-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .career-page .toolbar-item {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .career-page .toolbar-scroll .input-group,
+    .career-page .toolbar-search {
         min-width: 100%;
+        width: 100%;
+        grid-column: 1 / -1;
+        margin-top: 0.25rem;
+    }
+
+    .career-page .table-responsive table {
+        min-width: 840px;
     }
 }
 

@@ -3,7 +3,7 @@
 @section('title', 'Career Management')
 
 @section('content')
-    <div class="container py-4 career-page">
+    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 career-page">
 
 
         {{-- Card Utama --}}
@@ -14,9 +14,9 @@
                 <h3 class="fw-bold mb-0">Career Management</h3>
 
                 <!-- Toolbar di kanan -->
-                <div class="d-flex gap-2 align-items-center toolbar-scroll">
+                <div class="d-flex gap-2 align-items-center toolbar-scroll career-toolbar">
                     <!-- Export Dropdown -->
-                    <div class="dropdown">
+                    <div class="dropdown toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
                             id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
@@ -30,7 +30,7 @@
 
                     <!-- Add Career -->
                     <a href="{{ route('career.create') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center"
+                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative;">
                         <i class="bi bi-briefcase" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
@@ -38,13 +38,13 @@
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
                     <!-- Search Form -->
-                    <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center ms-2"
+                    <form action="{{ route('career.index') }}" method="GET" class="d-flex align-items-center ms-2 toolbar-search"
                         style="max-width:360px; width:100%">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="search" class="form-control form-control-sm"

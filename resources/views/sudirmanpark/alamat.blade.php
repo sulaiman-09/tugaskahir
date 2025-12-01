@@ -3,7 +3,7 @@
 @section('title', 'Sudirman Park - Alamat Homepass')
 
 @section('content')
-    <div class="container py-4 sudirmanpark-page">
+    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 sudirmanpark-page">
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -25,16 +25,16 @@
                 <h3 class="fw-bold mb-0 text-dark">Kelola Alamat Homepass - Sudirman Park</h3>
 
                 {{-- Toolbar --}}
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 sudirman-toolbar">
                     {{-- Tombol Back --}}
                     <a href="{{ route('sudirmanpark.index') }}"
-                        class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center"
+                        class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
                         <i class="bi bi-chevron-left" style="font-size: 1rem;"></i>
                     </a>
 
                     {{-- Export Dropdown --}}
-                    <div class="btn-group">
+                    <div class="btn-group toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
                             type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
@@ -50,20 +50,20 @@
 
                     {{-- Tambah Alamat --}}
                     <a href="{{ route('sudirmanpark.createHomepass') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center"
+                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
                         <i class="bi bi-building-add" style="color: #fff; font-size: 1rem;"></i>
                     </a>
 
                     {{-- Delete Selected --}}
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
                         <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
                     </button>
 
                     {{-- Search --}}
                     <form action="{{ route('sudirmanpark.alamat') }}" method="GET"
-                        class="d-flex align-items-center ms-auto" style="max-width: 420px; width:100%;">
+                        class="d-flex align-items-center ms-auto toolbar-search" style="max-width: 420px; width:100%;">
                         <input type="text" name="q" class="form-control form-control-sm"
                             placeholder="Search tower, floor, or unit" value="{{ $q ?? request('q') }}">
                         <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">

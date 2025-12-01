@@ -41,3 +41,63 @@
 .division-page .form-switch .form-check-input:checked {
     background-color: #0d6efd;
 }
+
+.division-page .toolbar-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    gap: 0.5rem;
+    padding-bottom: 4px;
+    overflow-y: visible;
+}
+
+.division-page .division-toolbar {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.division-page .toolbar-item {
+    flex: 0 1 auto;
+}
+
+.division-page .toolbar-search {
+    min-width: 260px;
+    max-width: 420px;
+}
+
+@media (max-width: 992px) {
+    .division-page .division-toolbar {
+        justify-content: flex-start;
+        gap: 0.6rem;
+    }
+
+    .division-page .toolbar-item {
+        flex: 1 1 auto;
+    }
+
+    .division-page .toolbar-search {
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .division-page .division-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+        align-items: stretch;
+    }
+
+    .division-page .toolbar-item {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .division-page .toolbar-search {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 100%;
+        margin-top: 0.25rem;
+    }
+}

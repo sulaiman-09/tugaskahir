@@ -125,6 +125,57 @@
     position: absolute !important;
 }
 
+.product-page .product-toolbar {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.product-page .toolbar-item {
+    flex: 0 1 auto;
+}
+
+.product-page .toolbar-search {
+    min-width: 260px;
+    max-width: 420px;
+}
+
+@media (max-width: 992px) {
+    .product-page .product-toolbar {
+        justify-content: flex-start;
+        gap: 0.6rem;
+    }
+
+    .product-page .toolbar-item {
+        flex: 1 1 auto;
+    }
+
+    .product-page .toolbar-search {
+        width: 100%;
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-page .product-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+        align-items: stretch;
+    }
+
+    .product-page .toolbar-item {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .product-page .toolbar-search {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 100%;
+        margin-top: 0.25rem;
+    }
+}
+
 /* ===== Form pages (create/edit product) ===== */
 .product-form-page .btn-primary {
     background-color: #007bff;

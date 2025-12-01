@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\ArrayExport;
@@ -29,7 +30,76 @@ class CustomerController extends Controller
             });
         }
 
-        // Filter tanggal (opsional sama seperti sebelumnya)
+        // Filter tanggal
+        $filter = strtolower($request->query('filter', 'all'));
+        $today = Carbon::today();
+
+        switch ($filter) {
+            case 'today':
+                $query->whereDate('created_at', $today);
+                break;
+            case 'yesterday':
+                $query->whereDate('created_at', $today->copy()->subDay());
+                break;
+            case 'this_week':
+                $query->whereBetween('created_at', [
+                    $today->copy()->startOfWeek(),
+                    $today->copy()->endOfWeek()->endOfDay(),
+                ]);
+                break;
+            case 'last_week':
+                $query->whereBetween('created_at', [
+                    $today->copy()->subWeek()->startOfWeek(),
+                    $today->copy()->subWeek()->endOfWeek()->endOfDay(),
+                ]);
+                break;
+            case 'this_month':
+                $query->whereBetween('created_at', [
+                    $today->copy()->startOfMonth(),
+                    $today->copy()->endOfMonth()->endOfDay(),
+                ]);
+                break;
+            case 'last_month':
+                $query->whereBetween('created_at', [
+                    $today->copy()->subMonth()->startOfMonth(),
+                    $today->copy()->subMonth()->endOfMonth()->endOfDay(),
+                ]);
+                break;
+            case 'last_7_days':
+                $query->whereBetween('created_at', [
+                    $today->copy()->subDays(6),
+                    $today->copy()->endOfDay(),
+                ]);
+                break;
+            case 'last_30_days':
+                $query->whereBetween('created_at', [
+                    $today->copy()->subDays(29),
+                    $today->copy()->endOfDay(),
+                ]);
+                break;
+            case 'custom':
+                $fromRaw = $request->query('from');
+                $toRaw = $request->query('to');
+
+                $from = $fromRaw && Carbon::hasFormat($fromRaw, 'Y-m-d')
+                    ? Carbon::createFromFormat('Y-m-d', $fromRaw)->startOfDay()
+                    : null;
+                $to = $toRaw && Carbon::hasFormat($toRaw, 'Y-m-d')
+                    ? Carbon::createFromFormat('Y-m-d', $toRaw)->endOfDay()
+                    : null;
+
+                if ($from && $to) {
+                    $query->whereBetween('created_at', [$from, $to]);
+                } elseif ($from) {
+                    $query->where('created_at', '>=', $from);
+                } elseif ($to) {
+                    $query->where('created_at', '<=', $to);
+                }
+                break;
+            default:
+                // 'all' or unknown: no date filter
+                break;
+        }
 
         // Pagination
         $perPage = $request->get('per_page', 10);
