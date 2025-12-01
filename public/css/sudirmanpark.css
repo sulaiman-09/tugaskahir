@@ -155,21 +155,68 @@
 }
 
 .sudirmanpark-page .sudirman-toolbar {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     overflow: visible;
+    align-items: center;
+    gap: 0.65rem;
 }
 
 .sudirmanpark-page .toolbar-item {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
 }
 
 .sudirmanpark-page .toolbar-search {
-    min-width: 260px;
-    max-width: 420px;
+    min-width: 320px;
+    max-width: 560px;
+    flex: 1 1 360px;
+}
+
+/* Edit modal sizing so header is visible */
+#sudirmanEditModal .modal-dialog {
+    max-width: 1180px;
+    width: calc(100% - 2.4rem);
+    margin: 5rem auto 2rem;
+}
+
+#sudirmanEditModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#homepassModal .modal-dialog {
+    max-width: 900px;
+    width: calc(100% - 2.4rem);
+    margin: 5rem auto 2rem;
+}
+
+#homepassModal .modal-body {
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    #sudirmanEditModal .modal-dialog {
+        width: calc(100% - 1.2rem);
+        margin: 2.5rem auto 1.5rem;
+    }
+
+    #sudirmanEditModal .modal-body {
+        max-height: 65vh;
+    }
+
+    #homepassModal .modal-dialog {
+        width: calc(100% - 1.2rem);
+        margin: 2.5rem auto 1.5rem;
+    }
+
+    #homepassModal .modal-body {
+        max-height: 60vh;
+    }
 }
 
 @media (max-width: 992px) {
     .sudirmanpark-page .sudirman-toolbar {
+        flex-wrap: wrap;
         justify-content: flex-start;
         gap: 0.6rem;
     }

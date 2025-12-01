@@ -115,8 +115,14 @@
                                     <td>{{ $address->created_at->format('d-m-Y') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('sudirmanpark.editHomepass', $address->id) }}"
-                                                class="btn btn-warning btn-sm">
+                                            <a href="#"
+                                                class="btn btn-warning btn-sm edit-homepass-btn"
+                                                data-edit-url="{{ route('sudirmanpark.editHomepass', $address->id) }}"
+                                                data-tower="{{ $address->tower }}"
+                                                data-floor="{{ $address->floor }}"
+                                                data-unit="{{ $address->unit }}"
+                                                data-status="{{ $address->is_active ? 'Active' : 'Inactive' }}"
+                                                data-id="{{ $address->id }}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                             <form action="{{ route('sudirmanpark.destroyHomepass', $address->id) }}"
@@ -186,14 +192,14 @@
 
         <!-- Modal: Create / Edit Homepass -->
         <div class="modal fade" id="homepassModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-md">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
                         <h5 class="modal-title" id="homepassModalLabel">+ Add Homepass</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="homepassForm">
-                        <div class="modal-body">
+                        <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding-top: 1rem;">
                             <input type="hidden" name="id" id="hp_id">
                             <div class="mb-3">
                                 <label class="form-label">Tower</label>
@@ -265,6 +271,7 @@
                 const homepassModal = new bootstrap.Modal(homepassModalEl);
                 const homepassForm = document.getElementById('homepassForm');
                 const hpSaveBtn = document.getElementById('hpSaveBtn');
+                const hpModalBody = homepassModalEl.querySelector('.modal-body');
 
                 // Open create modal
                 document.querySelectorAll('a[href$="createHomepass"]').forEach(btn => {
@@ -277,34 +284,32 @@
                     });
                 });
 
-                // Open edit modal from edit button
-                document.querySelectorAll('a[href*="/homepass/"]').forEach(link => {
-                    if (link.href.match(/\/homepass\/\d+\/edit$/)) {
-                        link.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            fetch(link.href)
-                                .then(res => res.text())
-                                .then(html => {
-                                    // parse simple values from returned HTML (view editHomepass contains inputs with values)
-                                    const tmp = document.createElement('div');
-                                    tmp.innerHTML = html;
-                                    const tower = tmp.querySelector('input[name="tower"]').value;
-                                    const floor = tmp.querySelector('input[name="floor"]').value;
-                                    const unit = tmp.querySelector('input[name="unit"]').value;
-                                    const status = tmp.querySelector('select[name="status"]').value;
-                                    const idMatch = link.href.match(/homepass\/(\d+)\/edit$/);
-                                    const id = idMatch ? idMatch[1] : '';
-                                    document.getElementById('hp_id').value = id;
-                                    document.getElementById('hp_tower').value = tower;
-                                    document.getElementById('hp_floor').value = floor;
-                                    document.getElementById('hp_unit').value = unit;
-                                    document.getElementById('hp_status').value = status;
-                                    document.getElementById('homepassModalLabel').textContent =
-                                        'Edit Homepass';
-                                    homepassModal.show();
-                                });
-                        });
-                    }
+                // Open edit modal from edit button (use data attributes to avoid full page load)
+                document.querySelectorAll('.edit-homepass-btn').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        homepassForm.reset();
+
+                        document.getElementById('hp_id').value = link.dataset.id || '';
+                        document.getElementById('hp_tower').value = link.dataset.tower || '';
+                        document.getElementById('hp_floor').value = link.dataset.floor || '';
+                        document.getElementById('hp_unit').value = link.dataset.unit || '';
+                        document.getElementById('hp_status').value = link.dataset.status || 'Active';
+                        document.getElementById('homepassModalLabel').textContent = 'Edit Homepass';
+
+                        hpModalBody.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                        const loading = document.getElementById('hp-loading');
+                        if (loading) loading.remove();
+
+                        homepassModal.show();
+
+                        // jika modal gagal tampil (misal ada error JS), fallback redirect ke halaman edit
+                        setTimeout(() => {
+                            if (!homepassModalEl.classList.contains('show')) {
+                                window.location.href = link.dataset.editUrl;
+                            }
+                        }, 250);
+                    });
                 });
 
                 // Submit create/edit via AJAX

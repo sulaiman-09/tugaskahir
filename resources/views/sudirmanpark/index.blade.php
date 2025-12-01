@@ -7,10 +7,10 @@
 
         {{-- Tombol Aksi --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex flex-column gap-3">
                 {{-- Judul --}}
                 <div class="d-flex flex-column">
-                    <h3 class="fw-bold mb-0 text-dark">Sudirman Park - </h3>
+                    <h3 class="fw-bold mb-0 text-dark">Sudirman Park -</h3>
                     <h3 class="fw-semibold mb-0 text-dark">Customer Management</h3>
                 </div>
 
@@ -336,16 +336,16 @@
 
         {{-- Edit modal untuk Sudirman Park (AJAX) --}}
         <div class="modal fade" id="sudirmanEditModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Customer</h5>
+                    <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
+                        <h5 class="modal-title mb-0">Edit Customer</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
                     <form id="sudirmanEditForm" enctype="multipart/form-data">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <div class="modal-body">
+                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-top: 1rem;">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Nama</label>
@@ -411,7 +411,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer sticky-bottom bg-white" style="z-index: 2; border-top: 1px solid #f1f5f9;">
                             <button type="button" class="btn btn-secondary btn-sm"
                                 data-bs-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
