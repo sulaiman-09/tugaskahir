@@ -63,6 +63,7 @@
     text-decoration: none;
     transition: all 0.12s ease-in-out;
     white-space: nowrap;
+    position: relative;
 }
 
 .customer-page .filter-scroll {
@@ -71,6 +72,7 @@
     white-space: nowrap;
     gap: 0.5rem;
     padding-bottom: 4px;
+    overflow-y: visible;
 }
 
 .customer-page .filter-scroll::-webkit-scrollbar {
@@ -115,6 +117,7 @@
     transition: all 0.15s ease-in-out;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
     min-height: 38px;
+    position: relative;
 }
 
 .customer-page .toolbar-btn.icon-only {
@@ -183,6 +186,7 @@
 
 .customer-page .customer-toolbar {
     flex-wrap: wrap;
+    overflow: visible;
 }
 
 .customer-page .customer-toolbar .toolbar-btn {
@@ -220,6 +224,11 @@
     box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08) !important;
 }
 
+.customer-page .card-header,
+.customer-page .card-body {
+    overflow: visible;
+}
+
 .customer-page .filter-toggle {
     border-radius: 10px;
     padding: 0.42rem 0.78rem;
@@ -255,6 +264,54 @@
     white-space: nowrap;
 }
 
+#customerEditModal .modal-dialog {
+    max-width: 1180px;
+    width: calc(100% - 2.4rem);
+    margin: 2.5rem auto;
+}
+
+#customerEditModal .modal-content {
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
+#customerEditModal .modal-header {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid #f1f5f9;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+}
+
+#customerEditModal .modal-body {
+    padding: 1.15rem 1.2rem 1.35rem;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+#customerEditModal .modal-footer {
+    padding: 0.85rem 1.2rem;
+    border-top: 1px solid #f1f5f9;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    z-index: 2;
+}
+
+#customerEditModal label {
+    margin-bottom: 4px;
+    color: #0f172a;
+}
+
+#customerEditModal .form-control,
+#customerEditModal .form-select,
+#customerEditModal textarea {
+    border-radius: 10px;
+    border-color: #e5e7eb;
+}
+
 @media (max-width: 992px) {
     .customer-page .customer-toolbar {
         justify-content: flex-start;
@@ -273,6 +330,10 @@
 
     .customer-page .table {
         min-width: 980px;
+    }
+
+    #customerEditModal .modal-body {
+        max-height: 60vh;
     }
 }
 
@@ -293,6 +354,16 @@
     .customer-page .table thead th,
     .customer-page .table td {
         padding: 0.55rem 0.6rem;
+    }
+
+    #customerEditModal .modal-dialog {
+        width: calc(100% - 1.2rem);
+        margin: 1.2rem auto;
+    }
+
+    #customerEditModal .modal-body {
+        max-height: 60vh;
+        padding: 1rem;
     }
 }
 
@@ -322,5 +393,9 @@
 
     .customer-page .table td:last-child {
         min-width: 160px;
+    }
+
+    #customerEditModal .modal-body {
+        max-height: 58vh;
     }
 }

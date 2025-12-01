@@ -124,7 +124,6 @@
                             type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; min-width: 44px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
-                            <span class="btn-label ms-1">Export</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('customer.export.excel') }}">Export Excel</a></li>
@@ -137,7 +136,6 @@
                         class="btn btn-sm toolbar-btn toolbar-btn-primary d-flex align-items-center justify-content-center"
                         title="Tambah Customer">
                         <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
-                        <span class="btn-label ms-1">Add</span>
                     </a>
 
                     <!-- Delete Selected -->
@@ -365,7 +363,7 @@
 
     <!-- Edit Customer Modal -->
     <div class="modal fade" id="customerEditModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Data Customer</h5>

@@ -44,7 +44,7 @@
             color: white;
             padding: 0 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             position: fixed;
             top: 0;
@@ -74,6 +74,12 @@
         .sidebar-toggle:hover {
             background: #161616;
             transform: translateY(-1px);
+        }
+
+        .header-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
         }
 
         .user-menu {
@@ -508,9 +514,11 @@
 
 <body>
     <header class="header">
-        <button class="sidebar-toggle" type="button" aria-label="Toggle navigation">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+        <div class="header-left">
+            <button class="sidebar-toggle" type="button" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
         <div class="user-menu">
             <div class="user-info">
                 <span>{{ auth()->user()->name ?? 'Admin User' }}</span>
