@@ -3,7 +3,7 @@
 @section('title', 'Data Division')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 division-page">
 
 
         {{-- Card utama --}}
@@ -349,51 +349,5 @@
 @endpush
 
 @push('styles')
-    <style>
-        .table-striped>tbody>tr:nth-of-type(odd) {
-            background-color: #f7faff;
-        }
-
-        .table-striped>tbody>tr:nth-of-type(even) {
-            background-color: #ffffff;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: #e3edff;
-        }
-
-        .table th,
-        .table td {
-            vertical-align: middle;
-        }
-
-        .status-toggle {
-            transform: scale(1.2);
-            cursor: pointer;
-        }
-
-        #per_page {
-            min-width: 80px;
-            border-radius: 8px;
-            padding: 5px 10px;
-            background-color: #fff;
-        }
-
-        #perPageForm {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Toggle switch ukuran normal */
-        .form-switch .form-check-input {
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .form-switch .form-check-input:checked {
-            background-color: #0d6efd;
-            /* Biru */
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/division.css') }}">
 @endpush

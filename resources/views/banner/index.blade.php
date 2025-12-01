@@ -3,7 +3,7 @@
 @section('title', 'Data Banner')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 banner-page">
 
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header Card --}}
@@ -435,54 +435,7 @@
     @endpush
 
     @push('styles')
-        <style>
-            .table thead th {
-                color: #000;
-                font-weight: 600;
-            }
-
-            .table tbody tr:nth-child(even) {
-                background-color: #f8faff;
-            }
-
-            .table tbody tr:hover {
-                background-color: #e6f0ff;
-                transition: 0.2s;
-            }
-
-            .btn-primary {
-                background-color: #007bff;
-                border: none;
-            }
-
-            .btn-primary:hover {
-                background-color: #0069d9;
-            }
-
-            .btn-warning,
-            .btn-danger {
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            }
-
-            .card-header {
-                border-bottom: 1px solid #dee2e6;
-            }
-
-            #per_page {
-                min-width: 80px;
-                border-radius: 8px;
-                padding: 5px 10px;
-                z-index: 10;
-                position: relative;
-                background-color: #fff;
-            }
-
-            #perPageForm {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/banner.css') }}">
     @endpush
 
 @endsection

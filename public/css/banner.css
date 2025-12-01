@@ -1,0 +1,46 @@
+.banner-page .table thead th {
+    color: #000;
+    font-weight: 600;
+}
+
+.banner-page .table tbody tr:nth-child(even) {
+    background-color: #f8faff;
+}
+
+.banner-page .table tbody tr:hover {
+    background-color: #e6f0ff;
+    transition: 0.2s;
+}
+
+.banner-page .btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.banner-page .btn-primary:hover {
+    background-color: #0069d9;
+}
+
+.banner-page .btn-warning,
+.banner-page .btn-danger {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.banner-page .card-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.banner-page #per_page {
+    min-width: 80px;
+    border-radius: 8px;
+    padding: 5px 10px;
+    z-index: 10;
+    position: relative;
+    background-color: #fff;
+}
+
+.banner-page #perPageForm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

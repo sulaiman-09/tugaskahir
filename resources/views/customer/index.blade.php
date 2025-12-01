@@ -18,7 +18,7 @@
         $currentFilter = request('filter', 'all');
     @endphp
 
-    <div class="container py-4">
+    <div class="container py-4 customer-page">
 
         {{-- Alert --}}
         @if (session('success'))
@@ -262,64 +262,7 @@
             <!-- Right: Pagination -->
             <div class="right-pagination">
                 @if ($customer_leads->hasPages())
-                    {{-- Variabel untuk kemudahan --}}
-                    @php
-                        $current = $customer_leads->currentPage();
-                        $last = $customer_leads->lastPage();
-
-                        // Logika sliding window: 2 halaman sebelum dan 2 sesudah halaman aktif
-                        $start = max(1, $current - 2);
-                        $end = min($last, $current + 2);
-                    @endphp
-
-                    <div class="flex justify-end mt-4">
-                        <nav class="inline-flex items-center space-x-1 text-sm">
-                            {{-- Tombol Previous --}}
-                            @if ($customer_leads->onFirstPage())
-                                <span class="px-3 py-1 border rounded-md opacity-40 cursor-not-allowed">‹</span>
-                            @else
-                                <a href="{{ $customer_leads->previousPageUrl() }}"
-                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">‹</a>
-                            @endif
-
-                            {{-- Halaman Pertama dan Ellipsis (jika perlu) --}}
-                            @if ($start > 1)
-                                <a href="{{ $customer_leads->url(1) }}"
-                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">1</a>
-                                @if ($start > 2)
-                                    <span class="px-3 py-1 border rounded-md opacity-60">…</span>
-                                @endif
-                            @endif
-
-                            {{-- Loop Angka Halaman (Sliding Window) --}}
-                            @for ($page = $start; $page <= $end; $page++)
-                                @if ($page == $current)
-                                    <span
-                                        class="px-3 py-1 border rounded-md bg-blue-600 text-white border-blue-600">{{ $page }}</span>
-                                @else
-                                    <a href="{{ $customer_leads->url($page) }}"
-                                        class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $page }}</a>
-                                @endif
-                            @endfor
-
-                            {{-- Ellipsis dan Halaman Terakhir (jika perlu) --}}
-                            @if ($end < $last)
-                                @if ($end < $last - 1)
-                                    <span class="px-3 py-1 border rounded-md opacity-60">…</span>
-                                @endif
-                                <a href="{{ $customer_leads->url($last) }}"
-                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">{{ $last }}</a>
-                            @endif
-
-                            {{-- Tombol Next --}}
-                            @if ($customer_leads->hasMorePages())
-                                <a href="{{ $customer_leads->nextPageUrl() }}"
-                                    class="px-3 py-1 border rounded-md hover:bg-gray-100">›</a>
-                            @else
-                                <span class="px-3 py-1 border rounded-md opacity-40 cursor-not-allowed">›</span>
-                            @endif
-                        </nav>
-                    </div>
+                    {{ $customer_leads->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
                 @endif
             </div>
 
@@ -367,193 +310,12 @@
 
     @endsection
 
-    @push('styles')
-        <style>
-            /* Dropdown Show Per Page */
-            #per_page {
-                min-width: 80px;
-                border-radius: 8px;
-                padding: 5px 10px;
-                background-color: #fff;
-                position: relative;
-                z-index: 10;
-            }
-
-            #perPageForm {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin: 0;
-            }
-
-            /* Wrapper */
-            .pagination-wrapper {
-                gap: 10px !important;
-            }
-
-            /* Showing text kecil dan rapi */
-            .showing-text {
-                white-space: nowrap;
-                font-size: 0.85rem;
-            }
-
-            /* Kecilkan pagination */
-            .pagination-sm .page-link {
-                font-size: 0.78rem;
-                padding: 4px 10px;
-                line-height: 1;
-                border-radius: 6px;
-            }
-
-            .pagination-sm .page-item {
-                margin: 0 2px;
-            }
-
-            /* Kecilkan icon SVG prev/next */
-            .pagination-sm svg {
-                width: 12px !important;
-                height: 12px !important;
-            }
-
-            /* Perbaiki posisi biar tidak turun-naik */
-            .right-pagination {
-                display: flex;
-                align-items: center;
-            }
-
-            /* Responsif */
-            @media (max-width: 480px) {
-                .pagination-sm .page-link {
-                    padding: 3px 6px;
-                }
-            }
-
-            /* Filter button styles - clean, interactive, no color noise */
-            .filter-btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.4rem;
-                padding: 0.28rem 0.65rem;
-                border-radius: 8px;
-                font-size: 0.86rem;
-                color: #6b7280;
-                /* slate-500 */
-                background: transparent;
-                border: 1px solid transparent;
-                text-decoration: none;
-                transition: all 0.12s ease-in-out;
-            }
-
-            /* Keep filter buttons on a single horizontal line and allow scrolling */
-            .filter-scroll {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                white-space: nowrap;
-                gap: 0.5rem;
-                padding-bottom: 4px;
-            }
-
-            .filter-scroll::-webkit-scrollbar {
-                height: 6px;
-            }
-
-            .filter-scroll::-webkit-scrollbar-thumb {
-                background: rgba(15, 23, 42, 0.06);
-                border-radius: 6px;
-            }
-
-            .filter-btn {
-                white-space: nowrap;
-            }
-
-            .filter-btn:hover {
-                color: #374151;
-                /* slate-700 */
-                background: #ffffff;
-                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-                transform: translateY(-1px);
-            }
-
-            .filter-btn:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-            }
-
-            .filter-btn.active {
-                background: #ffffff;
-                color: #0f172a;
-                /* slate-900 */
-                box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
-                border-color: rgba(15, 23, 42, 0.04);
-            }
-
-            /* Toolbar buttons (Export, Add, Delete, Show Coordinates) */
-            .toolbar-btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.35rem 0.7rem;
-                border-radius: 10px;
-                font-size: 0.88rem;
-                color: #334155;
-                /* slate-700 */
-                background: transparent;
-                border: 1px solid rgba(15, 23, 42, 0.04);
-                transition: all 0.12s ease-in-out;
-            }
-
-            .toolbar-btn:hover {
-                background: #ffffff;
-                box-shadow: 0 4px 12px rgba(2, 6, 23, 0.06);
-                transform: translateY(-1px);
-                color: #0f172a;
-            }
-
-            .toolbar-btn:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-            }
-
-            /* primary (Add New) - subtle, elegant */
-            .toolbar-btn-primary {
-                background: linear-gradient(180deg, #1f2937, #111827);
-                color: #ffffff !important;
-                border-color: rgba(0, 0, 0, 0.08);
-                box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
-            }
-
-            .toolbar-btn-primary:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.03);
-                background: linear-gradient(180deg, #111827, #0b1220);
-                color: #ffffff !important;
-                box-shadow: 0 10px 24px rgba(17, 24, 39, 0.16);
-            }
-
-            /* ghost / neutral (export, show coords) */
-            .toolbar-btn-ghost {
-                background: transparent;
-                color: #374151;
-            }
-
-            /* danger (delete) - muted red */
-            .toolbar-btn-danger {
-                background: transparent;
-                color: #b91c1c;
-                border-color: rgba(185, 28, 28, 0.08);
-            }
-
-            .toolbar-btn-danger:hover {
-                background: #b91c1c;
-                color: #fff !important;
-                box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
-            }
-        </style>
-
-        </style>
-        <!-- Leaflet CSS -->
+        @push('styles')
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <link rel="stylesheet" href="{{ asset('css/customer.css') }}">
     @endpush
+
+
     <!-- Edit Customer Modal -->
     <div class="modal fade" id="customerEditModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">

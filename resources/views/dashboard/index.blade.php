@@ -3,7 +3,7 @@
 @section('title', 'Dashboard - Life Media CMS')
 
 @section('content')
-    <div class="page-header">
+    <div class="page-header dashboard-page">
         <h1 class="page-title">Dashboard</h1>
         <button class="refresh-btn" onclick="location.reload()"
             style="background: linear-gradient(90deg, #37393b, #333332); border-radius: 9999px; padding: 10px 18px; font-weight:600; gap:0;">
@@ -195,89 +195,9 @@
         </div>
     </section>
 
-    <style>
-        body {
-            font-family: 'Inter', Arial, sans-serif;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25em 0.6em;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border-radius: 9999px;
-        }
-
-        .status-active {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-
-        .status-pending {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
-
-        .status-inactive {
-            background-color: #F3F4F6;
-            color: #4B5563;
-        }
-
-        .filter-btn {
-            color: #6b7280;
-            background-color: transparent;
-        }
-
-        .filter-btn.active {
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        .filter-btn:hover {
-            transform: translateY(-1px);
-        }
-
-        /* Ensure charts don't overflow layout container */
-        .chart-card .apexcharts-canvas {
-            max-width: 100%;
-        }
-
-        .chart-container {
-            position: relative;
-            min-height: 400px;
-        }
-
-        /* Keep existing layout spacing consistent */
-        .tailwind-section {
-            margin-top: 20px;
-        }
-
-        .tailwind-section .shadow-md {
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .tailwind-section .rounded-xl {
-            border-radius: 12px;
-        }
-
-        .tailwind-section .bg-white {
-            background: #fff;
-        }
-
-        .tailwind-section .bg-gray-100 {
-            background: #f5f5f5;
-        }
-
-        .tailwind-section .text-gray-700 {
-            color: #374151;
-        }
-
-        .tailwind-section .text-gray-500 {
-            color: #6b7280;
-        }
-    </style>
+    @push('styles')
+        <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    @endpush
 
 <script>
     function changeLimit(value) {

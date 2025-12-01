@@ -3,7 +3,7 @@
 @section('title', 'Career Management')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 career-page">
 
 
         {{-- Card Utama --}}
@@ -171,7 +171,7 @@
                 {{-- Right: Pagination --}}
                 <div class="right-pagination pagination-sm">
                     @if ($careers instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                        {{ $careers->links() }}
+                        {{ $careers->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
                     @endif
                 </div>
 
@@ -391,39 +391,7 @@
     </script>
 
     @push('styles')
-        <style>
-            .btn-outline-secondary {
-                border: 1.5px solid #6c757d;
-                color: #6c757d;
-                background: #fff;
-                transition: all .2s ease;
-            }
-
-            .btn-outline-secondary:hover {
-                background: #6c757d;
-                color: #fff;
-            }
-
-            .btn-primary {
-                background-color: #0d6efd;
-                border: none;
-                transition: all .2s ease;
-            }
-
-            .btn-primary:hover {
-                background-color: #0b5ed7;
-            }
-
-            .table th,
-            .table td {
-                vertical-align: middle;
-            }
-
-            .table thead th {
-                font-weight: 600;
-                color: #212529;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/career.css') }}">
     @endpush
 
 @endsection

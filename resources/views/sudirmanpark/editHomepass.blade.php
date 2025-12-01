@@ -57,13 +57,5 @@
 
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .page-title {
-            font-weight: 600;
-        }
-
-        .card-body {
-            border-radius: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/sudirmanpark.css') }}">
 @endpush

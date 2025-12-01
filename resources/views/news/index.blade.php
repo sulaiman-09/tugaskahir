@@ -3,7 +3,7 @@
 @section('title', 'News Management')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 news-page">
 
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header --}}
@@ -534,55 +534,6 @@
     @endpush
 
     @push('styles')
-        <style>
-            .table th,
-            .table td {
-                vertical-align: middle;
-            }
-
-            .btn-outline-secondary {
-                border: 1.5px solid #6c757d;
-                color: #6c757d;
-                background: #fff;
-                transition: 0.2s;
-            }
-
-            .btn-outline-secondary:hover {
-                background: #6c757d;
-                color: #fff;
-            }
-
-            .btn-primary {
-                background-color: #007bff;
-                border: none;
-                transition: 0.2s;
-            }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-            }
-
-            .table-striped>tbody>tr:nth-of-type(odd) {
-                background-color: #fdfdff;
-            }
-
-            .table-striped>tbody>tr:hover {
-                background-color: #eef5ff;
-            }
-
-            .fw-semibold {
-                font-weight: 600;
-            }
-
-            .text-truncate {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            .table td {
-                white-space: normal !important;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/news.css') }}">
     @endpush
 @endsection

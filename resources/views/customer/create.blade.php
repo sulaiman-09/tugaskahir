@@ -92,22 +92,12 @@
                     <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Additional Data</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Division</label>
-                            <select name="division" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                                <option value="">Select Division</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Sales Retail">Sales Retail</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
                             <label class="form-label fw-semibold small">Product Category</label>
-                            <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                            <select name="product_category_id" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                 <option value="">Select Category</option>
-                                <option value="Broadband Internet">Broadband Internet</option>
-                                <option value="Business Solutions">Business Solutions</option>
-                                <option value="Promo Spesial Jepara">Promo Spesial Jepara</option>
-                                <option value="Promo Spesial Sukoharjo">Promo Spesial Sukoharjo</option>
-                                <option value="Sudirman Park">Sudirman Park</option>
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -117,6 +107,32 @@
                                 <option value="Cover">Cover</option>
                                 <option value="Uncover">Uncover</option>
                             </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Product</label>
+                            <select name="product_id" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                                <option value="">Select Product</option>
+                                @foreach ($products as $prod)
+                                    <option value="{{ $prod->id }}">{{ $prod->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Koordinat (optional, untuk Maps) --}}
+                <div class="mb-4">
+                    <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Location (optional)</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Latitude</label>
+                            <input type="text" name="latitude" class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                placeholder="-7.123456">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Longitude</label>
+                            <input type="text" name="longitude" class="form-control rounded-3 shadow-sm border-0 bg-white"
+                                placeholder="110.123456">
                         </div>
                     </div>
                 </div>

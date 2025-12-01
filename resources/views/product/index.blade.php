@@ -4,7 +4,7 @@
 @section('title', 'Product Management')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 product-page">
 
         {{-- ======================= --}}
         {{-- TABEL 1 : PRODUCT CATEGORY --}}
@@ -18,7 +18,7 @@
                     <div class="d-flex gap-2 align-items-center toolbar-scroll">
                         <div class="dropdown">
                             <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                                type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                                 style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
                                 <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                             </button>
@@ -98,7 +98,7 @@
                                                 @foreach ($cat->benefits as $benefit)
                                                     <li style="margin-bottom: 5px; position: relative; padding-left: 18px;">
                                                         <span
-                                                            style="position: absolute; left: 0; top: 0; color: #0d6efd; font-size: 18px;">•</span>
+                                                            style="position: absolute; left: 0; top: 0; color: #0d6efd; font-size: 18px;">&bull;</span>
                                                         {{ $benefit->description }}
                                                     </li>
                                                 @endforeach
@@ -135,44 +135,6 @@
                     </table>
                 </div>
 
-                <div class="pagination-wrapper d-flex justify-content-between align-items-center mt-3 flex-wrap">
-
-                    {{-- Left: Show per page + showing text --}}
-                    <div class="d-flex align-items-center flex-wrap gap-3">
-
-                        {{-- Show Per Page Category --}}
-                        <form method="GET" action="{{ route('product.index') }}" class="d-flex align-items-center gap-2">
-                            <label for="category_per_page" class="mb-0 small text-muted">Show</label>
-
-                            <select name="category_per_page" id="category_per_page" class="form-select form-select-sm"
-                                onchange="this.form.submit()">
-                                @foreach ([10, 25, 50, 100, 'All'] as $size)
-                                    <option value="{{ $size }}"
-                                        {{ strtolower(request('category_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
-                                        {{ $size }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            {{-- Keep other query params --}}
-                            @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
-                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                            @endforeach
-                        </form>
-
-                        {{-- Showing text --}}
-                        <div class="showing-text small text-muted">
-                            Showing {{ $categories->firstItem() }} to {{ $categories->lastItem() }}
-                            of {{ $categories->total() }} results
-                        </div>
-                    </div>
-
-                    {{-- Right: Pagination --}}
-                    <div class="right-pagination pagination-sm">
-                        {{ $categories->appends(request()->query())->onEachSide(0)->links() }}
-                    </div>
-                </div>
-
             </div>
         </div>
 
@@ -186,7 +148,7 @@
                 <div class="d-flex gap-2 align-items-center toolbar-scroll">
                     <div class="dropdown">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            type="button" id="exportProductDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
@@ -300,22 +262,6 @@
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
-                                            <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered modal-xl">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Preview Image</h5>
-                                                            <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body text-center">
-                                                            <img id="previewImage" src="" class="img-fluid"
-                                                                alt="Preview">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
                                         </div>
                                     </td>
                                 </tr>
@@ -328,43 +274,78 @@
                     </table>
                 </div>
 
-                <div
-                    class="pagination-wrapper product-pagination d-flex justify-content-between align-items-center mt-3 flex-wrap">
+                @php
+                    $isProductPaginated = $products instanceof \Illuminate\Contracts\Pagination\Paginator;
+                @endphp
+                @if ($isProductPaginated)
+                    <div class="product-footer border-top bg-light-subtle px-3 py-3 rounded-bottom-3">
+                        <div class="pagination-wrapper product-pagination d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="d-flex align-items-center flex-wrap gap-3">
+                                <form method="GET" action="{{ route('product.index') }}" class="d-flex align-items-center gap-2" id="productPageForm">
+                                    <label for="product_per_page" class="mb-0 small text-muted">Show</label>
+                                    <select name="product_per_page" id="product_per_page" class="form-select form-select-sm"
+                                        onchange="this.form.submit()">
+                                        @foreach ([10, 25, 50, 100, 'All'] as $size)
+                                            <option value="{{ $size }}"
+                                                {{ strtolower(request('product_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
+                                                {{ $size }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
+                                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                    @endforeach
+                                </form>
+                                <div class="showing-text small text-muted">
+                                    Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} results
+                                </div>
+                            </div>
 
-                    {{-- Left: Show Per Page + Showing --}}
-                    <div class="d-flex align-items-center flex-wrap gap-3">
+                            @php
+                                $prodCurrent = $products->currentPage();
+                                $prodLast = $products->lastPage();
+                                $prodStart = max(1, $prodCurrent - 2);
+                                $prodEnd = min($prodLast, $prodCurrent + 2);
+                            @endphp
 
-                        <form method="GET" action="{{ route('product.index') }}"
-                            class="d-flex align-items-center gap-2" id="productPageForm">
+                            <nav class="pagination-sm" aria-label="Product pagination">
+                                <ul class="pagination mb-0">
+                                    <li class="page-item {{ $products->onFirstPage() ? 'disabled' : '' }}">
+                                        <a class="page-link" href="{{ $products->previousPageUrl() ?? '#' }}" aria-label="Previous">&lsaquo;</a>
+                                    </li>
 
-                            <label for="product_per_page" class="mb-0 small text-muted">Show</label>
+                                    @if ($prodStart > 1)
+                                        <li class="page-item"><a class="page-link" href="{{ $products->url(1) }}">1</a></li>
+                                        @if ($prodStart > 2)
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        @endif
+                                    @endif
 
-                            <select name="product_per_page" id="product_per_page" class="form-select form-select-sm"
-                                onchange="this.form.submit()">
-                                @foreach ([10, 25, 50, 100, 'All'] as $size)
-                                    <option value="{{ $size }}"
-                                        {{ strtolower(request('product_per_page', 10)) == strtolower($size) ? 'selected' : '' }}>
-                                        {{ $size }}
-                                    </option>
-                                @endforeach
-                            </select>
+                                    @for ($page = $prodStart; $page <= $prodEnd; $page++)
+                                        <li class="page-item {{ $page === $prodCurrent ? 'active' : '' }}">
+                                            @if ($page === $prodCurrent)
+                                                <span class="page-link">{{ $page }}</span>
+                                            @else
+                                                <a class="page-link" href="{{ $products->url($page) }}">{{ $page }}</a>
+                                            @endif
+                                        </li>
+                                    @endfor
 
-                            @foreach (request()->except('category_per_page', 'product_per_page', 'page') as $key => $value)
-                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                            @endforeach
-                        </form>
+                                    @if ($prodEnd < $prodLast)
+                                        @if ($prodEnd < $prodLast - 1)
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        @endif
+                                        <li class="page-item"><a class="page-link" href="{{ $products->url($prodLast) }}">{{ $prodLast }}</a></li>
+                                    @endif
 
-                        <div class="showing-text small text-muted">
-                            Showing {{ $products->firstItem() }} to {{ $products->lastItem() }}
-                            of {{ $products->total() }} results
+                                    <li class="page-item {{ $products->hasMorePages() ? '' : 'disabled' }}">
+                                        <a class="page-link" href="{{ $products->nextPageUrl() ?? '#' }}" aria-label="Next">&rsaquo;</a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
-
-                    {{-- Right pagination --}}
-                    <div class="right-pagination pagination-sm">
-                        {{ $products->appends(request()->query())->onEachSide(0)->links() }}
-                    </div>
-                </div>
+                @endif
 
             </div>
         </div>
@@ -385,138 +366,23 @@
         </div>
     </div>
 
+    {{-- Modal preview image (single instance) --}}
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Preview Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" src="" class="img-fluid" alt="Preview">
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('styles')
-        <style>
-            /* Wrapper pagination */
-            .product-pagination {
-                gap: 10px !important;
-            }
-
-            /* Styling dropdown show per page */
-            .product-pagination #product_per_page {
-                min-width: 80px;
-                border-radius: 8px;
-                padding: 5px 10px;
-                background-color: #fff;
-            }
-
-            .product-pagination .showing-text {
-                white-space: nowrap;
-                font-size: 0.85rem;
-            }
-
-            /* ======== FIX PANAH PREVIOUS/NEXT ======== */
-            /* Kecilkan tombol */
-            .product-pagination .pagination .page-link {
-                padding: 4px 8px !important;
-                font-size: 10px !important;
-                line-height: 1 !important;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 2px;
-            }
-
-            /* Kecilkan ikon SVG bawaan Laravel pagination */
-            .product-pagination .pagination .page-link svg {
-                width: 10px !important;
-                height: 10px !important;
-            }
-
-            /* Untuk tombol Prev / Next (karena isinya SVG saja) */
-            .product-pagination .pagination .page-item .page-link[rel="prev"],
-            .product-pagination .pagination .page-item .page-link[rel="next"] {
-                padding: 4px 8px !important;
-            }
-
-            /* Toolbar button styles (re-used for consistency with Customer/SudirmanPark) */
-            .toolbar-btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.35rem 0.7rem;
-                border-radius: 10px;
-                font-size: 0.88rem;
-                color: #334155;
-                /* slate-700 */
-                background: transparent;
-                border: 1px solid rgba(15, 23, 42, 0.04);
-                transition: all 0.12s ease-in-out;
-            }
-
-            .toolbar-btn:hover {
-                background: #ffffff;
-                box-shadow: 0 4px 12px rgba(2, 6, 23, 0.06);
-                transform: translateY(-1px);
-                color: #0f172a;
-            }
-
-            .toolbar-btn:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-            }
-
-            .toolbar-btn-primary {
-                background: linear-gradient(180deg, #1f2937, #111827);
-                color: #ffffff !important;
-                border-color: rgba(0, 0, 0, 0.08);
-                box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
-            }
-
-            .toolbar-btn-primary:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.03);
-                color: #ffffff !important;
-                background: linear-gradient(180deg, #111827, #0b1220);
-                box-shadow: 0 10px 24px rgba(17, 24, 39, 0.16);
-            }
-
-            .toolbar-btn-ghost {
-                background: transparent;
-                color: #374151;
-            }
-
-            .toolbar-btn-danger {
-                background: transparent;
-                color: #b91c1c;
-                border-color: rgba(185, 28, 28, 0.08);
-            }
-
-            .toolbar-btn-danger:hover {
-                background: #b91c1c;
-                color: #fff !important;
-                box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
-            }
-
-            .toolbar-scroll {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                white-space: nowrap;
-                gap: 0.5rem;
-                padding-bottom: 4px;
-            }
-
-            .toolbar-scroll::-webkit-scrollbar {
-                height: 6px;
-            }
-
-            .toolbar-scroll::-webkit-scrollbar-thumb {
-                background: rgba(15, 23, 42, 0.06);
-                border-radius: 6px;
-            }
-
-            /* FIX Dropdown ketutup tabel */
-            .toolbar-scroll {
-                position: relative;
-                overflow: visible !important;
-                /* izinkan dropdown keluar */
-            }
-
-            .toolbar-scroll .dropdown-menu {
-                z-index: 9999 !important;
-                position: absolute !important;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/product.css') }}">
     @endpush
 
     @push('scripts')

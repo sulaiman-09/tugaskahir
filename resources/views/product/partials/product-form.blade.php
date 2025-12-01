@@ -1,12 +1,20 @@
-@php $hideCancel = $hideCancel ?? false; @endphp
+@php
+    $hideCancel = $hideCancel ?? false;
+    $product = $product ?? new \App\Models\Product();
+    $isEdit = $product && $product->exists;
+    $formAction = $formAction ?? ($isEdit ? route('product.update', $product->id) : route('product.store'));
+    $method = strtoupper($method ?? ($isEdit ? 'PUT' : 'POST'));
+    $submitLabel = $submitLabel ?? ($isEdit ? 'Update Product' : 'Create Product');
+@endphp
 
 {{-- Alert Validation (AJAX akan isi di sini) --}}
 <div class="alert alert-danger d-none" data-error-box></div>
 
-<form action="{{ route('product.update', $product->id) }}" method="POST" enctype="multipart/form-data"
-    class="product-edit-form">
+<form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" class="product-edit-form">
     @csrf
-    @method('PUT')
+    @unless(in_array($method, ['GET', 'POST']))
+        @method($method)
+    @endunless
 
     <div class="mb-3">
         <label class="form-label fw-semibold">Product Name</label>
@@ -27,8 +35,12 @@
     <div class="mb-3">
         <label class="form-label fw-semibold">Category</label>
         <select name="product_category_id" class="form-select" required>
+            <option value="" disabled {{ old('product_category_id', $product->product_category_id) ? '' : 'selected' }}>
+                -- Select Category --
+            </option>
             @foreach ($categories as $cat)
-                <option value="{{ $cat->id }}" {{ $cat->id == $product->product_category_id ? 'selected' : '' }}>
+                <option value="{{ $cat->id }}"
+                    {{ (int) old('product_category_id', $product->product_category_id) === $cat->id ? 'selected' : '' }}>
                     {{ $cat->name }}
                 </option>
             @endforeach
@@ -43,7 +55,7 @@
 
     <div class="mb-3">
         <label class="form-label fw-semibold">Web Image</label><br>
-        @if ($product->web_image)
+        @if ($isEdit && $product->web_image)
             <img src="{{ asset('storage/' . $product->web_image) }}" width="100" class="mb-2 rounded shadow-sm border">
         @endif
         <input type="file" name="web_image" class="form-control">
@@ -53,7 +65,7 @@
     <div class="mb-3">
         <label class="form-label fw-semibold">Apps Image</label>
         <div class="mb-2">
-            @if ($product->path_apps)
+            @if ($isEdit && $product->path_apps)
                 <img src="{{ asset('storage/' . $product->path_apps) }}" width="100" class="rounded shadow-sm border">
             @endif
         </div>
@@ -61,14 +73,14 @@
         <small class="text-muted">Recommended: 800x600px</small>
     </div>
 
-    <div class="mt-4 d-flex justify-content-between">
+    <div class="mt-4 d-flex {{ $hideCancel ? 'justify-content-end' : 'justify-content-between' }}">
         @unless($hideCancel)
             <a href="{{ route('product.index') }}" class="btn btn-secondary ms-2">
                 <i class="fa fa-arrow-left me-1"></i> Cancel
             </a>
         @endunless
         <button type="submit" class="btn btn-primary">
-            <i class="fa fa-save me-1"></i> Update Product
+            <i class="fa fa-save me-1"></i> {{ $submitLabel }}
         </button>
     </div>
 </form>

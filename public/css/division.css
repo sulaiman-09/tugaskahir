@@ -1,0 +1,43 @@
+.division-page .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f7faff;
+}
+
+.division-page .table-striped > tbody > tr:nth-of-type(even) {
+    background-color: #ffffff;
+}
+
+.division-page .table-hover tbody tr:hover {
+    background-color: #e3edff;
+}
+
+.division-page .table th,
+.division-page .table td {
+    vertical-align: middle;
+}
+
+.division-page .status-toggle {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.division-page #per_page {
+    min-width: 80px;
+    border-radius: 8px;
+    padding: 5px 10px;
+    background-color: #fff;
+}
+
+.division-page #perPageForm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.division-page .form-switch .form-check-input {
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.division-page .form-switch .form-check-input:checked {
+    background-color: #0d6efd;
+}

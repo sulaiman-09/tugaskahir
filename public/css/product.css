@@ -1,0 +1,179 @@
+.product-page {
+    /* spacing handled by existing container classes */
+}
+
+/* ===== Pagination + toolbar styling (Product List) ===== */
+.product-page .product-pagination {
+    gap: 10px !important;
+}
+
+.product-page .product-pagination #product_per_page {
+    min-width: 80px;
+    border-radius: 8px;
+    padding: 5px 10px;
+    background-color: #fff;
+}
+
+.product-page .product-pagination .showing-text {
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.product-page .product-pagination .pagination .page-link {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.product-page .product-pagination .pagination .page-link svg {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.product-page .product-pagination .pagination .page-item .page-link[rel="prev"],
+.product-page .product-pagination .pagination .page-item .page-link[rel="next"] {
+    padding: 4px 8px !important;
+}
+
+.product-page .product-footer {
+    border-top: 1px solid #e2e8f0;
+}
+
+.product-page .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #334155;
+    background: transparent;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    transition: all 0.12s ease-in-out;
+    white-space: nowrap;
+}
+
+.product-page .toolbar-btn:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.06);
+    transform: translateY(-1px);
+    color: #0f172a;
+}
+
+.product-page .toolbar-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+}
+
+.product-page .toolbar-btn-primary {
+    background: linear-gradient(180deg, #1f2937, #111827);
+    color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
+}
+
+.product-page .toolbar-btn-primary:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+    color: #ffffff !important;
+    background: linear-gradient(180deg, #111827, #0b1220);
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.16);
+}
+
+.product-page .toolbar-btn-ghost {
+    background: transparent;
+    color: #374151;
+}
+
+.product-page .toolbar-btn-danger {
+    background: transparent;
+    color: #b91c1c;
+    border-color: rgba(185, 28, 28, 0.08);
+}
+
+.product-page .toolbar-btn-danger:hover {
+    background: #b91c1c;
+    color: #fff !important;
+    box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
+}
+
+.product-page .toolbar-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    gap: 0.5rem;
+    padding-bottom: 4px;
+    position: relative;
+    overflow: visible !important;
+}
+
+.product-page .toolbar-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.product-page .toolbar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.06);
+    border-radius: 6px;
+}
+
+.product-page .toolbar-scroll .dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+/* ===== Form pages (create/edit product) ===== */
+.product-form-page .btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.product-form-page .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.product-form-page .form-label {
+    color: #0d6efd;
+}
+
+/* ===== Form pages (create/edit category) ===== */
+.product-category-page {
+    background-color: #f8fafc !important;
+}
+
+.product-category-page .card {
+    background: #ffffff;
+}
+
+.product-category-page h6 {
+    font-size: 0.95rem;
+}
+
+.product-category-page .form-control:focus,
+.product-category-page .form-select:focus {
+    border-color: #aacbff !important;
+    box-shadow: 0 0 5px rgba(99, 162, 255, 0.35) !important;
+}
+
+.product-category-page .btn-primary {
+    background-color: #0d6efd !important;
+    border: none !important;
+    transition: 0.2s;
+}
+
+.product-category-page .btn-primary:hover {
+    background-color: #0b5ed7 !important;
+}
+
+.product-category-page .btn-outline-secondary:hover {
+    background-color: #f1f3f5 !important;
+}
+
+.product-category-page .form-label.text-primary {
+    color: #0d6efd !important;
+    font-weight: 600;
+}

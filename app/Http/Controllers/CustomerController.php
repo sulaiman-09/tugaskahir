@@ -79,9 +79,8 @@ class CustomerController extends Controller
             'district'          => 'nullable|string|max:255',
             'village'           => 'nullable|string|max:255',
             'region_id'         => 'nullable|string',
-            'division'          => 'nullable|string|max:255',
-            'product_category'  => 'nullable|string|max:255',
-            'product'           => 'nullable|numeric',
+            'product_category_id' => 'nullable|exists:product_categories,id',
+            'product_id'          => 'nullable|exists:products,id',
             'latitude'          => 'nullable|string|max:255',
             'longitude'         => 'nullable|string|max:255',
             'coverage'          => 'nullable|string|max:255',
@@ -90,10 +89,9 @@ class CustomerController extends Controller
         // Ensure region_id is set to null if not provided
         $validated['region_id'] = $validated['region_id'] ?? null;
 
-        // Map product to product_id if it's numeric
-        if (isset($validated['product']) && is_numeric($validated['product'])) {
-            $validated['product_id'] = $validated['product'];
-            unset($validated['product']);
+        // Isi customer_address dengan address jika kosong, agar Maps punya alamat
+        if (empty($validated['customer_address']) && !empty($validated['address'])) {
+            $validated['customer_address'] = $validated['address'];
         }
 
         Customer::create($validated);
@@ -140,9 +138,8 @@ class CustomerController extends Controller
             'district'          => 'nullable|string|max:255',
             'village'           => 'nullable|string|max:255',
             'region_id'         => 'nullable|string',
-            'division'          => 'nullable|string|max:255',
-            'product_category'  => 'nullable|string|max:255',
-            'product'           => 'nullable|numeric',
+            'product_category_id' => 'nullable|exists:product_categories,id',
+            'product_id'          => 'nullable|exists:products,id',
             'latitude'          => 'nullable|string|max:255',
             'longitude'         => 'nullable|string|max:255',
             'coverage'          => 'nullable|string|max:255',
@@ -151,10 +148,8 @@ class CustomerController extends Controller
         // Ensure region_id is set to null if not provided
         $validated['region_id'] = $validated['region_id'] ?? null;
 
-        // Map product to product_id if it's numeric
-        if (isset($validated['product']) && is_numeric($validated['product'])) {
-            $validated['product_id'] = $validated['product'];
-            unset($validated['product']);
+        if (empty($validated['customer_address']) && !empty($validated['address'])) {
+            $validated['customer_address'] = $validated['address'];
         }
 
         $customer = Customer::findOrFail($id);
@@ -207,8 +202,9 @@ class CustomerController extends Controller
 
     public function exportExcel(Request $request)
     {
+        // Urutkan dari data paling awal agar export dimulai dari nomor 1
         $customers = Customer::with(['product', 'productCategory'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         $data = $customers->map(function ($c) {
@@ -229,8 +225,9 @@ class CustomerController extends Controller
 
     public function exportPdf(Request $request)
     {
+        // Urutkan dari data paling awal agar PDF dimulai dari nomor 1
         $customers = Customer::with(['product', 'productCategory'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         $pdf = Pdf::loadView('customer.export-pdf', compact('customers'))

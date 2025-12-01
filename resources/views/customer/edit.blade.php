@@ -96,39 +96,35 @@
                     <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Additional Data</h6>
                     <div class="row g-3">
                         <div class="col-md-4">
-                        <label class="form-label fw-semibold small">Division</label>
-                        <select name="division" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                        <option value="">Pilih Division</option>
-                        <option value="Marketing" {{ $customer->division == 'Marketing' ? 'selected' : '' }}>Marketing</option>
-                        <option value="Sales Retail" {{ $customer->division == 'Sales Retail' ? 'selected' : '' }}>Sales Retail</option>
-                        </select>
-                        </div>
-                        <div class="col-md-4">
-                        <label class="form-label fw-semibold small">Product Category</label>
-                        <select name="product_category" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                        <option value="">Select Category</option>
-                        <option value="Broadband Internet" {{ $customer->product_category == 'Broadband Internet' ? 'selected' : '' }}>Broadband Internet</option>
-                        <option value="Business Solutions" {{ $customer->product_category == 'Business Solutions' ? 'selected' : '' }}>Business Solutions</option>
-                        <option value="Promo Spesial Jepara" {{ $customer->product_category == 'Promo Spesial Jepara' ? 'selected' : '' }}>Promo Spesial Jepara</option>
-                        <option value="Promo Spesial Sukoharjo" {{ $customer->product_category == 'Promo Spesial Sukoharjo' ? 'selected' : '' }}>Promo Spesial Sukoharjo</option>
-                        <option value="Sudirman Park" {{ $customer->product_category == 'Sudirman Park' ? 'selected' : '' }}>Sudirman Park</option>
-                        </select>
-                        </div>
-                        <div class="col-md-4">
-                        <label class="form-label fw-semibold small">Product</label>
-                        <select name="product" class="form-select rounded-3 shadow-sm border-0 bg-white">
-                        <option value="">Select product</option>
-                        @foreach($products as $prod)
-                            <option value="{{ $prod->id }}" {{ $customer->product_id == $prod->id ? 'selected' : '' }}>{{ $prod->name }}</option>
-                            @endforeach
+                            <label class="form-label fw-semibold small">Product Category</label>
+                            <select name="product_category_id" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                                <option value="">Select Category</option>
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->id }}"
+                                        {{ (int) old('product_category_id', $customer->product_category_id) === $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">Coverage</label>
                             <select name="coverage" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                 <option value="">Select Coverage</option>
-                                <option value="Cover" {{ $customer->coverage == 'Cover' ? 'selected' : '' }}>Cover</option>
-                                <option value="Uncover" {{ $customer->coverage == 'Uncover' ? 'selected' : '' }}>Uncover</option>
+                                <option value="Cover" {{ old('coverage', $customer->coverage) === 'Cover' ? 'selected' : '' }}>Cover</option>
+                                <option value="Uncover" {{ old('coverage', $customer->coverage) === 'Uncover' ? 'selected' : '' }}>Uncover</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Product</label>
+                            <select name="product_id" class="form-select rounded-3 shadow-sm border-0 bg-white">
+                                <option value="">Select Product</option>
+                                @foreach ($products as $prod)
+                                    <option value="{{ $prod->id }}"
+                                        {{ (int) old('product_id', $customer->product_id) === $prod->id ? 'selected' : '' }}>
+                                        {{ $prod->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

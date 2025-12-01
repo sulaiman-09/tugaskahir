@@ -3,7 +3,7 @@
 @section('title', 'Edit Product Category')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 product-category-page">
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
 
             {{-- Header --}}
@@ -37,43 +37,8 @@
         </div>
     </div>
 
-    {{-- Style Tambahan --}}
-    <style>
-        body {
-            background-color: #f8fafc !important;
-        }
-
-        .card {
-            background: #ffffff;
-        }
-
-        h6 {
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #aacbff !important;
-            box-shadow: 0 0 5px rgba(99, 162, 255, 0.35) !important;
-        }
-
-        .btn-primary {
-            background-color: #0d6efd !important;
-            border: none !important;
-            transition: 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #0b5ed7 !important;
-        }
-
-        .btn-outline-secondary:hover {
-            background-color: #f1f3f5 !important;
-        }
-
-        .form-label.text-primary {
-            color: #0d6efd !important;
-            font-weight: 600;
-        }
-    </style>
 @endsection
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/product.css') }}">
+@endpush

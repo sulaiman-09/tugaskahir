@@ -1,11 +1,20 @@
-@php $hideCancel = $hideCancel ?? false; @endphp
+@php
+    $hideCancel = $hideCancel ?? false;
+    $category = $category ?? new \App\Models\ProductCategory();
+    $isEdit = $category && $category->exists;
+    $formAction = $formAction ?? ($isEdit ? route('product.category.update', $category->id) : route('product.category.store'));
+    $method = strtoupper($method ?? ($isEdit ? 'PUT' : 'POST'));
+    $submitLabel = $submitLabel ?? ($isEdit ? 'Update Category' : 'Create Category');
+@endphp
 
 {{-- Alert Validation (AJAX akan isi di sini) --}}
 <div class="alert alert-danger d-none" data-error-box></div>
 
-<form action="{{ route('product.category.update', $category->id) }}" method="POST" class="category-edit-form">
+<form action="{{ $formAction }}" method="POST" class="category-edit-form">
     @csrf
-    @method('PUT')
+    @unless(in_array($method, ['GET', 'POST']))
+        @method($method)
+    @endunless
 
     <div class="mb-4">
         <div class="row g-3">
@@ -51,6 +60,17 @@
                 </small>
             </div>
 
+            @unless($isEdit)
+                <div class="col-md-12">
+                    <label for="benefit" class="form-label text-primary fw-semibold small">
+                        Benefit
+                    </label>
+                    <textarea name="benefit" id="benefit" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="3"
+                        placeholder="Tuliskan manfaat atau keunggulan kategori">{{ old('benefit') }}</textarea>
+                    <small class="text-muted">Pisahkan baris untuk setiap benefit.</small>
+                </div>
+            @endunless
+
             {{-- Show Price --}}
             <div class="col-md-12">
                 <div class="form-check mt-3 ps-1">
@@ -67,14 +87,14 @@
     </div>
 
     {{-- Tombol Aksi --}}
-    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+    <div class="d-flex {{ $hideCancel ? 'justify-content-end' : 'justify-content-between' }} align-items-center border-top pt-3 mt-4">
         @unless($hideCancel)
             <a href="{{ route('product.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i> Cancel
             </a>
         @endunless
         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-            <i class="bi bi-save2 me-1"></i> Update Category
+            <i class="bi bi-save2 me-1"></i> {{ $submitLabel }}
         </button>
     </div>
 </form>

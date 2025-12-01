@@ -3,7 +3,7 @@
 @section('title', 'Sudirman Park - Alamat Homepass')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 sudirmanpark-page">
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -180,7 +180,7 @@
 
             {{-- Right: Pagination --}}
             <div class="right-pagination pagination-sm">
-                {{ $addresses->appends(request()->query())->onEachSide(0)->links() }}
+                {{ $addresses->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
             </div>
         </div>
 
@@ -242,72 +242,7 @@
 
     @push('styles')
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            .btn-outline-primary {
-                border: 1.5px solid #007bff;
-                color: #007bff;
-                background: #fff;
-                transition: all 0.2s ease;
-            }
-
-            .btn-outline-primary:hover {
-                background-color: #007bff;
-                color: #fff;
-            }
-
-            .btn-primary {
-                background-color: #007bff;
-                border: none;
-                transition: all 0.2s ease;
-            }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-            }
-
-            .btn-outline-secondary:hover {
-                background-color: #6c757d;
-                color: #fff;
-            }
-
-            .table th,
-            .table td {
-                vertical-align: middle;
-            }
-
-            /* Kecilkan panah Previous/Next agar sama dengan select per page */
-            .right-pagination svg {
-                width: 10px !important;
-                height: 10px !important;
-            }
-
-            /* Perbaiki padding tombol pagination */
-            .right-pagination .page-link {
-                padding: 3px 8px !important;
-                font-size: 12px !important;
-                line-height: 1 !important;
-            }
-
-            /* Perkecil jarak antar tombol */
-            .right-pagination .page-item {
-                margin: 0 2px !important;
-            }
-
-            /* Wajib: agar column tidak memaksa mengecil */
-            .table-responsive table {
-                min-width: 1200px;
-                /* boleh dinaikkan sesuai kebutuhan */
-                white-space: nowrap;
-                /* biar teks tidak turun ke bawah */
-            }
-
-            /* Boleh: agar cell lebih rapi */
-            .table td,
-            .table th {
-                vertical-align: middle;
-                padding: 8px 12px;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/sudirmanpark.css') }}">
     @endpush
 
     @push('scripts')

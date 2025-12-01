@@ -1,0 +1,48 @@
+.news-page .table th,
+.news-page .table td {
+    vertical-align: middle;
+}
+
+.news-page .btn-outline-secondary {
+    border: 1.5px solid #6c757d;
+    color: #6c757d;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.news-page .btn-outline-secondary:hover {
+    background: #6c757d;
+    color: #fff;
+}
+
+.news-page .btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: 0.2s;
+}
+
+.news-page .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.news-page .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #fdfdff;
+}
+
+.news-page .table-striped > tbody > tr:hover {
+    background-color: #eef5ff;
+}
+
+.news-page .fw-semibold {
+    font-weight: 600;
+}
+
+.news-page .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.news-page .table td {
+    white-space: normal !important;
+}

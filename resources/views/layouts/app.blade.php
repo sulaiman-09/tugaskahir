@@ -319,6 +319,63 @@
         .toolbar-btn.toolbar-btn-export {
             min-width: 98px;
         }
+
+        /* Pastikan dropdown toolbar tidak ketutup tabel/card */
+        .toolbar-scroll {
+            position: relative;
+            overflow: visible !important;
+        }
+
+        .toolbar-scroll .dropdown-menu {
+            z-index: 1100 !important;
+            position: absolute !important;
+        }
+
+        /* Samakan tampilan pagination prev/next di seluruh halaman */
+        .pagination .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 6px 10px;
+            min-width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1;
+            color: #0f172a;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .pagination .page-link svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Laravel default SVG icons often carry utility classes (w-5 h-5); lock them down too */
+        .pagination .page-link .w-5,
+        .pagination .page-link .h-5 {
+            width: 12px !important;
+            height: 12px !important;
+        }
+
+        .pagination .page-item .page-link[rel="prev"],
+        .pagination .page-item .page-link[rel="next"] {
+            padding: 4px 10px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: #111827;
+            color: #fff;
+            border-color: #0f172a;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #94a3b8;
+            background: #f8fafc;
+        }
     </style>
 
     {{-- Tempat CSS tambahan dari setiap halaman --}}

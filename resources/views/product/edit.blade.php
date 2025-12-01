@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-4">
+    <div class="container py-4 product-form-page">
         <h2 class="mb-4">Edit Product</h2>
 
         {{-- Pesan sukses --}}
@@ -25,19 +25,5 @@
 @endsection
 
 @push('styles')
-    <style>
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .form-label {
-            color: #0d6efd;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/product.css') }}">
 @endpush
