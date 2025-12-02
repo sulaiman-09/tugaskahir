@@ -27,6 +27,7 @@ class Customer extends Model
         'district',
         'village',
         'region_id',
+        'division_id',
         'product_category_id',
         'product_id',
         'latitude',
@@ -48,4 +49,10 @@ class Customer extends Model
     {
         return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
+
+    public function division()
+{
+    return $this->belongsTo(Division::class, 'division_id');
+}
+
 }

@@ -101,6 +101,16 @@
                             </select>
                         </div>
                         <div class="col-md-4">
+    <label class="form-label fw-semibold small">Division</label>
+    <select name="division_id" class="form-select rounded-3 shadow-sm border-0 bg-white">
+        <option value="">Select Division</option>
+        @foreach ($divisions as $div)
+            <option value="{{ $div->id }}">{{ $div->name }}</option>
+        @endforeach
+    </select>
+</div> 
+
+                        <div class="col-md-4">
                             <label class="form-label fw-semibold small">Coverage</label>
                             <select name="coverage" class="form-select rounded-3 shadow-sm border-0 bg-white">
                                 <option value="">Select Coverage</option>

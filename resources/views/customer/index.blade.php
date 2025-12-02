@@ -186,6 +186,7 @@
                                 <th>Longitude</th>
                                 <th>Coverage</th>
                                 <th>Product</th>
+                                <th>Product Category</th>
                                 <th>Division</th>
                                 <th>Created At</th>
                                 <th>Details</th>
@@ -232,6 +233,10 @@
 
                                     <td>
                                         {{ $customer_lead->productCategory?->name ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $customer_lead->division?->name ?? '-' }}
                                     </td>
 
                                     <td>

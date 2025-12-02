@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\ArrayExport;
+use App\Models\Division;
+
 
 class CustomerController extends Controller
 {
@@ -122,15 +124,21 @@ class CustomerController extends Controller
     /**
      * Form tambah customer baru.
      */
-    public function create()
-    {
-        // ambil semua data dari tabel products & product_categories
-        $products = Product::all();
-        $categories = ProductCategory::all();
+public function create()
+{
+    // ambil semua data dari tabel
+    $products = Product::all();
+    $categories = ProductCategory::all();
+    $divisions = Division::all(); // 🔥 wajib ditambahkan
 
-        // kirim ke view
-        return view('customer.create', compact('products', 'categories'));
-    }
+    // kirim ke view
+    return view('customer.create', [
+        'products' => $products,
+        'categories' => $categories,
+        'divisions' => $divisions
+    ]);
+}
+
 
     /**
      * Simpan customer baru.
@@ -149,6 +157,7 @@ class CustomerController extends Controller
             'district'          => 'nullable|string|max:255',
             'village'           => 'nullable|string|max:255',
             'region_id'         => 'nullable|string',
+            'division_id'       => 'nullable|exists:divisions,id',
             'product_category_id' => 'nullable|exists:product_categories,id',
             'product_id'          => 'nullable|exists:products,id',
             'latitude'          => 'nullable|string|max:255',
