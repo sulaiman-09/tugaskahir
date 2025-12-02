@@ -71,7 +71,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.28rem 0.65rem;
+    padding: 0.55rem 0.5rem;
     border-radius: 8px;
     font-size: 0.86rem;
     color: #6b7280;
@@ -88,7 +88,8 @@
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
     gap: 0.5rem;
-    padding-bottom: 4px;
+    padding-top: 6px !important;
+    padding-bottom: 8px;
     overflow-y: visible;
 }
 
@@ -115,8 +116,8 @@
 }
 
 .customer-page .filter-btn.active {
-    background: #ffffff;
-    color: #0f172a;
+    background: #000000;
+    color: #ffffff;
     box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
     border-color: rgba(15, 23, 42, 0.04);
 }
@@ -478,5 +479,36 @@
 
     #customerEditModal .modal-body {
         max-height: 58vh;
+    }
+}
+
+/* === MOBILE FIX === */
+@media (max-width: 768px) {
+
+    /* Toolbar pindah jadi vertical stacking */
+    .customer-page .customer-toolbar {
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Search bar harus full-width supaya tidak mepet */
+    .customer-page .customer-search {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+
+        display: flex;
+    }
+
+    .customer-page .customer-search input {
+        flex: 1 !important;
+        width: 100% !important;
+    }
+
+    /* Tombol search tetap kecil di kanan */
+    .customer-page .customer-search .search-btn {
+        width: 45px !important;
+        padding: 0 !important;
     }
 }

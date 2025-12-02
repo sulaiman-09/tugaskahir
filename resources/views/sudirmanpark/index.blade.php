@@ -7,17 +7,18 @@
 
         {{-- Tombol Aksi --}}
         <div class="card border-0 shadow-sm rounded-3 mb-3">
-            <div class="card-header bg-white py-3 d-flex align-items-center">
+            <div class="card-header bg-white py-3 d-flex align-items-center sudirman-header">
 
                 {{-- Judul di kiri --}}
                 <h3 class="fw-semibold mb-0 text-dark">Customer Management</h3>
 
-                <div class="flex-grow-1"></div>
+                <div class="flex-grow-1 sudirman-header-spacer"></div>
 
                 {{-- Toolbar di kanan --}}
-                <div class="d-flex align-items-center gap-2 flex-nowrap justify-content-end" style="white-space: nowrap;">
+                {{-- Toolbar di kanan --}}
+                <div class="sudirman-toolbar">
 
-                    {{-- Export (ASLI) --}}
+                    {{-- Export --}}
                     <div class="dropdown toolbar-item">
                         <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
                             id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
@@ -38,35 +39,38 @@
                         </ul>
                     </div>
 
-                    {{-- Tambah Customer (ASLI) --}}
+                    {{-- Tambah Customer --}}
                     <a href="{{ route('sudirmanpark.create') }}"
                         class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px;">
                         <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
                     </a>
 
-                    {{-- Manage Links (ASLI) --}}
+                    {{-- Manage Links --}}
                     <a href="{{ route('sudirmanpark.alamat') }}"
                         class="btn btn-sm toolbar-item {{ request()->routeIs('sudirmanpark.alamat') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}"
                         style="{{ request()->routeIs('sudirmanpark.alamat') ? '' : 'background-color: white; border: 1px solid #000; color: #000;' }}">
-                        Manage Tower Address
+                        <i class="bi bi-building me-1"></i>
+                        <span class="btn-label">Manage Tower Address</span>
                     </a>
 
                     <a href="{{ route('product.index') }}"
                         class="btn btn-sm toolbar-item {{ request()->routeIs('product.*') ? 'toolbar-btn toolbar-btn-primary' : 'toolbar-btn toolbar-btn-ghost' }}"
                         style="{{ request()->routeIs('product.*') ? '' : 'background-color: white; border: 1px solid #000; color: #000;' }}">
-                        Manage Product
+                        <i class="bi bi-box-seam me-1"></i>
+                        <span class="btn-label">Manage Product</span>
                     </a>
 
-                    {{-- Delete Selected (ASLI) --}}
+                    {{-- Delete Selected --}}
                     <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
+                        <span class="btn-label">Delete Selected</span>
                     </button>
 
-                    {{-- Search (SEJAJAR) --}}
-                    <form action="{{ route('sudirmanpark.index') }}" method="GET" class="d-flex align-items-center"
-                        style="max-width:240px; width:100%;">
+                    {{-- Search --}}
+                    <form action="{{ route('sudirmanpark.index') }}" method="GET"
+                        class="d-flex align-items-center toolbar-search">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="q" class="form-control form-control-sm"
                                 placeholder="Search..." value="{{ $q ?? request('q') }}">
@@ -78,6 +82,7 @@
                     </form>
 
                 </div>
+
             </div>
 
 

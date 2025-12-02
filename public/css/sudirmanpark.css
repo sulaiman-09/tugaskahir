@@ -120,6 +120,10 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
 }
 
+.sudirmanpark-page .btn-label {
+    display: inline-block;
+}
+
 .sudirmanpark-page .toolbar-btn-primary {
     background: linear-gradient(180deg, #1f2937, #111827);
     color: #ffffff !important;
@@ -170,7 +174,16 @@
     box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12);
 }
 
+.sudirmanpark-page .sudirman-header {
+    gap: 0.75rem;
+}
+
+.sudirmanpark-page .sudirman-header-spacer {
+    flex: 1 1 auto;
+}
+
 .sudirmanpark-page .sudirman-toolbar {
+    display: flex;
     flex-wrap: nowrap;
     overflow: visible;
     align-items: center;
@@ -182,9 +195,31 @@
 }
 
 .sudirmanpark-page .toolbar-search {
-    min-width: 320px;
+    min-width: 240px;
     max-width: 560px;
     flex: 1 1 360px;
+}
+
+.sudirmanpark-page .tower-header {
+    gap: 0.75rem;
+}
+
+.sudirmanpark-page .tower-title {
+    flex: 0 0 auto;
+}
+
+.sudirmanpark-page .tower-actions {
+    gap: 0.75rem;
+}
+
+.sudirmanpark-page .tower-toolbar {
+    flex-wrap: nowrap;
+    overflow: visible;
+}
+
+.sudirmanpark-page .tower-search {
+    max-width: 420px;
+    width: 100%;
 }
 
 /* Edit modal sizing so header is visible */
@@ -231,10 +266,20 @@
 }
 
 @media (max-width: 992px) {
+    .sudirmanpark-page .sudirman-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .sudirmanpark-page .sudirman-header-spacer {
+        display: none;
+    }
+
     .sudirmanpark-page .sudirman-toolbar {
         flex-wrap: wrap;
         justify-content: flex-start;
         gap: 0.6rem;
+        width: 100%;
     }
 
     .sudirmanpark-page .toolbar-item {
@@ -248,22 +293,95 @@
 }
 
 @media (max-width: 768px) {
+    .sudirmanpark-page .sudirman-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sudirmanpark-page .tower-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sudirmanpark-page .tower-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
     .sudirmanpark-page .sudirman-toolbar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.6rem;
-        align-items: stretch;
+        width: 100%;
+        flex-wrap: wrap;
+        overflow-x: visible;
+        gap: 0.45rem;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
+    }
+
+    .sudirmanpark-page .sudirman-toolbar::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .sudirmanpark-page .sudirman-toolbar::-webkit-scrollbar-thumb {
+        background: rgba(15, 23, 42, 0.12);
+        border-radius: 6px;
+    }
+
+    .sudirmanpark-page .btn-label {
+        display: none !important;
+    }
+
+    .sudirmanpark-page .sudirman-toolbar .toolbar-btn,
+    .sudirmanpark-page .sudirman-toolbar .btn,
+    .sudirmanpark-page .sudirman-toolbar .dropdown > button {
+        width: auto;
+        min-width: 40px;
+        padding: 0.35rem 0.5rem;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .sudirmanpark-page .sudirman-toolbar .dropdown {
+        flex: 0 0 auto;
     }
 
     .sudirmanpark-page .toolbar-item {
-        width: 100%;
-        justify-content: center;
+        width: auto;
+        flex: 0 0 auto;
     }
 
     .sudirmanpark-page .toolbar-search {
-        grid-column: 1 / -1;
-        width: 100%;
         min-width: 100%;
+        max-width: 100%;
+        flex: 1 1 100%;
+        width: 100%;
+        order: 10;
         margin-top: 0.25rem;
+    }
+
+    .sudirmanpark-page .tower-toolbar {
+        width: 100%;
+        flex-wrap: wrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+    }
+
+    .sudirmanpark-page .tower-toolbar::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .sudirmanpark-page .tower-toolbar::-webkit-scrollbar-thumb {
+        background: rgba(15, 23, 42, 0.12);
+        border-radius: 6px;
+    }
+
+    .sudirmanpark-page .tower-search {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        order: 5;
+        margin-top: 0.35rem;
     }
 }

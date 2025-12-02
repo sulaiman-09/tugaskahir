@@ -85,6 +85,10 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
 }
 
+.product-page .btn-label {
+    display: inline-block;
+}
+
 .product-page .toolbar-btn-primary {
     background: linear-gradient(180deg, #1f2937, #111827);
     color: #ffffff !important;
@@ -155,6 +159,32 @@
     max-width: 420px;
 }
 
+.product-page .table {
+    min-width: 1050px;
+}
+
+.product-page .product-header {
+    gap: 0.75rem;
+}
+
+.product-page .product-title {
+    flex: 0 0 auto;
+}
+
+.product-page .product-actions {
+    gap: 0.75rem;
+}
+
+.product-page .product-toolbar {
+    flex-wrap: nowrap;
+    overflow: visible;
+}
+
+.product-page .product-search {
+    max-width: 420px;
+    width: 100%;
+}
+
 @media (max-width: 992px) {
     .product-page .product-toolbar {
         justify-content: flex-start;
@@ -172,23 +202,61 @@
 }
 
 @media (max-width: 768px) {
-    .product-page .product-toolbar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.6rem;
-        align-items: stretch;
+    .product-page .product-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .product-page .toolbar-item {
+    .product-page .product-actions {
+        flex-direction: column;
+        align-items: center;
         width: 100%;
+    }
+
+    .product-page .product-toolbar {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.45rem;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
         justify-content: center;
     }
 
-    .product-page .toolbar-search {
-        grid-column: 1 / -1;
+    .product-page .product-toolbar::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .product-page .product-toolbar::-webkit-scrollbar-thumb {
+        background: rgba(15, 23, 42, 0.12);
+        border-radius: 6px;
+    }
+
+    .product-page .btn-label {
+        display: none !important;
+    }
+
+    .product-page .product-toolbar .toolbar-btn,
+    .product-page .product-toolbar .btn,
+    .product-page .product-toolbar .dropdown > button {
+        width: auto;
+        min-width: 40px;
+        padding: 0.35rem 0.5rem;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .product-page .toolbar-item {
+        width: auto;
+        flex: 0 0 auto;
+    }
+
+    .product-page .product-search {
         width: 100%;
+        max-width: 100%;
         min-width: 100%;
-        margin-top: 0.25rem;
+        order: 5;
+        margin-top: 0.35rem;
     }
 }
 

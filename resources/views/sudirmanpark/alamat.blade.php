@@ -20,56 +20,60 @@
 
         <div class="card border-0 shadow-sm rounded-3 mb-3">
             {{-- Header Card --}}
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 d-flex align-items-center gap-2 tower-header">
                 {{-- Judul --}}
-                <h3 class="fw-bold mb-0 text-dark">Kelola Alamat Homepass</h3>
+                <h3 class="fw-bold mb-0 text-dark tower-title">Kelola Alamat Homepass</h3>
 
-                {{-- Toolbar --}}
-                <div class="d-flex align-items-center gap-2 sudirman-toolbar">
-                    {{-- Tombol Back --}}
-                    <a href="{{ route('sudirmanpark.index') }}"
-                        class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center toolbar-item"
-                        style="width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
-                        <i class="bi bi-chevron-left" style="font-size: 1rem;"></i>
-                    </a>
+                {{-- Aksi + Search --}}
+                <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end tower-actions">
+                    <div class="d-flex align-items-center gap-2 sudirman-toolbar tower-toolbar">
+                        {{-- Tombol Back --}}
+                        <a href="{{ route('sudirmanpark.index') }}"
+                            class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center toolbar-item"
+                            style="width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
+                            <i class="bi bi-chevron-left" style="font-size: 1rem;"></i>
+                        </a>
 
-                    {{-- Export Dropdown --}}
-                    <div class="btn-group toolbar-item">
-                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: white; border: 1px solid #000; color: #000; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
-                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                        {{-- Export Dropdown --}}
+                        <div class="btn-group toolbar-item">
+                            <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                                type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="background-color: white; border: 1px solid #000; color: #000; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
+                                <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassExcel') }}">Export
+                                        Excel</a></li>
+                                <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">Export PDF</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {{-- Tambah Alamat (halaman baru) --}}
+                        <a href="{{ route('sudirmanpark.createHomepass') }}"
+                            class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
+                            style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
+                            <i class="bi bi-building-add" style="color: #fff; font-size: 1rem;"></i>
+                        </a>
+
+                        {{-- Delete Selected --}}
+                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger toolbar-item">
+                            <i class="fa fa-trash"></i>
+                            <span class="btn-label">Delete Selected</span>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassExcel') }}">Export
-                                    Excel</a></li>
-                            <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">Export PDF</a>
-                            </li>
-                        </ul>
                     </div>
-
-                    {{-- Tambah Alamat (halaman baru) --}}
-                    <a href="{{ route('sudirmanpark.createHomepass') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
-                        <i class="bi bi-building-add" style="color: #fff; font-size: 1rem;"></i>
-                    </a>
-
-                    {{-- Delete Selected --}}
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
-                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
-                    </button>
 
                     {{-- Search --}}
                     <form action="{{ route('sudirmanpark.alamat') }}" method="GET"
-                        class="d-flex align-items-center ms-auto toolbar-search" style="max-width: 420px; width:100%;">
-                        <input type="text" name="q" class="form-control form-control-sm"
-                            placeholder="Search tower, floor, or unit" value="{{ $q ?? request('q') }}">
+                        class="d-flex align-items-center tower-search">
+                        <div class="input-group input-group-sm w-100">
+                            <input type="text" name="q" class="form-control form-control-sm"
+                                placeholder="Search tower, floor, or unit" value="{{ $q ?? request('q') }}">
+                            <button class="btn btn-primary btn-sm" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                         <input type="hidden" name="show_all" value="{{ $showAll ? '1' : '0' }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
                     </form>
                 </div>
             </div>

@@ -12,44 +12,43 @@
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-body">
 
-                <div class="d-flex align-items-center mb-3">
+                <div class="d-flex align-items-center mb-3 product-header">
 
                     {{-- Judul di kiri --}}
-                    <h3 class="fw-bold mb-0 text-dark">Product Categories</h3>
+                    <h3 class="fw-bold mb-0 text-dark product-title">Product Categories</h3>
 
-                    {{-- Spacer --}}
-                    <div class="flex-grow-1"></div>
+                    {{-- Actions + Search --}}
+                    <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end product-actions">
+                        <div class="d-flex align-items-center gap-2 flex-nowrap product-toolbar">
+                            <div class="dropdown toolbar-item">
+                                <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                                    type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                    style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                                    <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ route('product.category.export.excel') }}">Export
+                                            Excel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('product.category.export.pdf') }}">Export
+                                            PDF</a></li>
+                                </ul>
+                            </div>
 
-                    {{-- Toolbar di kanan --}}
-                    <div class="d-flex align-items-center gap-2 flex-nowrap" style="white-space: nowrap;">
+                            <a href="{{ route('product.category.create') }}"
+                                class="btn btn-sm toolbar-btn toolbar-btn-primary d-flex align-items-center justify-content-center toolbar-item"
+                                style="padding: 6px 8px;">
+                                <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
+                            </a>
 
-                        <div class="dropdown toolbar-item">
-                            <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                                type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                                style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
-                                <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                            <button type="button" id="deleteSelectedCategories"
+                                class="btn btn-sm toolbar-btn toolbar-btn-danger toolbar-item">
+                                <i class="fa fa-trash"></i>
+                                <span class="btn-label">Delete Selected</span>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('product.category.export.excel') }}">Export
-                                        Excel</a></li>
-                                <li><a class="dropdown-item" href="{{ route('product.category.export.pdf') }}">Export
-                                        PDF</a></li>
-                            </ul>
                         </div>
 
-                        <a href="{{ route('product.category.create') }}"
-                            class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
-                            style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px;">
-                            <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
-                        </a>
-
-                        <button type="button" id="deleteSelectedCategories" class="btn btn-sm toolbar-btn toolbar-item"
-                            style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                            <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
-                        </button>
-
-                        <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center"
-                            style="max-width:300px; width:100%;">
+                        <form action="{{ route('product.index') }}" method="GET"
+                            class="d-flex align-items-center product-search">
                             <div class="input-group input-group-sm w-100">
                                 <input type="text" name="category_search" class="form-control form-control-sm"
                                     placeholder="Search category name or slug" value="{{ request('category_search') }}">
@@ -151,42 +150,42 @@
         {{-- TABEL 2 : PRODUCT LIST --}}
         {{-- ======================= --}}
         <div class="card border-0 shadow-sm rounded-3 mb-4">
-            <div class="card-header bg-white py-3 d-flex align-items-center">
+            <div class="card-header bg-white py-3 d-flex align-items-center product-header">
 
                 {{-- Judul di kiri --}}
-                <h3 class="fw-bold mb-0 text-dark">Product List</h3>
+                <h3 class="fw-bold mb-0 text-dark product-title">Product List</h3>
 
-                {{-- Spacer agar tombol pindah ke kanan --}}
-                <div class="flex-grow-1"></div>
+                {{-- Actions + Search --}}
+                <div class="d-flex align-items-center gap-2 flex-grow-1 justify-content-end product-actions">
+                    <div class="d-flex gap-2 align-items-center flex-nowrap product-toolbar">
 
-                {{-- Toolbar di kanan --}}
-                <div class="d-flex gap-2 align-items-center flex-nowrap" style="white-space: nowrap;">
+                        <div class="dropdown toolbar-item">
+                            <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
+                                type="button" id="exportProductDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                                <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ route('product.export.excel') }}">Export Excel</a></li>
+                                <li><a class="dropdown-item" href="{{ route('product.export.pdf') }}">Export PDF</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="dropdown toolbar-item">
-                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                            type="button" id="exportProductDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
-                            <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                        <a href="{{ route('product.create') }}"
+                            class="btn btn-sm toolbar-btn toolbar-btn-primary d-flex align-items-center justify-content-center toolbar-item"
+                            style="padding: 6px 8px;">
+                            <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
+                        </a>
+
+                        <button type="button" id="deleteSelectedProducts"
+                            class="btn btn-sm toolbar-btn toolbar-btn-danger toolbar-item">
+                            <i class="fa fa-trash"></i>
+                            <span class="btn-label">Delete Selected</span>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('product.export.excel') }}">Export Excel</a></li>
-                            <li><a class="dropdown-item" href="{{ route('product.export.pdf') }}">Export PDF</a></li>
-                        </ul>
                     </div>
 
-                    <a href="{{ route('product.create') }}"
-                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px;">
-                        <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
-                    </a>
-
-                    <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn toolbar-item"
-                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
-                    </button>
-
-                    <form action="{{ route('product.index') }}" method="GET" class="d-flex align-items-center"
-                        style="max-width:300px; width:100%">
+                    <form action="{{ route('product.index') }}" method="GET"
+                        class="d-flex align-items-center product-search">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="product_search" class="form-control form-control-sm"
                                 placeholder="Search product name, speed, or category"
