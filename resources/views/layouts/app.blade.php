@@ -92,25 +92,43 @@
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 999px;
             cursor: pointer;
             text-decoration: none;
             font-size: 14px;
-            transition: background 0.3s ease-in-out;
+            transition: background 0.3s ease-in-out, transform 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .logout-btn:hover {
             background: #c0392b;
+            transform: translateY(-1px);
         }
 
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            line-height: 1.2;
-            gap: 2px;
-            text-align: right;
+        .profile-chip {
+            border: 1px solid #1f2937;
+            background: #0b0b0b;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: default;
+            font-size: 14px;
+            line-height: 1.1;
+        }
+
+        .profile-chip .profile-name {
+            font-weight: 700;
+        }
+
+        .profile-chip .profile-role {
+            font-size: 12px;
+            opacity: 0.8;
         }
 
         /* --- SIDEBAR --- */
@@ -335,59 +353,67 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .header {
-                padding: 10px 14px;
-                gap: 10px;
-            }
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 14px;
+        gap: 10px;
+    }
 
-            .user-menu {
-                gap: 10px;
-            }
+    .user-menu {
+        gap: 10px;
+        flex-direction: row;
+        align-items: center;
+    }
 
-            .logout-btn {
-                padding: 8px 12px;
-            }
+    .logout-btn {
+        padding: 8px 10px;
+        width: auto;
+    }
 
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-            .toolbar-scroll {
-                flex-wrap: wrap;
-                overflow-x: visible;
-            }
+    .toolbar-scroll {
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
 
-            .toolbar-scroll .input-group {
-                min-width: 100%;
-                max-width: 100%;
-            }
+    .toolbar-scroll .input-group {
+        min-width: 100%;
+        max-width: 100%;
+    }
 
-            .toolbar-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
+    .toolbar-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
 
-        @media (max-width: 576px) {
-            .header {
-                align-items: flex-start;
-                padding-top: 12px;
-                padding-bottom: 12px;
-            }
+@media (max-width: 576px) {
+    .header {
+        align-items: flex-start;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
 
-            .user-menu {
-                flex-direction: column;
-                align-items: flex-end;
-            }
+    .user-menu {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
 
-            .logout-btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
+    .logout-btn {
+        width: auto;
+        text-align: center;
+    }
+
+    .profile-name {
+        display: none;
+    }
+}
     </style>
 
     <style>
@@ -520,13 +546,17 @@
             </button>
         </div>
         <div class="user-menu">
-            <div class="user-info">
-                <span>{{ auth()->user()->name ?? 'Admin User' }}</span>
-                <span style="font-size: 12px; opacity: 0.8;">({{ ucfirst(auth()->user()->role ?? 'admin') }})</span>
-            </div>
+            <button class="profile-chip" type="button" aria-label="Profile">
+                <i class="fa-solid fa-user"></i>
+                <span class="profile-name">{{ auth()->user()->name ?? 'Admin' }}</span>
+                <span class="profile-role">{{ ucfirst(auth()->user()->role ?? 'admin') }}</span>
+            </button>
             <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                 @csrf
-                <button type="submit" class="logout-btn">Logout</button>
+                <button type="submit" class="logout-btn" aria-label="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="d-none d-sm-inline ms-1">Logout</span>
+                </button>
             </form>
         </div>
     </header>

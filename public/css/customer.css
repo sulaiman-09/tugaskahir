@@ -338,13 +338,66 @@
 }
 
 @media (max-width: 768px) {
-    .customer-page .btn-label {
-        display: none;
+    .customer-page {
+        padding-left: 0.4rem !important;
+        padding-right: 0.4rem !important;
+        width: 100%;
     }
 
-    .customer-page .customer-toolbar {
-        gap: 0.4rem;
+    .customer-page .card {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
     }
+
+    .customer-page .btn-label {
+        display: none !important;
+    }
+
+    /* Pastikan tombol toolbar tetap muncul di mobile */
+      .customer-page .customer-toolbar .toolbar-btn,
+      .customer-page .customer-toolbar .btn,
+      .customer-page .customer-toolbar .dropdown > button {
+          display: inline-flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+      }
+
+      .customer-page .customer-toolbar {
+          gap: 0.5rem;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          scrollbar-width: thin;
+      }
+
+      .customer-page .customer-toolbar .toolbar-btn,
+      .customer-page .customer-toolbar .btn {
+          width: auto;
+          min-width: 40px;
+          padding: 0.35rem 0.5rem;
+          justify-content: center;
+          flex: 0 0 auto;
+      }
+
+      .customer-page .customer-toolbar .dropdown {
+          flex: 0 0 auto;
+      }
+
+      .customer-page .customer-search {
+          min-width: 160px;
+          max-width: 220px;
+          flex: 1 1 auto;
+      }
+
+      .customer-page .customer-toolbar::-webkit-scrollbar {
+          height: 6px;
+      }
+
+      .customer-page .customer-toolbar::-webkit-scrollbar-thumb {
+          background: rgba(15, 23, 42, 0.12);
+          border-radius: 6px;
+      }
 
     .customer-page .table {
         min-width: 900px;
@@ -368,22 +421,33 @@
 }
 
 @media (max-width: 576px) {
+    .customer-page {
+        padding-left: 0.35rem !important;
+        padding-right: 0.35rem !important;
+    }
+
+    .customer-page .card {
+        margin-inline: 0;
+    }
+
     .customer-page .card-header h3 {
         font-size: 1.05rem;
     }
 
     .customer-page .toolbar-btn,
     .customer-page .customer-toolbar .btn {
-        width: 100%;
-        justify-content: center;
+        width: auto;
+        min-width: 44px;
     }
 
-    .customer-page .customer-toolbar .dropdown {
-        width: 100%;
-    }
-
+    .customer-page .customer-toolbar .dropdown,
     .customer-page .customer-toolbar .dropdown > button {
-        width: 100%;
+        width: auto;
+    }
+
+    .customer-page .customer-search {
+        min-width: 200px;
+        max-width: 280px;
     }
 
     .customer-page .table {

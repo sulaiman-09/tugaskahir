@@ -18,7 +18,7 @@
         $currentFilter = request('filter', 'all');
     @endphp
 
-    <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 customer-page">
+    <div class="container-fluid px-2 px-md-4 px-lg-5 py-4 customer-page">
 
         {{-- Alert --}}
         @if (session('success'))
@@ -124,6 +124,7 @@
                             type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; min-width: 44px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
+                            <span class="btn-label ms-1">Export</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('customer.export.excel') }}">Export Excel</a></li>
@@ -136,20 +137,24 @@
                         class="btn btn-sm toolbar-btn toolbar-btn-primary d-flex align-items-center justify-content-center"
                         title="Tambah Customer">
                         <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
+                        <span class="btn-label ms-1">Add</span>
+                        <span class="d-sm-none visually-hidden">Add</span>
                     </a>
 
                     <!-- Delete Selected -->
                     <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger"
                         title="Delete selected">
                         <i class="fa-solid fa-list-check" style="color: #b91c1c;"></i>
-                        <span class="btn-label ms-1">Delete Selected</span>
+                        <span class="btn-label ms-1">Delete</span>
+                        <span class="d-sm-none visually-hidden">Delete</span>
                     </button>
 
                     <!-- Toggle Coordinates -->
                     <button id="toggle-coordinates" type="button"
                         class="btn btn-sm toolbar-btn toolbar-btn-ghost" title="Toggle coordinates">
                         <i class="bi bi-geo-alt"></i>
-                        <span class="btn-label ms-1">Show Coordinates</span>
+                        <span class="btn-label ms-1">Coords</span>
+                        <span class="d-sm-none visually-hidden">Coordinates</span>
                     </button>
 
                     <!-- Search Form -->

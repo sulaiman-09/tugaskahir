@@ -3,13 +3,14 @@
 @section('title', 'Dashboard - Life Media CMS')
 
 @section('content')
-    <div class="page-header dashboard-page">
-        <h1 class="page-title">Dashboard</h1>
-        <button class="refresh-btn" onclick="location.reload()"
-            style="background: linear-gradient(90deg, #37393b, #333332); border-radius: 9999px; padding: 10px 18px; font-weight:600; gap:0;">
-            Refresh
-        </button>
-
+    <div class="page-header dashboard-page d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <h1 class="page-title mb-0">Dashboard</h1>
+        <div class="d-flex align-items-center gap-2">
+            <button class="refresh-btn" onclick="location.reload()"
+                style="background: linear-gradient(90deg, #37393b, #333332); border-radius: 9999px; padding: 10px 14px; font-weight:600; gap:6px; display:inline-flex; align-items:center;">
+                <i class="bi bi-arrow-repeat"></i> <span class="d-none d-sm-inline">Refresh</span>
+            </button>
+        </div>
     </div>
 
     <!-- Tailwind & ApexCharts (scoped to this page) -->
@@ -97,15 +98,24 @@
                     <h3 class="text-2xl font-bold text-gray-900">Customer Growth Over Time</h3>
                     <p class="text-sm text-gray-500 mt-1">Track new customer acquisitions across different time periods</p>
                 </div>
-                <div id="growth-chart-filters" class="flex space-x-2 bg-gray-100 p-1.5 rounded-lg shadow-sm">
-                    <button data-period="daily"
-                        class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Daily</button>
-                    <button data-period="weekly"
-                        class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Weekly</button>
-                    <button data-period="monthly"
-                        class="filter-btn active px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200">Monthly</button>
-                    <button data-period="yearly"
-                        class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Yearly</button>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <div id="growth-chart-filters" class="hidden sm:flex space-x-2 bg-gray-100 p-1.5 rounded-lg shadow-sm">
+                        <button data-period="daily"
+                            class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Daily</button>
+                        <button data-period="weekly"
+                            class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Weekly</button>
+                        <button data-period="monthly"
+                            class="filter-btn active px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200">Monthly</button>
+                        <button data-period="yearly"
+                            class="filter-btn px-4 py-2 text-sm font-semibold rounded-md transition-all duration-200 hover:bg-gray-200">Yearly</button>
+                    </div>
+                    <select id="growth-chart-filters-mobile"
+                        class="block sm:hidden w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
                 </div>
             </div>
             <div id="customer-growth-chart" class="chart-container"></div>
@@ -385,41 +395,58 @@
         growthChart.render();
         updateStats(monthlyData);
 
+        function applyPeriod(period) {
+            let newData = {};
+            switch (period) {
+                case 'yearly':
+                    newData = yearlyData;
+                    currentXAxisLabels = yearlyData.x_axis_labels;
+                    break;
+                case 'monthly':
+                    newData = monthlyData;
+                    currentXAxisLabels = monthlyData.x_axis_labels;
+                    break;
+                case 'weekly':
+                    newData = weeklyData;
+                    currentXAxisLabels = weeklyData.x_axis_labels;
+                    break;
+                case 'daily':
+                    newData = dailyData;
+                    currentXAxisLabels = dailyData.x_axis_labels;
+                    break;
+            }
+            currentData = newData;
+            growthChart.updateOptions({
+                series: newData.series,
+                xaxis: {
+                    categories: newData.categories
+                }
+            });
+            updateStats(newData);
+        }
+
         const filterButtons = document.querySelectorAll('#growth-chart-filters .filter-btn');
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 const period = button.dataset.period;
-                let newData = {};
-                switch (period) {
-                    case 'yearly':
-                        newData = yearlyData;
-                        currentXAxisLabels = yearlyData.x_axis_labels;
-                        break;
-                    case 'monthly':
-                        newData = monthlyData;
-                        currentXAxisLabels = monthlyData.x_axis_labels;
-                        break;
-                    case 'weekly':
-                        newData = weeklyData;
-                        currentXAxisLabels = weeklyData.x_axis_labels;
-                        break;
-                    case 'daily':
-                        newData = dailyData;
-                        currentXAxisLabels = dailyData.x_axis_labels;
-                        break;
-                }
-                currentData = newData;
-                growthChart.updateOptions({
-                    series: newData.series,
-                    xaxis: {
-                        categories: newData.categories
-                    }
-                });
-                updateStats(newData);
+                const mobileSelect = document.getElementById('growth-chart-filters-mobile');
+                if (mobileSelect) mobileSelect.value = period;
+                applyPeriod(period);
             });
         });
+
+        const filterSelect = document.getElementById('growth-chart-filters-mobile');
+        if (filterSelect) {
+            filterSelect.addEventListener('change', () => {
+                const period = filterSelect.value;
+                const btn = document.querySelector(`#growth-chart-filters .filter-btn[data-period="${period}"]`);
+                filterButtons.forEach(b => b.classList.remove('active'));
+                if (btn) btn.classList.add('active');
+                applyPeriod(period);
+            });
+        }
 
         var submissionsOptions = {
             series: [{

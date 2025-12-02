@@ -48,12 +48,12 @@
                         </ul>
                     </div>
 
-                    {{-- Tambah Alamat --}}
-                    <button type="button" id="addHomepassBtn"
+                    {{-- Tambah Alamat (halaman baru) --}}
+                    <a href="{{ route('sudirmanpark.createHomepass') }}"
                         class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
                         style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; border-radius: 6px;">
                         <i class="bi bi-building-add" style="color: #fff; font-size: 1rem;"></i>
-                    </button>
+                    </a>
 
                     {{-- Delete Selected --}}
                     <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
@@ -267,19 +267,6 @@
                 const hpStatus = document.getElementById('hp_status');
                 const hpSaveBtn = document.getElementById('hpSaveBtn');
                 const modalLabel = document.getElementById('homepassModalLabel');
-                const addBtn = document.getElementById('addHomepassBtn');
-
-                const storeUrl = "{{ route('sudirmanpark.storeHomepass') }}";
-
-                function setCreateMode() {
-                    homepassForm.action = storeUrl;
-                    hpMethod.value = 'POST';
-                    homepassForm.reset();
-                    hpId.value = '';
-                    hpStatus.value = 'Active';
-                    hpSaveBtn.textContent = 'Create Homepass';
-                    modalLabel.textContent = 'Tambah Homepass';
-                }
 
                 function setEditMode(btn) {
                     homepassForm.action = btn.dataset.updateUrl;
@@ -291,14 +278,6 @@
                     hpStatus.value = btn.dataset.status || 'Active';
                     hpSaveBtn.textContent = 'Update Homepass';
                     modalLabel.textContent = 'Edit Homepass';
-                }
-
-                if (addBtn) {
-                    addBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        setCreateMode();
-                        homepassModal.show();
-                    });
                 }
 
                 document.querySelectorAll('.edit-homepass-btn').forEach(btn => {
@@ -374,7 +353,7 @@
                 });
 
                 // Delete homepass via AJAX
-                document.querySelectorAll('form[action*="homepass"]').forEach(form => {
+                document.querySelectorAll('form.delete-form').forEach(form => {
                     form.addEventListener('submit', function(e) {
                         e.preventDefault();
                         if (!confirm('Yakin ingin menghapus alamat ini?')) return;
@@ -406,7 +385,10 @@
                             .then(data => {
                                 if (!data) return;
                                 showToast('Berhasil dihapus');
-                                form.closest('tr').remove();
+                                // Pastikan kembali ke daftar untuk menghindari 404 setelah delete
+                                setTimeout(() => {
+                                    window.location.href = "{{ route('sudirmanpark.alamat') }}";
+                                }, 300);
                             })
                             .catch(() => alert('Gagal menghapus'));
                     });
