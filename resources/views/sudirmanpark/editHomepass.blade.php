@@ -5,9 +5,9 @@
 @section('content')
     <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 sudirmanpark-page">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="page-title mb-0">Edit Homepass</h1>
+            <h5 class="modal-title fw-bold fs-5">Edit Homepass</h5>
             <a href="{{ route('sudirmanpark.alamat') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Kembali
+                <i class="bi bi-arrow-left me-1"></i> Back
             </a>
         </div>
 

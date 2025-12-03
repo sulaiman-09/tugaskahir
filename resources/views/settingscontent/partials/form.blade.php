@@ -3,13 +3,14 @@
 {{-- Error box untuk validasi AJAX --}}
 <div class="alert alert-danger d-none" data-error-box></div>
 
-<form action="{{ route('settings-content.update', $content->id) }}" method="POST" enctype="multipart/form-data" class="settings-content-form">
+<form action="{{ route('settings-content.update', $content->id) }}" method="POST" enctype="multipart/form-data"
+    class="settings-content-form">
     @csrf
     @method('PUT')
 
     {{-- Data Utama --}}
     <div class="mb-4">
-        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Main Data</h6>
+        <h6 class="fw-bold ps-2 mb-3" style="color:black; border-left: 3px solid #000;">Main Data</h6>
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold small">Content Type <span class="text-danger">*</span></label>
@@ -36,14 +37,14 @@
 
     {{-- Deskripsi --}}
     <div class="mb-4">
-        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Description</h6>
+        <h6 class="fw-bold ps-2 mb-3" style="color:black; border-left: 3px solid #000;">Description</h6>
         <textarea name="description" class="form-control rounded-3 shadow-sm border-0 bg-white" rows="4"
             placeholder="Enter description...">{{ old('description', $content->description) }}</textarea>
     </div>
 
     {{-- Media --}}
     <div class="mb-4">
-        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Media</h6>
+        <h6 class="fw-bold ps-2 mb-3" style="color:black; border-left: 3px solid #000;">Media</h6>
         <div class="row g-3">
             {{-- Image --}}
             <div class="col-md-6">
@@ -75,22 +76,17 @@
 
     {{-- Status --}}
     <div class="mb-4">
-        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Status</h6>
+        <h6 class="fw-bold ps-2 mb-3" style="color:black; border-left: 3px solid #000;">Status</h6>
         <div class="form-check form-switch ms-3">
-            <input type="checkbox" name="is_active" class="form-check-input" {{ old('is_active', $content->is_active) ? 'checked' : '' }}>
+            <input type="checkbox" name="is_active" class="form-check-input"
+                {{ old('is_active', $content->is_active) ? 'checked' : '' }}>
             <label class="form-check-label fw-semibold small ms-2">Active</label>
         </div>
     </div>
 
     {{-- Tombol Aksi --}}
-    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
-        @unless($hideCancel)
-            <a href="{{ route('settings-content.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                Cancel
-            </a>
-        @endunless
-        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-            Update Content
-        </button>
+    <div class="modal-footer sticky-bottom bg-white" style="z-index: 2; border-top: 1px solid #f1f5f9;">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
     </div>
 </form>

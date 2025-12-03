@@ -22,7 +22,8 @@
                         <div class="d-flex align-items-center gap-2 flex-nowrap product-toolbar">
                             <div class="dropdown toolbar-item">
                                 <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center"
-                                    type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                    type="button" id="exportCategoryDropdown" data-bs-toggle="dropdown"
+                                    aria-expanded="false"
                                     style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
                                     <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                                 </button>
@@ -40,9 +41,9 @@
                                 <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                             </a>
 
-                            <button type="button" id="deleteSelectedCategories"
-                                class="btn btn-sm toolbar-btn toolbar-btn-danger toolbar-item">
-                                <i class="fa fa-trash"></i>
+                            <button type="button" id="deleteSelectedCategories" class="btn btn-sm toolbar-btn toolbar-item"
+                                style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                                <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
                                 <span class="btn-label">Delete Selected</span>
                             </button>
                         </div>
@@ -166,7 +167,8 @@
                                 <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('product.export.excel') }}">Export Excel</a></li>
+                                <li><a class="dropdown-item" href="{{ route('product.export.excel') }}">Export Excel</a>
+                                </li>
                                 <li><a class="dropdown-item" href="{{ route('product.export.pdf') }}">Export PDF</a></li>
                             </ul>
                         </div>
@@ -177,9 +179,9 @@
                             <i class="bi bi-bag-plus" style="color: #fff; font-size: 0.875rem;"></i>
                         </a>
 
-                        <button type="button" id="deleteSelectedProducts"
-                            class="btn btn-sm toolbar-btn toolbar-btn-danger toolbar-item">
-                            <i class="fa fa-trash"></i>
+                        <button type="button" id="deleteSelectedProducts" class="btn btn-sm toolbar-btn toolbar-item"
+                            style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                            <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
                             <span class="btn-label">Delete Selected</span>
                         </button>
                     </div>
@@ -197,9 +199,7 @@
                     </form>
 
                 </div>
-
             </div>
-
 
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -382,7 +382,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalTitle">Edit</h5>
+                    <h5 class="modal-title fw-bold fs-5" id="editModalTitle">Edit</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="editModalBody">

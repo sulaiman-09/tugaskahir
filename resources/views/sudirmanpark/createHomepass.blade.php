@@ -63,11 +63,15 @@
             </div>
 
             {{-- Save Button --}}
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                    <i class="bi bi-save me-1"></i> Save
-                </button>
-            </div>
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
+                        <a href="{{ route('sudirmanpark.alamat.index') }}"
+                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                            <i class="bi bi-save2 me-1"></i> Create Homepass
+                        </button>
+                    </div>
         </form>
     </div>
 @endsection

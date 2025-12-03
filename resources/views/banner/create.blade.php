@@ -18,11 +18,11 @@
 
                     {{-- Data Utama --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Banner Information</h6>
+                        <h6 class="fw-semibold text-dark border-start border-3 ps-2 mb-3">Banner Information</h6>
                         <div class="row g-3">
                             {{-- Banner Name --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">
+                                <label class="form-label fw-semibold small text-dark">
                                     Banner Name <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="name"
@@ -32,12 +32,10 @@
 
                             {{-- Status --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">
+                                <label class="form-label fw-semibold small text-dark">
                                     Status <span class="text-danger">*</span>
                                 </label>
-                                <select name="is_active"
-                                    class="form-select rounded-3 shadow-sm border-0 bg-white"
-                                    required>
+                                <select name="is_active" class="form-select rounded-3 shadow-sm border-0 bg-white" required>
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
@@ -47,18 +45,18 @@
 
                     {{-- Upload Gambar --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Banner Images</h6>
+                        <h6 class="fw-semibold text-dark border-start border-3 ps-2 mb-3">Banner Images</h6>
                         <div class="row g-3">
                             {{-- Web Image --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Web Image</label>
+                                <label class="form-label fw-semibold small text-dark">Web Image</label>
                                 <input type="file" name="web_image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
 
                             {{-- Mobile Image --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Mobile Image</label>
+                                <label class="form-label fw-semibold small text-dark">Mobile Image</label>
                                 <input type="file" name="mobile_image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
@@ -67,19 +65,18 @@
 
                     {{-- Tombol Aksi --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
-                        <a href="{{ route('banner.index') }}"
-                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                            Cancel
+                        <a href="{{ route('banner.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
                         </a>
-                        <button type="submit"
-                            class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Create Banner
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                            <i class="bi bi-save2 me-1"></i> Create Banner
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 
     {{-- STYLE TAMBAHAN --}}
     <style>

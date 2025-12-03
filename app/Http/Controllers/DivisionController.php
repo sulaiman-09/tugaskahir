@@ -84,12 +84,9 @@ class DivisionController extends Controller
     // Menampilkan form tambah division
     public function create()
     {
-    $categories = Category::all();
-    $products   = Product::all();
-    $divisions  = Division::all();
-
-    return view('customer.create', compact('categories', 'products', 'divisions'));
+        return view('division.create');
     }
+
 
     // Menyimpan data baru ke tabel divisions
     public function store(Request $request)
