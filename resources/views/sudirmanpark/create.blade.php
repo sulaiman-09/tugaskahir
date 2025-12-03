@@ -109,10 +109,14 @@
                     </div>
 
                     {{-- Action Buttons --}}
-                    <div class="d-flex justify-content-end mt-3">
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
                         <a href="{{ route('sudirmanpark.index') }}"
-                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold me-2">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">Create</button>
+                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
+                            <i class="bi bi-save2 me-1"></i> Create Customer
+                        </button>
                     </div>
                 </form>
             </div>

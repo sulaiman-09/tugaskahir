@@ -124,7 +124,6 @@
                             type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; min-width: 44px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
-                            <span class="btn-label ms-1">Export</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('customer.export.excel') }}">Export Excel</a></li>
@@ -137,21 +136,18 @@
                         class="btn btn-sm toolbar-btn toolbar-btn-primary d-flex align-items-center justify-content-center"
                         title="Tambah Customer">
                         <i class="bi bi-person-plus" style="color: #fff; font-size: 1rem;"></i>
-                        <span class="btn-label ms-1">Add</span>
-                        <span class="d-sm-none visually-hidden">Add</span>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger"
-                        title="Delete selected">
-                        <i class="fa-solid fa-list-check" style="color: #b91c1c;"></i>
-                        <span class="btn-label ms-1">Delete</span>
-                        <span class="d-sm-none visually-hidden">Delete</span>
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
+                        style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
+                        <span class="btn-label">Delete Selected</span>
                     </button>
 
                     <!-- Toggle Coordinates -->
-                    <button id="toggle-coordinates" type="button"
-                        class="btn btn-sm toolbar-btn toolbar-btn-ghost" title="Toggle coordinates">
+                    <button id="toggle-coordinates" type="button" class="btn btn-sm toolbar-btn toolbar-btn-ghost"
+                        title="Toggle coordinates">
                         <i class="bi bi-geo-alt"></i>
                         <span class="btn-label ms-1">Coords</span>
                         <span class="d-sm-none visually-hidden">Coordinates</span>
@@ -198,7 +194,8 @@
                             @forelse($customer_leads as $index => $customer_lead)
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="customer-checkbox" value="{{ $customer_lead->id }}">
+                                        <input type="checkbox" class="customer-checkbox"
+                                            value="{{ $customer_lead->id }}">
                                     </td>
 
                                     <td>{{ $customer_leads->firstItem() + $index }}</td>
@@ -254,7 +251,7 @@
 
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                        <button type="button" class="btn btn-warning btn-sm btn-edit-customer"
+                                            <button type="button" class="btn btn-warning btn-sm btn-edit-customer"
                                                 title="Edit" data-id="{{ $customer_lead->id }}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
@@ -365,7 +362,7 @@
 
     @endsection
 
-        @push('styles')
+    @push('styles')
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <link rel="stylesheet" href="{{ asset('css/customer.css') }}">
     @endpush
@@ -375,112 +372,115 @@
     <div class="modal fade" id="customerEditModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Data Customer</h5>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold fs-5">Edit Customer Data</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="customerEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <div class="modal-body">
-                        <div class="mb-3">
+                    <div class="modal-body py-3">
+
+                        <div class="mb-4">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Nama Pelanggan</label>
+                                    <label class="form-label small">Customer Name</label>
                                     <input type="text" name="customer_name" id="cust-name"
                                         class="form-control rounded-3" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Nomor Telepon</label>
+                                    <label class="form-label small">Phone Number</label>
                                     <input type="text" name="customer_phone" id="cust-phone"
                                         class="form-control rounded-3" required>
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label fw-semibold small">Alamat Lengkap</label>
+                                    <label class="form-label small">Full Address</label>
                                     <textarea name="address" id="cust-address" class="form-control rounded-3" rows="2" required></textarea>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Email</label>
+                                    <label class="form-label small">Email</label>
                                     <input type="email" name="email" id="cust-email"
                                         class="form-control rounded-3">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Kode Referral</label>
+                                    <label class="form-label small">Referral Code</label>
                                     <input type="text" name="referral_code" id="cust-referral"
                                         class="form-control rounded-3">
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label fw-semibold small">Customer Address</label>
+                                    <label class="form-label small">Customer Address</label>
                                     <textarea name="customer_address" id="cust-customer_address" class="form-control rounded-3" rows="2"></textarea>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Latitude</label>
+                                    <label class="form-label small">Latitude</label>
                                     <input type="text" name="latitude" id="cust-latitude"
                                         class="form-control rounded-3">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">Longitude</label>
+                                    <label class="form-label small">Longitude</label>
                                     <input type="text" name="longitude" id="cust-longitude"
                                         class="form-control rounded-3">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
+                            <h6 class="fw-semibold mb-3">Region</h6>
                             <div class="row g-3">
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">Provinsi</label>
+                                    <label class="form-label small">Province</label>
                                     <select id="cust-province" name="province" class="form-select rounded-3"
                                         required></select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">Kota/Kabupaten</label>
+                                    <label class="form-label small">City / Regency</label>
                                     <select id="cust-city" name="city" class="form-select rounded-3"></select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">Kecamatan</label>
+                                    <label class="form-label small">District</label>
                                     <select id="cust-district" name="district"
                                         class="form-select rounded-3"></select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">Kelurahan/Desa</label>
+                                    <label class="form-label small">Village</label>
                                     <select id="cust-village" name="village" class="form-select rounded-3"></select>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
+                            <h6 class="fw-semibold mb-3">Product Information</h6>
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold small">Division</label>
+                                    <label class="form-label small">Division</label>
                                     <select name="division" id="cust-division" class="form-select rounded-3">
-                                        <option value="">Pilih Division</option>
+                                        <option value="">Select Division</option>
                                         <option value="Marketing">Marketing</option>
                                         <option value="Sales Retail">Sales Retail</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold small">Kategori Produk</label>
+                                    <label class="form-label small">Product Category</label>
                                     <select name="product_category" id="cust-product_category"
                                         class="form-select rounded-3">
-                                        <option value="">Pilih Kategori</option>
+                                        <option value="">Select Category</option>
                                         @foreach ($categories as $cat)
                                             <option value="{{ $cat->name }}">{{ $cat->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold small">Produk</label>
+                                    <label class="form-label small">Product</label>
                                     <select name="product" id="cust-product" class="form-select rounded-3">
-                                        <option value="">Pilih Produk</option>
+                                        <option value="">Select Product</option>
                                         @foreach ($products as $prod)
                                             <option value="{{ $prod->id }}">{{ $prod->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-semibold small">Coverage</label>
+                                    <label class="form-label small">Coverage</label>
                                     <select name="coverage" id="cust-coverage" class="form-select rounded-3">
-                                        <option value="">Pilih Coverage</option>
+                                        <option value="">Select Coverage</option>
                                         <option value="Cover">Cover</option>
                                         <option value="Uncover">Uncover</option>
                                     </select>
@@ -488,15 +488,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer sticky-bottom bg-white"
+                        style="z-index: 2; border-top: 1px solid #f1f5f9;">
                         <button type="button" class="btn btn-secondary btn-sm"
-                            data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 
     @push('scripts')
         <script>
@@ -517,10 +519,10 @@
                         const districtSelect = document.getElementById('cust-district');
                         const villageSelect = document.getElementById('cust-village');
 
-                        provinceSelect.innerHTML = '<option value="">Pilih Provinsi</option>';
-                        citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
-                        districtSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
-                        villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+                        provinceSelect.innerHTML = '<option value="">Select Province</option>';
+                        citySelect.innerHTML = '<option value="">Select City/Regency</option>';
+                        districtSelect.innerHTML = '<option value="">Select District</option>';
+                        villageSelect.innerHTML = '<option value="">Select Village</option>';
 
                         fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
                             .then(res => res.json())
@@ -544,7 +546,7 @@
                             });
 
                         function loadCities(provinceId, selectedCity) {
-                            citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                            citySelect.innerHTML = '<option value="">Select City/Regency</option>';
                             fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`)
                                 .then(res => res.json())
                                 .then(cities => {
@@ -566,7 +568,7 @@
                         }
 
                         function loadDistricts(cityId, selectedDistrict) {
-                            districtSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                            districtSelect.innerHTML = '<option value="">Select District</option>';
                             fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cityId}.json`)
                                 .then(res => res.json())
                                 .then(districts => {
@@ -588,7 +590,7 @@
                         }
 
                         function loadVillages(districtId, selectedVillage) {
-                            villageSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
+                            villageSelect.innerHTML = '<option value="">Select Village</option>';
                             fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${districtId}.json`)
                                 .then(res => res.json())
                                 .then(villages => {
@@ -663,14 +665,14 @@
                                     modal.show();
                                 }).catch(err => {
                                     console.error(err);
-                                    Swal.fire('Error', 'Gagal mengambil data customer', 'error');
+                                    Swal.fire('Error', 'Failed to fetch customer data', 'error');
                                 });
                         });
                     });
 
                     form.addEventListener('submit', function(e) {
                         e.preventDefault();
-                        if (!currentId) return Swal.fire('Error', 'ID tidak tersedia', 'error');
+                        if (!currentId) return Swal.fire('Error', 'ID not available', 'error');
 
                         const fd = new FormData(form);
                         fd.append('_method', 'PUT');
@@ -693,18 +695,19 @@
                                     modal.hide();
                                     Swal.fire({
                                             icon: 'success',
-                                            title: 'Berhasil',
-                                            text: json.message || 'Perubahan disimpan'
+                                            title: 'Success',
+                                            text: json.message || 'Changes saved'
                                         })
                                         .then(() => window.location.reload());
                                 } else {
-                                    const msg = json.message || 'Gagal menyimpan. Cek input.';
-                                    Swal.fire('Gagal', msg, 'error');
+                                    const msg = json.message ||
+                                        'Failed to save. Please check your input.';
+                                    Swal.fire('Failed', msg, 'error');
                                 }
                             })
                             .catch(err => {
                                 console.error(err);
-                                Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                                Swal.fire('Error', 'Server error occurred', 'error');
                             });
                     });
                 }
@@ -713,6 +716,7 @@
             });
         </script>
     @endpush
+
 
     <!-- Map Modal -->
     <div class="modal fade" id="mapDetailModal" tabindex="-1" aria-hidden="true">

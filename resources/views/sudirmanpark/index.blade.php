@@ -342,100 +342,102 @@
             </script>
         @endpush
 
-        {{-- Edit modal untuk Sudirman Park (AJAX) --}}
+        {{-- Edit modal for Sudirman Park (AJAX) --}}
         <div class="modal fade" id="sudirmanEditModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header sticky-top bg-white"
                         style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
-                        <h5 class="modal-title mb-0">Edit Customer</h5>
+                        <h5 class="modal-title fw-bold fs-5">Edit Sudirman Park Customer</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <form id="sudirmanEditForm" enctype="multipart/form-data">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-top: 1rem;">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Nama</label>
-                                    <input type="text" name="name" id="edit-name"
-                                        class="form-control form-control-sm" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Telepon</label>
-                                    <input type="text" name="phone" id="edit-phone"
-                                        class="form-control form-control-sm" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" id="edit-email"
-                                        class="form-control form-control-sm">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Tower</label>
-                                    <input type="text" name="tower" id="edit-tower"
-                                        class="form-control form-control-sm" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Paket</label>
-                                    <select name="package" id="edit-package" class="form-select form-select-sm"
-                                        required>
-                                        <option value="">Pilih Paket</option>
-                                        <option value="Test Package - Rp 500.000">Test Package - Rp 500.000</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Status</label>
-                                    <select name="status" id="edit-status" class="form-select form-select-sm"
-                                        required>
-                                        <option value="registration">Registration</option>
-                                        <option value="processed">Processed</option>
-                                        <option value="approved">Approved</option>
-                                        <option value="cancelled">Cancelled</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Catatan</label>
-                                    <textarea name="note" id="edit-note" class="form-control form-control-sm" rows="2"></textarea>
-                                </div>
+<form id="sudirmanEditForm" enctype="multipart/form-data">
+    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-top: 1rem;">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Name</label>
+                <input type="text" name="name" id="edit-name"
+                    class="form-control form-control-sm" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Phone</label>
+                <input type="text" name="phone" id="edit-phone"
+                    class="form-control form-control-sm" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" name="email" id="edit-email"
+                    class="form-control form-control-sm">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Tower</label>
+                <input type="text" name="tower" id="edit-tower"
+                    class="form-control form-control-sm" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Package</label>
+                <select name="package" id="edit-package" class="form-select form-select-sm"
+                    required>
+                    <option value="">Select Package</option>
+                    <option value="Test Package - Rp 500.000">Test Package - Rp 500.000</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Status</label>
+                <select name="status" id="edit-status" class="form-select form-select-sm"
+                    required>
+                    <option value="registration">Registration</option>
+                    <option value="processed">Processed</option>
+                    <option value="approved">Approved</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold">Notes</label>
+                <textarea name="note" id="edit-note" class="form-control form-control-sm" rows="2"
+                    placeholder="Write a note if needed..."></textarea>
+            </div>
 
-                                <div class="col-12">
-                                    <label class="form-label">Foto KTP</label>
-                                    <div id="current-ktp-area" class="mb-2"></div>
-                                    <input type="file" name="ktp" id="edit-ktp"
-                                        class="form-control form-control-sm" accept="image/*,.pdf">
-                                    <div id="edit-ktp-preview" class="mt-2"></div>
-                                </div>
-                                @if (\Illuminate\Support\Facades\Schema::hasColumn('sudirman_parks', 'visible'))
-                                    <div class="col-12">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="edit-visible"
-                                                name="visible">
-                                            <label class="form-check-label fw-semibold small"
-                                                for="edit-visible">Tampilkan
-                                                di
-                                                daftar</label>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="modal-footer sticky-bottom bg-white"
-                            style="z-index: 2; border-top: 1px solid #f1f5f9;">
-                            <button type="button" class="btn btn-secondary btn-sm"
-                                data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary btn-sm">Simpan Perubahan</button>
-                        </div>
-                    </form>
+            <div class="col-12">
+                <label class="form-label fw-semibold">National ID Photo (KTP)</label>
+                <div id="current-ktp-area" class="mb-2"></div>
+                <input type="file" name="ktp" id="edit-ktp"
+                    class="form-control form-control-sm" accept="image/*,.pdf">
+                <div id="edit-ktp-preview" class="mt-2"></div>
+            </div>
+
+            @if (\Illuminate\Support\Facades\Schema::hasColumn('sudirman_parks', 'visible'))
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="edit-visible"
+                            name="visible">
+                        <label class="form-check-label fw-semibold small" for="edit-visible">Show
+                            in list</label>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+    <div class="modal-footer sticky-bottom bg-white"
+        style="z-index: 2; border-top: 1px solid #f1f5f9;">
+        <button type="button" class="btn btn-secondary btn-sm"
+            data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+    </div>
+</form>
+
                 </div>
             </div>
         </div>
+
 
         @push('scripts')
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     function init() {
-                        // tunggu bootstrap modal tersedia
+                        // wait for bootstrap modal to be available
                         if (typeof bootstrap === 'undefined' || !document.getElementById('sudirmanEditModal')) {
                             return setTimeout(init, 100);
                         }
@@ -445,7 +447,7 @@
                         const form = document.getElementById('sudirmanEditForm');
                         let currentId = null;
 
-                        // buka modal saat tombol edit diklik
+                        // open modal when edit button is clicked
                         document.querySelectorAll('.btn-edit-ajax').forEach(btn => {
                             btn.addEventListener('click', function() {
                                 const id = this.dataset.id;
@@ -461,7 +463,7 @@
                                         document.getElementById('edit-phone').value = data.phone || '';
                                         document.getElementById('edit-email').value = data.email || '';
                                         document.getElementById('edit-tower').value = data.tower || '';
-                                        // set package select if exists
+
                                         const pkg = document.getElementById('edit-package');
                                         if (pkg) {
                                             pkg.value = data.package || '';
@@ -481,17 +483,19 @@
                                             const link = document.createElement('a');
                                             link.href = `/storage/ktp/${data.ktp}`;
                                             link.target = '_blank';
-                                            link.textContent = 'Lihat KTP saat ini';
+                                            link.textContent = 'View current ID Card';
                                             link.className = 'me-2';
                                             currentArea.appendChild(link);
 
-                                            // Hapus KTP button (AJAX)
+                                            // delete file button
                                             const delBtn = document.createElement('button');
                                             delBtn.type = 'button';
                                             delBtn.className = 'btn btn-sm btn-outline-danger';
-                                            delBtn.textContent = 'Hapus KTP';
+                                            delBtn.textContent = 'Delete ID Card';
                                             delBtn.addEventListener('click', function() {
-                                                if (!confirm('Yakin ingin menghapus file KTP?'))
+                                                if (!confirm(
+                                                        'Are you sure you want to delete this file?'
+                                                        ))
                                                     return;
                                                 fetch(`/sudirmanpark/${id}/ktp`, {
                                                         method: 'DELETE',
@@ -499,8 +503,8 @@
                                                             'X-CSRF-TOKEN': document
                                                                 .querySelector(
                                                                     'meta[name="csrf-token"]'
-                                                                ).getAttribute(
-                                                                    'content'),
+                                                                    )
+                                                                .getAttribute('content'),
                                                             'X-Requested-With': 'XMLHttpRequest'
                                                         }
                                                     })
@@ -510,17 +514,17 @@
                                                             currentArea.innerHTML =
                                                                 '<span class="text-muted">No File</span>';
                                                             preview.innerHTML = '';
-                                                            Swal.fire('Berhasil',
-                                                                'File KTP dihapus',
+                                                            Swal.fire('Success',
+                                                                'ID Card deleted',
                                                                 'success');
                                                         } else {
-                                                            Swal.fire('Gagal',
-                                                                'Tidak dapat menghapus file',
+                                                            Swal.fire('Failed',
+                                                                'Unable to delete file',
                                                                 'error');
                                                         }
                                                     })
                                                     .catch(() => Swal.fire('Error',
-                                                        'Terjadi kesalahan', 'error'));
+                                                        'An error occurred', 'error'));
                                             });
                                             currentArea.appendChild(delBtn);
 
@@ -542,7 +546,6 @@
                                                 '<span class="text-muted">No File</span>';
                                         }
 
-                                        // visible checkbox
                                         const vis = document.getElementById('edit-visible');
                                         if (vis) {
                                             vis.checked = !!data.visible;
@@ -552,13 +555,14 @@
                                     })
                                     .catch(err => {
                                         console.error(err);
-                                        Swal.fire('Error', 'Gagal mengambil data. Cek console.',
+                                        Swal.fire('Error',
+                                            'Failed to fetch data. Check console.',
                                             'error');
                                     });
                             });
                         });
 
-                        // preview saat pilih file baru
+                        // preview when selecting new file
                         const ktpInput = document.getElementById('edit-ktp');
                         if (ktpInput) {
                             ktpInput.addEventListener('change', function(e) {
@@ -589,11 +593,11 @@
                             });
                         }
 
-                        // submit form via AJAX (FormData)
+                        // submit form AJAX
                         if (form) {
                             form.addEventListener('submit', function(e) {
                                 e.preventDefault();
-                                if (!currentId) return Swal.fire('Error', 'ID tidak ditemukan', 'error');
+                                if (!currentId) return Swal.fire('Error', 'ID not found', 'error');
 
                                 const fd = new FormData(form);
                                 fd.append('_method', 'PUT');
@@ -616,19 +620,19 @@
                                             editModal.hide();
                                             Swal.fire({
                                                     icon: 'success',
-                                                    title: 'Berhasil',
-                                                    text: json.message || 'Perubahan tersimpan'
+                                                    title: 'Success',
+                                                    text: json.message || 'Changes saved'
                                                 })
                                                 .then(() => window.location.href =
                                                     '{{ route('sudirmanpark.index') }}');
                                         } else {
-                                            const msg = json.message || 'Gagal menyimpan. Cek input.';
-                                            Swal.fire('Gagal', msg, 'error');
+                                            const msg = json.message || 'Failed to save. Check input.';
+                                            Swal.fire('Failed', msg, 'error');
                                         }
                                     })
                                     .catch(err => {
                                         console.error(err);
-                                        Swal.fire('Error', 'Terjadi kesalahan server', 'error');
+                                        Swal.fire('Error', 'Server error occurred', 'error');
                                     });
                             });
                         }
@@ -638,6 +642,8 @@
                 });
             </script>
         @endpush
+
+
         @push('scripts')
             <script>
                 // KTP preview modal logic

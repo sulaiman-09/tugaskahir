@@ -87,6 +87,7 @@ class DivisionController extends Controller
         return view('division.create');
     }
 
+
     // Menyimpan data baru ke tabel divisions
     public function store(Request $request)
     {

@@ -8,7 +8,7 @@
 
             {{-- Header --}}
             <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-semibold text-dark">Add New Division</h5>
+                <h5 class="mb-0 fw-semibold" style="color: #000;">Add New Division</h5>
             </div>
 
             {{-- Body --}}
@@ -18,7 +18,6 @@
 
                     {{-- Data Utama --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Division Information</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="name" class="form-label fw-semibold small">Division Name <span
@@ -34,9 +33,8 @@
                             <div class="col-md-6">
                                 <label for="status" class="form-label fw-semibold small">Active Status</label>
                                 <div class="form-check form-switch ms-2 mt-2">
-                                    <input type="checkbox" name="status" id="status"
-                                        class="form-check-input shadow-sm" value="1"
-                                        {{ old('status', true) ? 'checked' : '' }}>
+                                    <input type="checkbox" name="status" id="status" class="form-check-input shadow-sm"
+                                        value="1" {{ old('status', true) ? 'checked' : '' }}>
                                     <label for="status" class="form-check-label fw-semibold small">Active</label>
                                 </div>
                             </div>
@@ -45,7 +43,7 @@
 
                     {{-- Deskripsi --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Description</h6>
+                        <label for="status" class="form-label fw-semibold small">Description</label>
                         <textarea name="description" id="description"
                             class="form-control rounded-3 shadow-sm border-0 bg-white @error('description') is-invalid @enderror"
                             placeholder="Enter short description..." rows="3">{{ old('description') }}</textarea>
@@ -56,11 +54,12 @@
 
                     {{-- Tombol Aksi --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
-                        <a href="{{ route('division.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                            Cancel
+                        <a href="{{ route('division.index') }}"
+                            class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Create Division
+                            <i class="bi bi-save2 me-1"></i> Create Division
                         </button>
                     </div>
                 </form>

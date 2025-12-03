@@ -18,16 +18,18 @@
 
                     {{-- Data Utama --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">User Information</h6>
+                        <h6 class="fw-semibold text-dark border-start border-3 ps-2 mb-3">User Information</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Name <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small text-dark">Name <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" name="name"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Enter user name"
                                     required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Email <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold small text-dark">Email <span
+                                        class="text-danger">*</span></label>
                                 <input type="email" name="email"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     placeholder="Enter user email" required>
@@ -37,17 +39,17 @@
 
                     {{-- Password --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">Security</h6>
+                        <h6 class="fw-semibold text-dark border-start border-3 ps-2 mb-3">Security</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Password <span
+                                <label class="form-label fw-semibold small text-dark">Password <span
                                         class="text-danger">*</span></label>
                                 <input type="password" name="password"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white" placeholder="Enter password"
                                     required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small">Confirm Password <span
+                                <label class="form-label fw-semibold small text-dark">Confirm Password <span
                                         class="text-danger">*</span></label>
                                 <input type="password" name="password_confirmation"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
@@ -58,30 +60,31 @@
 
                     {{-- Role --}}
                     <div class="mb-4">
-                        <h6 class="fw-semibold text-primary border-start border-3 ps-2 mb-3">User Role</h6>
+                        <h6 class="fw-semibold text-dark border-start border-3 ps-2 mb-3">User Role</h6>
                         <div class="d-flex flex-wrap gap-4 ms-2">
                             @foreach (['admin', 'sales', 'report', 'Sudirman Park'] as $role)
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="role" id="{{ $role }}"
                                         value="{{ $role }}" required>
-                                    <label class="form-check-label fw-semibold small"
+                                    <label class="form-check-label fw-semibold small text-dark"
                                         for="{{ $role }}">{{ ucfirst($role) }}</label>
                                 </div>
                             @endforeach
                         </div>
                     </div>
 
+
                     {{-- Tombol Aksi --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
                         <a href="{{ route('users.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                            Cancel
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Create User
+                            <i class="bi bi-save2 me-1"></i> Create User
                         </button>
                     </div>
-                </form>
             </div>
+            </form>
         </div>
     </div>
 

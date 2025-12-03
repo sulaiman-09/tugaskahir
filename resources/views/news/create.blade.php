@@ -19,14 +19,14 @@
                     <div class="mb-4">
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <label class="form-label fw-semibold small text-primary">News Title <span
+                                <label class="form-label fw-semibold small text-dark">News Title <span
                                         class="text-danger">*</span></label>
                                 <input type="text" name="news_title" id="news_title"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     value="{{ old('news_title') }}" placeholder="Enter news title" required>
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label fw-semibold small text-primary">News Content <span
+                                <label class="form-label fw-semibold small text-dark">News Content <span
                                         class="text-danger">*</span></label>
                                 <textarea name="news_content" id="news_content" class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     rows="6" placeholder="Enter news content" required>{{ old('news_content') }}</textarea>
@@ -37,17 +37,17 @@
                     <div class="mb-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-primary">Web Image</label>
+                                <label class="form-label fw-semibold small text-dark">Web Image</label>
                                 <input type="file" name="news_image" id="news_image"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-primary">App Image</label>
+                                <label class="form-label fw-semibold small text-dark">App Image</label>
                                 <input type="file" name="news_image_app" id="news_image_app"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white">
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label fw-semibold small text-primary">Image Caption</label>
+                                <label class="form-label fw-semibold small text-dark">Image Caption</label>
                                 <input type="text" name="news_image_caption" id="news_image_caption"
                                     class="form-control rounded-3 shadow-sm border-0 bg-white"
                                     value="{{ old('news_image_caption') }}" placeholder="Enter image caption">
@@ -58,16 +58,17 @@
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
                         <a href="{{ route('news.index') }}" class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
-                            Cancel
+                            <i class="bi bi-arrow-left me-1"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-semibold shadow-sm">
-                            Create News
+                            <i class="bi bi-save2 me-1"></i> Create News
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 
     {{-- STYLE TAMBAHAN --}}
     <style>

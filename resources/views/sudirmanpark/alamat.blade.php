@@ -194,49 +194,50 @@
         </div>
 
         <!-- Modal: Create / Edit Homepass -->
-        <div class="modal fade" id="homepassModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
-                        <h5 class="modal-title" id="homepassModalLabel">+ Add Homepass</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form id="homepassForm" method="POST" action="{{ route('sudirmanpark.storeHomepass') }}">
-                        @csrf
-                        <input type="hidden" name="_method" id="hp_method" value="POST">
-                        <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding-top: 1rem;">
-                            <input type="hidden" name="id" id="hp_id">
-                            <div class="mb-3">
-                                <label class="form-label">Tower</label>
-                                <input type="text" name="tower" id="hp_tower" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Floor</label>
-                                <input type="text" name="floor" id="hp_floor" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Unit</label>
-                                <input type="text" name="unit" id="hp_unit" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Status</label>
-                                <select name="status" id="hp_status" class="form-select">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="hpSaveBtn">Create Homepass</button>
-                        </div>
-                    </form>
-                </div>
+<div class="modal fade" id="homepassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
+                <h5 class="modal-title fw-bold" id="homepassModalLabel">+ Add Homepass</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form id="homepassForm" method="POST" action="{{ route('sudirmanpark.storeHomepass') }}">
+                @csrf
+                <input type="hidden" name="_method" id="hp_method" value="POST">
+                <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding-top: 1rem;">
+                    <input type="hidden" name="id" id="hp_id">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tower</label>
+                        <input type="text" name="tower" id="hp_tower" class="form-control form-control-sm" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Floor</label>
+                        <input type="text" name="floor" id="hp_floor" class="form-control form-control-sm" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Unit</label>
+                        <input type="text" name="unit" id="hp_unit" class="form-control form-control-sm" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status" id="hp_status" class="form-select form-select-sm">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #f1f5f9;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="hpSaveBtn">Create Homepass</button>
+                </div>
+            </form>
         </div>
+    </div>
+</div>
+
 
         <!-- Toast -->
         <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
