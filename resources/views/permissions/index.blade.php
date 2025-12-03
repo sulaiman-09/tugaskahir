@@ -8,42 +8,46 @@
         <div class="card border-0 shadow-sm rounded-3">
 
             {{-- Header Card --}}
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 permission-header">
                 <!-- Judul kiri -->
-                <h3 class="fw-bold mb-0 text-dark">Permission Management</h3>
+                <h3 class="fw-bold mb-0 text-dark permission-title">Permission Management</h3>
+
+                <!-- Spacer -->
+                <div class="flex-grow-1"></div>
 
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1 permission-toolbar toolbar-scroll">
+                <div class="permission-toolbar">
                     <!-- Add Permission -->
                     <a href="{{ route('permissions.create') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
+                        class="btn btn-sm toolbar-btn-square d-flex align-items-center justify-content-center toolbar-item"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; position: relative;">
                         <i class="bi bi-key" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
                             style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelectedPermissions" class="btn btn-sm toolbar-btn toolbar-item"
+                    <button type="button" id="deleteSelectedPermissions" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                        title="Delete selected permissions" aria-label="Delete selected permissions"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                        <i class="fa fa-trash" style="color: #dc3545;"></i>
                     </button>
 
                     <!-- Search Form -->
-                    <div class="d-flex align-items-center toolbar-search" style="min-width: 260px; max-width: 400px;">
-                        <form action="{{ route('permissions.index') }}" method="GET" class="d-flex w-100">
+                    <form action="{{ route('permissions.index') }}" method="GET" class="permission-search">
+                        <div class="input-group input-group-sm w-100">
                             <input type="text" name="search" class="form-control form-control-sm"
                                 placeholder="Search permission name..." value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="fa fa-search"></i>
                             </button>
                             @if (request('search'))
-                                <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary btn-sm ms-2">
+                                <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary btn-sm">
                                     Clear
                                 </a>
                             @endif
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 

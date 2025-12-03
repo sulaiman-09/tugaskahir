@@ -7,42 +7,46 @@
         {{-- Card Utama --}}
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header Card --}}
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center gap-2">
+            <div class="card-header bg-white py-3 role-header">
                 <!-- Judul kiri -->
-                <h3 class="fw-bold mb-0 text-dark">Role Management</h3>
+                <h3 class="fw-bold mb-0 text-dark role-title">Role Management</h3>
+
+                <!-- Spacer -->
+                <div class="flex-grow-1"></div>
 
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 justify-content-end flex-grow-1 role-toolbar toolbar-scroll">
+                <div class="role-toolbar">
                     <!-- Add Role -->
                     <a href="{{ route('roles.create') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
+                        class="btn btn-sm toolbar-btn-square d-flex align-items-center justify-content-center toolbar-item"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; position: relative;">
                         <i class="bi bi-person-check" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
                             style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelectedRoles" class="btn btn-sm toolbar-btn toolbar-item"
+                    <button type="button" id="deleteSelectedRoles" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                        title="Delete selected roles" aria-label="Delete selected roles"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                        <i class="fa fa-trash" style="color: #dc3545;"></i>
                     </button>
 
                     <!-- Search Form -->
-                    <div class="d-flex align-items-center toolbar-search" style="min-width: 260px; max-width: 400px;">
-                        <form action="{{ route('roles.index') }}" method="GET" class="d-flex w-100">
+                    <form action="{{ route('roles.index') }}" method="GET" class="role-search">
+                        <div class="input-group input-group-sm w-100">
                             <input type="text" name="search" class="form-control form-control-sm"
                                 placeholder="Search role name..." value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary btn-sm ms-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="fa fa-search"></i>
                             </button>
                             @if (request('search'))
-                                <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary btn-sm ms-2">
+                                <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary btn-sm">
                                     Clear
                                 </a>
                             @endif
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 

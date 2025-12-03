@@ -13,41 +13,46 @@
             <div class="card border-0 shadow-sm rounded-3">
 
                 {{-- Header --}}
-                <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="card-header bg-white py-3 user-header">
 
                     {{-- Kiri: Judul --}}
-                    <h3 class="fw-bold mb-0">User Management</h3>
+                    <h3 class="fw-bold mb-0 user-title">User Management</h3>
+
+                    {{-- Spacer --}}
+                    <div class="flex-grow-1"></div>
 
                     {{-- Kanan: Tombol + Search --}}
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="user-toolbar">
 
                         {{-- Tombol Add --}}
-                        <a href="{{ route('users.create') }}" class="btn btn-sm d-flex align-items-center gap-1"
-                            style="background-color: #000; border: 1px solid #000; color: #fff; padding: 5px 6px; border-radius: 6px;">
+                        <a href="{{ route('users.create') }}"
+                            class="btn btn-sm toolbar-btn-square d-flex align-items-center justify-content-center toolbar-item"
+                            style="background-color: #000; border: 1px solid #000; color: #fff;">
                             <i class="bi bi-person" style="color: #fff; font-size: 1rem;"></i>
                             <i class="bi bi-plus-lg" style="color: #fff; font-size: 0.9rem;"></i>
                         </a>
 
                         {{-- Tombol Delete --}}
-                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn"
+                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                            title="Delete selected users" aria-label="Delete selected users"
                             style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                            <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                            <i class="fa fa-trash" style="color: #dc3545;"></i>
                         </button>
 
                         {{-- Search --}}
-                        <div class="d-flex align-items-center" style="min-width: 260px; max-width: 400px;">
-                            <form action="{{ route('users.index') }}" method="GET" class="d-flex w-100">
+                        <form action="{{ route('users.index') }}" method="GET" class="user-search">
+                            <div class="input-group input-group-sm w-100">
                                 <input type="text" name="search" class="form-control form-control-sm"
                                     placeholder="Search name or email..." value="{{ request('search') }}">
-                                <button type="submit" class="btn btn-primary btn-sm ms-2"><i
+                                <button type="submit" class="btn btn-primary btn-sm"><i
                                         class="fa fa-search"></i></button>
                                 @if (request('search'))
                                     <a href="{{ route('users.index') }}"
-                                        class="btn btn-outline-secondary btn-sm ms-2">Clear</a>
+                                        class="btn btn-outline-secondary btn-sm">Clear</a>
                                 @endif
                                 <input type="hidden" name="per_page" value="{{ request('per_page', 15) }}">
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
 

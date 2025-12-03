@@ -7,22 +7,23 @@
 
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header Card --}}
-            <div class="card-header bg-white py-3 d-flex align-items-center">
+            <div class="card-header bg-white py-3 banner-header">
 
                 <!-- Judul di kiri -->
-                <h3 class="fw-bold mb-0">Data Banner</h3>
+                <h3 class="fw-bold mb-0 banner-title">Data Banner</h3>
 
                 <!-- Spacer agar tombol pindah ke kanan -->
                 <div class="flex-grow-1"></div>
 
                 <!-- Toolbar di kanan -->
-                <div class="d-flex gap-2 align-items-center flex-nowrap" style="white-space: nowrap;">
+                <div class="banner-toolbar">
 
                     <!-- Export Dropdown -->
                     <div class="dropdown toolbar-item">
-                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
-                            id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                        <button
+                            class="btn btn-sm toolbar-btn toolbar-btn-square d-flex align-items-center justify-content-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: white; border: 1px solid #000; color: #000;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
 
@@ -40,22 +41,23 @@
 
                     <!-- Add Banner -->
                     <a href="{{ route('banner.create') }}"
-                        class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px; position: relative; width: 36px; height: 36px;">
-                        <i class="bi bi-image" style="color: #fff; font-size: 1.2rem;"></i>
+                        class="btn btn-sm toolbar-btn toolbar-btn-square d-flex align-items-center justify-content-center toolbar-item"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; position: relative;">
+                        <i class="bi bi-image" style="color: #fff;"></i>
                         <span
                             style="position: absolute; top: -2px; right: -2px; background: #fff; color: #000; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">+</span>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
+                    <button type="button" id="deleteSelected"
+                        class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item" title="Delete selected banners"
+                        aria-label="Delete selected banners"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                        <i class="fa fa-trash" style="color: #dc3545;"></i>
                     </button>
 
                     <!-- Search Form -->
-                    <form action="{{ route('banner.index') }}" method="GET" class="d-flex align-items-center"
-                        style="max-width:300px; width:100%">
+                    <form action="{{ route('banner.index') }}" method="GET" class="toolbar-search">
                         <div class="input-group input-group-sm w-100">
                             <input type="text" name="search" class="form-control form-control-sm"
                                 placeholder="Search name" value="{{ request('search') }}">

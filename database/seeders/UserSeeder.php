@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Seed demo users such as admin and sales.
      */
     public function run(): void
     {
@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin Utama',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('123456'), // Password di-hash
-            'role' => 'admin', // Pastikan kolom role ada di tabel users
+            'role' => 'admin',
         ]);
-        
+
         // Membuat User Sales (Contoh tambahan)
         User::create([
             'name' => 'Sales Staff',

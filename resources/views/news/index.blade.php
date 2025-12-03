@@ -7,22 +7,22 @@
 
         <div class="card border-0 shadow-sm rounded-3">
             {{-- Header --}}
-            <div class="card-header bg-white py-3 d-flex align-items-center">
+            <div class="card-header bg-white py-3 news-header">
 
                 <!-- Judul kiri -->
-                <h3 class="fw-bold mb-0 text-dark">News Management</h3>
+                <h3 class="fw-bold mb-0 text-dark news-title">News Management</h3>
 
                 <!-- Spacer -->
                 <div class="flex-grow-1"></div>
 
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 flex-nowrap" style="white-space: nowrap;">
+                <div class="news-toolbar">
 
                     <!-- Export Dropdown -->
                     <div class="dropdown toolbar-item">
-                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
+                        <button class="btn btn-sm toolbar-btn toolbar-btn-square d-flex align-items-center justify-content-center" type="button"
                             id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px;">
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
                         <ul class="dropdown-menu">
@@ -33,27 +33,29 @@
 
                     <!-- Add News -->
                     <a href="{{ route('news.create') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative;">
+                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-btn-square toolbar-item"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px; position: relative;">
                         <i class="bi bi-file-text" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
                             style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                        title="Delete selected news" aria-label="Delete selected news"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                        <i class="fa fa-trash" style="color: #dc3545;"></i>
                     </button>
 
                     <!-- Search Form -->
-                    <form action="{{ route('news.index') }}" method="GET" class="d-flex align-items-center"
-                        style="max-width:280px; width:100%;">
-                        <input type="text" name="search" class="form-control form-control-sm"
-                            placeholder="Search title, caption, or admin..." value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
+                    <form action="{{ route('news.index') }}" method="GET" class="news-search">
+                        <div class="input-group input-group-sm w-100">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search title, caption, or admin..." value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                     </form>
 
                 </div>

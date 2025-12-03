@@ -14,6 +14,64 @@
     transform: translate(0, 0) !important; /* Hilangkan lompatan */
 }
 
+.settingscontent-page .asset-cell {
+    min-width: 110px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.settingscontent-page .asset-cell .btn-outline-secondary {
+    min-width: 86px;
+    height: 32px;
+    padding: 4px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.settingscontent-page .actions-cell {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.settingscontent-page .asset-cell .badge-empty {
+    background-color: #f5f7fb;
+    color: #6c757d;
+    border: 1px dashed #cbd3e2;
+    font-size: 0.78rem;
+    padding: 5px 10px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 86px;
+    margin: 0 auto;
+}
+
+.settingscontent-page .settings-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.settingscontent-page .settings-title {
+    margin-bottom: 0;
+}
+
+.settingscontent-page .toolbar-btn-square {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    border-radius: 8px;
+    padding: 0 !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
 .settingscontent-page .toolbar-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -24,6 +82,9 @@
 }
 
 .settingscontent-page .settings-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     flex-wrap: wrap;
     overflow: visible;
 }
@@ -35,9 +96,20 @@
 .settingscontent-page .toolbar-search {
     min-width: 260px;
     max-width: 420px;
+    width: auto;
+}
+
+.settingscontent-page .settings-search {
+    min-width: 260px;
+    max-width: 420px;
+    width: auto;
 }
 
 @media (max-width: 992px) {
+    .settingscontent-page .settings-header {
+        align-items: flex-start;
+    }
+
     .settingscontent-page .settings-toolbar {
         justify-content: flex-start;
         gap: 0.6rem;
@@ -54,22 +126,50 @@
 }
 
 @media (max-width: 768px) {
+    .settingscontent-page .settings-header {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .settingscontent-page .settings-header .flex-grow-1 {
+        display: none;
+    }
+
+    .settingscontent-page .settings-title {
+        text-align: center;
+        width: 100%;
+    }
+
     .settingscontent-page .settings-toolbar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.6rem;
-        align-items: stretch;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 460px;
+        overflow: visible;
+        padding-bottom: 4px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .settingscontent-page .toolbar-item {
-        width: 100%;
+        flex: 0 0 auto;
+        width: auto;
         justify-content: center;
     }
 
-    .settingscontent-page .toolbar-search {
-        grid-column: 1 / -1;
-        width: 100%;
+    .settingscontent-page .toolbar-search,
+    .settingscontent-page .settings-search {
+        flex: 1 1 100%;
         min-width: 100%;
+        width: 100%;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
         margin-top: 0.25rem;
     }
 }

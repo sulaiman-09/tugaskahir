@@ -7,22 +7,22 @@
 
         {{-- Card Tabel --}}
         <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-white py-3 d-flex align-items-center">
+            <div class="card-header bg-white py-3 settings-header">
 
                 <!-- Judul kiri -->
-                <h3 class="fw-bold mb-0 text-dark">Settings Content</h3>
+                <h3 class="fw-bold mb-0 text-dark settings-title">Settings Content</h3>
 
                 <!-- Spacer -->
                 <div class="flex-grow-1"></div>
 
                 <!-- Toolbar kanan -->
-                <div class="d-flex align-items-center gap-2 flex-nowrap" style="white-space: nowrap;">
+                <div class="settings-toolbar">
 
                     <!-- Export Dropdown -->
                     <div class="btn-group toolbar-item">
-                        <button class="btn btn-sm toolbar-btn d-flex align-items-center justify-content-center" type="button"
+                        <button class="btn btn-sm toolbar-btn toolbar-btn-square d-flex align-items-center justify-content-center" type="button"
                             id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px; width: 36px; height: 36px; border-radius: 6px;">
+                            style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
                         <ul class="dropdown-menu">
@@ -35,27 +35,29 @@
 
                     <!-- Add Content -->
                     <a href="{{ route('settings-content.create') }}"
-                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-item"
-                        style="background-color: #000; border: 1px solid #000; color: #fff; width: 36px; height: 36px; padding: 6px 8px; position: relative; border-radius: 6px;">
+                        class="btn btn-sm d-flex align-items-center justify-content-center toolbar-btn-square toolbar-item"
+                        style="background-color: #000; border: 1px solid #000; color: #fff; padding: 6px 8px; position: relative;">
                         <i class="bi bi-file-text" style="color: #fff; font-size: 1rem;"></i>
                         <i class="bi bi-plus-lg"
                             style="color: #fff; font-size: 0.7rem; position: absolute; top: 2px; right: 2px;"></i>
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelectedContents" class="btn btn-sm toolbar-btn toolbar-item"
+                    <button type="button" id="deleteSelectedContents" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                        title="Delete selected contents" aria-label="Delete selected contents"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i> Delete Selected
+                        <i class="fa fa-trash" style="color: #dc3545;"></i>
                     </button>
 
                     <!-- Search Form -->
-                    <form action="{{ route('settings-content.index') }}" method="GET" class="d-flex align-items-center"
-                        style="max-width:280px; width:100%;">
-                        <input type="text" name="search" class="form-control form-control-sm"
-                            placeholder="Search title or name" value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary btn-sm ms-2">
-                            <i class="fa fa-search"></i>
-                        </button>
+                    <form action="{{ route('settings-content.index') }}" method="GET" class="settings-search">
+                        <div class="input-group input-group-sm w-100">
+                            <input type="text" name="search" class="form-control form-control-sm"
+                                placeholder="Search title or name" value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                         <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
                     </form>
 
@@ -105,7 +107,7 @@
                                             <span class="badge bg-secondary">Inactive</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="asset-cell">
                                         @if ($content->image_path)
                                             <button type="button" class="btn btn-outline-secondary content-preview-btn"
                                                 style="height: 28px; padding: 2px 6px; font-size: 0.75rem;"
@@ -113,11 +115,11 @@
                                                 View Image
                                             </button>
                                         @else
-                                            <span class="text-muted" style="font-size: 0.75rem;">No Image</span>
+                                            <span class="badge badge-empty">No Image</span>
                                         @endif
                                     </td>
 
-                                    <td>
+                                    <td class="asset-cell">
                                         @if ($content->icon_path)
                                             <button type="button" class="btn btn-outline-secondary content-preview-btn"
                                                 style="height: 28px; padding: 2px 6px; font-size: 0.75rem;"
@@ -125,10 +127,10 @@
                                                 View Icon
                                             </button>
                                         @else
-                                            <span class="text-muted" style="font-size: 0.75rem;">No Icon</span>
+                                            <span class="badge badge-empty">No Icon</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="actions-cell">
                                         <div class="d-flex justify-content-center gap-2">
                                             <button type="button" class="btn btn-warning btn-sm edit-content-btn"
                                                 data-url="{{ route('settings-content.edit', $content->id) }}"

@@ -49,6 +49,29 @@
     gap: 8px;
 }
 
+.division-page .division-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.division-page .division-title {
+    margin-bottom: 0;
+}
+
+.division-page .toolbar-btn-square {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    border-radius: 8px;
+    padding: 0 !important;
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
 .division-page .form-switch .form-check-input {
     cursor: pointer;
     transition: 0.3s;
@@ -68,6 +91,9 @@
 }
 
 .division-page .division-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     flex-wrap: wrap;
     overflow: visible;
 }
@@ -79,9 +105,14 @@
 .division-page .toolbar-search {
     min-width: 260px;
     max-width: 420px;
+    width: auto;
 }
 
 @media (max-width: 992px) {
+    .division-page .division-header {
+        align-items: flex-start;
+    }
+
     .division-page .division-toolbar {
         justify-content: flex-start;
         gap: 0.6rem;
@@ -98,22 +129,49 @@
 }
 
 @media (max-width: 768px) {
+    .division-page .division-header {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .division-page .division-header .flex-grow-1 {
+        display: none;
+    }
+
+    .division-page .division-title {
+        text-align: center;
+        width: 100%;
+    }
+
     .division-page .division-toolbar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.6rem;
-        align-items: stretch;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 460px;
+        overflow: visible;
+        padding-bottom: 4px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .division-page .toolbar-item {
-        width: 100%;
+        flex: 0 0 auto;
+        width: auto;
         justify-content: center;
     }
 
     .division-page .toolbar-search {
-        grid-column: 1 / -1;
+        flex: 1 1 100%;
         width: 100%;
         min-width: 100%;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
         margin-top: 0.25rem;
     }
 }
