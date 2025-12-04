@@ -64,7 +64,7 @@
 
             {{-- Save Button --}}
                     <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-4">
-                        <a href="{{ route('sudirmanpark.alamat.index') }}"
+                        <a href="{{ route('sudirmanpark.alamat') }}"
                             class="btn btn-outline-secondary px-4 rounded-3 fw-semibold">
                             <i class="bi bi-arrow-left me-1"></i> Cancel
                         </a>
