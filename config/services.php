@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'hospitality' => [
+        'base_url' => env('HOSPITALITY_BASE_URL'),
+        'api_key' => env('HOSPITALITY_API_KEY'), // optional Bearer token
+    ],
+
 ];

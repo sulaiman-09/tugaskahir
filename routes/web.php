@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
 
     // PRODUCT
     Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/product/synced', [ProductController::class, 'synced'])->name('product.synced');
+    Route::get('/product/api/remote', [ProductController::class, 'remoteIndex'])->name('product.remote');
     Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
     Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
     Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('product.edit');
@@ -241,3 +243,5 @@ Route::middleware('auth')->group(function () {
         return view('stats.customer-growth');
     })->name('stats.customer-growth-view');
 });
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');

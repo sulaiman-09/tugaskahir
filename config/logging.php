@@ -105,6 +105,13 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
+        'hospitality' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/hospitality.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'replace_placeholders' => true,
+        ],
+
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),

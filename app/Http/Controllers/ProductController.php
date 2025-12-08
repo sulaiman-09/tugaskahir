@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Services\HospitalityApi;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -67,6 +68,47 @@ class ProductController extends Controller
             'categoryPerPage',
             'productPerPage'
         ));
+    }
+
+    /**
+     * Contoh view produk dari database lokal (hasil sync).
+     */
+    public function synced(Request $request)
+    {
+        $products = Product::with('category')
+            ->when($request->get('search'), function ($q) use ($request) {
+                $term = $request->get('search');
+                $q->where('name', 'like', "%{$term}%")
+                    ->orWhere('speed', 'like', "%{$term}%");
+            })
+            ->orderByDesc('updated_at')
+            ->paginate(20);
+
+        return view('product.synced', compact('products'));
+    }
+
+    /**
+     * Ambil produk langsung dari API Hospitality dan tampilkan di view sederhana.
+     */
+    public function remoteIndex(HospitalityApi $api)
+    {
+        $apiError = null;
+        $apiProducts = [];
+        $apiRaw = null;
+
+        try {
+            $result = $api->getProducts();
+            $apiProducts = $result['data'] ?? [];
+            $apiRaw = $result['raw'] ?? null;
+        } catch (\Throwable $e) {
+            $apiError = $e->getMessage();
+        }
+
+        return view('product.remote', [
+            'apiProducts' => $apiProducts,
+            'apiRaw' => $apiRaw,
+            'apiError' => $apiError,
+        ]);
     }
 
 

@@ -6,6 +6,13 @@
 @section('content')
     <div class="container-fluid px-3 px-md-4 px-lg-5 py-4 product-page">
 
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="fw-bold mb-0">Product Management</h2>
+            <a href="{{ route('product.remote') }}" class="btn btn-outline-primary btn-sm">
+                View Live API Products
+            </a>
+        </div>
+
         {{-- ======================= --}}
         {{-- TABEL 1 : PRODUCT CATEGORY --}}
         {{-- ======================= --}}
