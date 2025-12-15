@@ -64,11 +64,11 @@ class NewsController extends Controller
 
         // Upload gambar jika ada
         if ($request->hasFile('news_image')) {
-            $validated['news_image'] = $request->file('news_image')->store('uploads/news', 'public');
+            $validated['news_image'] = $request->file('news_image')->store('news', 'public');
         }
 
         if ($request->hasFile('news_image_app')) {
-            $validated['news_image_app'] = $request->file('news_image_app')->store('uploads/news', 'public');
+            $validated['news_image_app'] = $request->file('news_image_app')->store('news', 'public');
         }
 
         // Tambahkan kolom wajib agar tidak error
@@ -118,7 +118,7 @@ class NewsController extends Controller
             if ($news->news_image && Storage::disk('public')->exists($news->news_image)) {
                 Storage::disk('public')->delete($news->news_image);
             }
-            $validated['news_image'] = $request->file('news_image')->store('uploads/news', 'public');
+            $validated['news_image'] = $request->file('news_image')->store('news', 'public');
         }
 
         // Hapus dan ganti gambar app jika upload baru
@@ -126,7 +126,7 @@ class NewsController extends Controller
             if ($news->news_image_app && Storage::disk('public')->exists($news->news_image_app)) {
                 Storage::disk('public')->delete($news->news_image_app);
             }
-            $validated['news_image_app'] = $request->file('news_image_app')->store('uploads/news', 'public');
+            $validated['news_image_app'] = $request->file('news_image_app')->store('news', 'public');
         }
 
         // Pastikan kolom admin dan user tetap tersimpan

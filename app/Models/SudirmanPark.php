@@ -27,4 +27,13 @@ class SudirmanPark extends Model
     protected $casts = [
         'visible' => 'boolean',
     ];
+
+    public function getKtpUrlAttribute(): ?string
+    {
+        if (!$this->ktp) {
+            return null;
+        }
+        $path = 'ktp/' . ltrim($this->ktp, '/');
+        return \Storage::disk('public')->exists($path) ? \Storage::url($path) : null;
+    }
 }

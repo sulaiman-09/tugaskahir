@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\SyncHospitalityData;
+use App\Console\Commands\MigrateLegacyAssets;
 use App\Jobs\SyncHospitalityDataJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         SyncHospitalityData::class,
+        MigrateLegacyAssets::class,
     ];
 
     protected function schedule(Schedule $schedule): void
