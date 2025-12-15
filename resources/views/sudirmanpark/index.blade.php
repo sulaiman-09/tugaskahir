@@ -263,80 +263,49 @@
 
         @push('scripts')
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    // Select all
-                    document.getElementById('selectAllCustomers').addEventListener('change', function() {
-                        document.querySelectorAll('.customer-checkbox').forEach(cb => cb.checked = this.checked);
-                    });
+                document.addEventListener('DOMContentLoaded', function() {
+                    const btnDelete = document.getElementById('deleteSelected');
+                    if (!btnDelete) return;
 
-                    // Bulk delete
-                    document.getElementById('deleteSelected').addEventListener('click', () => {
-                        const selected = Array.from(document.querySelectorAll('.customer-checkbox:checked')).map(
-                            cb => cb.value);
-                        if (selected.length === 0) return alert('Pilih minimal satu customer untuk dihapus.');
-                        if (!confirm(`Yakin ingin menghapus ${selected.length} customer terpilih?`)) return;
+                    btnDelete.addEventListener('click', function() {
+                        const selected = Array.from(
+                            document.querySelectorAll('.customer-checkbox:checked')
+                        ).map(cb => cb.value);
+
+                        if (selected.length === 0) {
+                            alert('Pilih minimal satu customer untuk dihapus.');
+                            return;
+                        }
+
+                        if (!confirm(`Yakin ingin menghapus ${selected.length} customer terpilih?`)) {
+                            return;
+                        }
 
                         fetch("{{ route('sudirmanpark.bulkDelete') }}", {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
-                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                    "Accept": "application/json"
                                 },
                                 body: JSON.stringify({
                                     ids: selected
                                 })
                             })
+
                             .then(res => res.json())
                             .then(data => {
                                 if (data.success) {
-                                    alert(data.message);
-                                    location.reload();
-                                } else alert(data.message);
+                                    alert(data.message ?? 'Berhasil menghapus customer terpilih.');
+                                    setTimeout(() => location.reload(), 800);
+                                } else {
+                                    alert(data.message ?? 'Gagal menghapus customer.');
+                                }
                             })
-                            .catch(() => alert('Terjadi kesalahan.'));
-                    });
-
-                    // Fix status badge update
-                    document.querySelectorAll('.status-change').forEach(select => {
-                        select.addEventListener('change', function() {
-                            const id = this.dataset.id;
-                            const status = this.value;
-                            const row = this.closest('tr');
-
-                            fetch(`/sudirmanpark/${id}/status`, {
-                                    method: 'PATCH',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        status
-                                    })
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        // Update status badge (td ke-9 sesuai kolom Status)
-                                        const badgeCell = row.querySelector('td:nth-child(9) span');
-                                        badgeCell.textContent = data.status.charAt(0).toUpperCase() +
-                                            data.status.slice(1);
-                                        badgeCell.className = 'badge ' + (
-                                            status === 'approved' ? 'bg-success' :
-                                            status === 'processed' ? 'bg-warning' :
-                                            status === 'registration' ? 'bg-info' :
-                                            status === 'cancelled' ? 'bg-danger' : ''
-                                        );
-
-                                        // Update status change info (td ke-11)
-                                        const statusChangeCell = row.querySelector('td:nth-child(11)');
-                                        statusChangeCell.textContent = data.status_change;
-                                    } else {
-                                        alert('Gagal mengubah status.');
-                                    }
-                                })
-                                .catch(() => alert('Terjadi kesalahan koneksi.'));
-                        });
+                            .catch(err => {
+                                console.error(err);
+                                alert('Terjadi kesalahan saat menghapus customer.');
+                            });
                     });
                 });
             </script>
@@ -352,81 +321,81 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-<form id="sudirmanEditForm" enctype="multipart/form-data">
-    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-    <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-top: 1rem;">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Name</label>
-                <input type="text" name="name" id="edit-name"
-                    class="form-control form-control-sm" required>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Phone</label>
-                <input type="text" name="phone" id="edit-phone"
-                    class="form-control form-control-sm" required>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Email</label>
-                <input type="email" name="email" id="edit-email"
-                    class="form-control form-control-sm">
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Tower</label>
-                <input type="text" name="tower" id="edit-tower"
-                    class="form-control form-control-sm" required>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Package</label>
-                <select name="package" id="edit-package" class="form-select form-select-sm"
-                    required>
-                    <option value="">Select Package</option>
-                    <option value="Test Package - Rp 500.000">Test Package - Rp 500.000</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Status</label>
-                <select name="status" id="edit-status" class="form-select form-select-sm"
-                    required>
-                    <option value="registration">Registration</option>
-                    <option value="processed">Processed</option>
-                    <option value="approved">Approved</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-            </div>
-            <div class="col-12">
-                <label class="form-label fw-semibold">Notes</label>
-                <textarea name="note" id="edit-note" class="form-control form-control-sm" rows="2"
-                    placeholder="Write a note if needed..."></textarea>
-            </div>
+                    <form id="sudirmanEditForm" enctype="multipart/form-data">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-top: 1rem;">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Name</label>
+                                    <input type="text" name="name" id="edit-name"
+                                        class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Phone</label>
+                                    <input type="text" name="phone" id="edit-phone"
+                                        class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Email</label>
+                                    <input type="email" name="email" id="edit-email"
+                                        class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Tower</label>
+                                    <input type="text" name="tower" id="edit-tower"
+                                        class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Package</label>
+                                    <select name="package" id="edit-package" class="form-select form-select-sm"
+                                        required>
+                                        <option value="">Select Package</option>
+                                        <option value="Test Package - Rp 500.000">Test Package - Rp 500.000</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Status</label>
+                                    <select name="status" id="edit-status" class="form-select form-select-sm"
+                                        required>
+                                        <option value="registration">Registration</option>
+                                        <option value="processed">Processed</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Notes</label>
+                                    <textarea name="note" id="edit-note" class="form-control form-control-sm" rows="2"
+                                        placeholder="Write a note if needed..."></textarea>
+                                </div>
 
-            <div class="col-12">
-                <label class="form-label fw-semibold">National ID Photo (KTP)</label>
-                <div id="current-ktp-area" class="mb-2"></div>
-                <input type="file" name="ktp" id="edit-ktp"
-                    class="form-control form-control-sm" accept="image/*,.pdf">
-                <div id="edit-ktp-preview" class="mt-2"></div>
-            </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">National ID Photo (KTP)</label>
+                                    <div id="current-ktp-area" class="mb-2"></div>
+                                    <input type="file" name="ktp" id="edit-ktp"
+                                        class="form-control form-control-sm" accept="image/*,.pdf">
+                                    <div id="edit-ktp-preview" class="mt-2"></div>
+                                </div>
 
-            @if (\Illuminate\Support\Facades\Schema::hasColumn('sudirman_parks', 'visible'))
-                <div class="col-12">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="edit-visible"
-                            name="visible">
-                        <label class="form-check-label fw-semibold small" for="edit-visible">Show
-                            in list</label>
-                    </div>
-                </div>
-            @endif
-        </div>
-    </div>
-    <div class="modal-footer sticky-bottom bg-white"
-        style="z-index: 2; border-top: 1px solid #f1f5f9;">
-        <button type="button" class="btn btn-secondary btn-sm"
-            data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
-    </div>
-</form>
+                                @if (\Illuminate\Support\Facades\Schema::hasColumn('sudirman_parks', 'visible'))
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="edit-visible"
+                                                name="visible">
+                                            <label class="form-check-label fw-semibold small" for="edit-visible">Show
+                                                in list</label>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="modal-footer sticky-bottom bg-white"
+                            style="z-index: 2; border-top: 1px solid #f1f5f9;">
+                            <button type="button" class="btn btn-secondary btn-sm"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                        </div>
+                    </form>
 
                 </div>
             </div>
@@ -495,7 +464,7 @@
                                             delBtn.addEventListener('click', function() {
                                                 if (!confirm(
                                                         'Are you sure you want to delete this file?'
-                                                        ))
+                                                    ))
                                                     return;
                                                 fetch(`/sudirmanpark/${id}/ktp`, {
                                                         method: 'DELETE',
@@ -503,7 +472,7 @@
                                                             'X-CSRF-TOKEN': document
                                                                 .querySelector(
                                                                     'meta[name="csrf-token"]'
-                                                                    )
+                                                                )
                                                                 .getAttribute('content'),
                                                             'X-Requested-With': 'XMLHttpRequest'
                                                         }

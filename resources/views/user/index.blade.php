@@ -33,10 +33,11 @@
                         </a>
 
                         {{-- Tombol Delete --}}
-                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
                             title="Delete selected users" aria-label="Delete selected users"
                             style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                            <i class="fa fa-trash" style="color: #dc3545;"></i>
+                            <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
+                            <span class="btn-label">Delete Selected</span>
                         </button>
 
                         {{-- Search --}}
@@ -44,11 +45,9 @@
                             <div class="input-group input-group-sm w-100">
                                 <input type="text" name="search" class="form-control form-control-sm"
                                     placeholder="Search name or email..." value="{{ request('search') }}">
-                                <button type="submit" class="btn btn-primary btn-sm"><i
-                                        class="fa fa-search"></i></button>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-search"></i></button>
                                 @if (request('search'))
-                                    <a href="{{ route('users.index') }}"
-                                        class="btn btn-outline-secondary btn-sm">Clear</a>
+                                    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm">Clear</a>
                                 @endif
                                 <input type="hidden" name="per_page" value="{{ request('per_page', 15) }}">
                             </div>

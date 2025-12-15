@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\ProductController as ApiProductController;
 use App\Http\Controllers\Api\CareerController as ApiCareerController;
 use App\Http\Controllers\Api\CustomerLeadController;
 use App\Http\Controllers\Api\BannerController as ApiBannerController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\CompanyDescriptionController as ApiCompanyDescripti
 use App\Http\Controllers\Api\LocationController as ApiLocationController;
 use App\Http\Controllers\Api\SudirmanParkApiController as ApiSudirmanParkApiController;
 use App\Http\Controllers\Api\SudirmanCustomerController as ApiSudirmanCustomerController;
+use App\Http\Controllers\Api\NewsController as ApiNewsController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +35,9 @@ Route::post('/hospitality/sync', function () {
     ]);
 });
 
+// Produk sinkronisasi (list produk lokal)
+Route::get('/products', [ApiProductController::class, 'index'])->name('api.products.synced');
+
 Route::prefix('careers')->group(function () {
     Route::get('/', [ApiCareerController::class, 'index'])->name('api.careers.index');
     Route::post('/', [ApiCareerController::class, 'store'])->name('api.careers.store');
@@ -45,8 +50,12 @@ Route::prefix('careers')->group(function () {
 Route::prefix('v1/web')->group(function () {
     Route::post('/customer-leads', [CustomerLeadController::class, 'store'])
         ->name('api.customer-leads.store');
+    Route::get('/products', [ApiProductController::class, 'index'])
+        ->name('api.products.index');
     Route::get('/banners', [ApiBannerController::class, 'index'])
         ->name('api.banners.index');
+    Route::get('/news', [ApiNewsController::class, 'index'])
+        ->name('api.news.index');
     Route::get('/products-register', [ApiProductRegisterController::class, 'index'])
         ->name('api.products-register.index');
     Route::get('/product-benefits', [ApiProductBenefitController::class, 'index'])

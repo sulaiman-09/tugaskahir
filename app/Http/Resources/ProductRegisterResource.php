@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ProductRegisterResource extends JsonResource
 {
@@ -13,12 +14,23 @@ class ProductRegisterResource extends JsonResource
      */
     public function toArray($request): array
     {
+        $webImage = $this->web_image ?? $this->path ?? null;
+        $appImage = $this->path_apps ?? null;
+
+        $webUrl = $webImage
+            ? (Storage::disk('public')->exists($webImage) ? Storage::url($webImage) : $webImage)
+            : null;
+
+        $appUrl = $appImage
+            ? (Storage::disk('public')->exists($appImage) ? Storage::url($appImage) : $appImage)
+            : null;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'price' => $this->price,
-            'path' => $this->web_image ?? $this->path ?? null,
-            'path_apps' => $this->path_apps ?? null,
+            'path' => $webUrl,
+            'path_apps' => $appUrl,
             'speed' => $this->speed,
             'description' => $this->description,
             'category' => [

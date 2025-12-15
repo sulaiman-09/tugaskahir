@@ -22,8 +22,9 @@
 
                     <!-- Export Dropdown -->
                     <div class="dropdown toolbar-item">
-                        <button class="btn btn-sm toolbar-btn toolbar-btn-square d-flex align-items-center justify-content-center" type="button"
-                            id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        <button
+                            class="btn btn-sm toolbar-btn toolbar-btn-square d-flex align-items-center justify-content-center"
+                            type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: white; border: 1px solid #000; color: #000; padding: 6px 8px;">
                             <i class="fa fa-print" style="color: #000; font-size: 1rem;"></i>
                         </button>
@@ -43,10 +44,11 @@
                     </a>
 
                     <!-- Delete Selected -->
-                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-square toolbar-item"
+                    <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
                         title="Delete selected careers" aria-label="Delete selected careers"
                         style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
-                        <i class="fa fa-trash" style="color: #dc3545;"></i>
+                        <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
+                        <span class="btn-label">Delete Selected</span>
                     </button>
 
                     <!-- Search Form -->

@@ -89,7 +89,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}', [SudirmanParkController::class, 'destroy'])->name('destroy');
 
             // 🗑️ Bulk Delete (Customer)
-            Route::post('/bulk-delete', [SudirmanParkController::class, 'bulkDelete'])->name('bulkDelete');
+            Route::post('/bulk-delete', [SudirmanParkController::class, 'bulkDeleteCustomer'])
+                ->name('bulkDelete');
 
             // 🗑️ Bulk Delete Homepass (Alamat Tower)
             Route::delete('/homepass/bulk-delete', [SudirmanParkController::class, 'bulkDeleteHomepass'])->name('bulkDeleteHomepass');

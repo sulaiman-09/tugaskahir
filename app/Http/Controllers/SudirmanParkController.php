@@ -553,18 +553,35 @@ class SudirmanParkController extends Controller
         }
     }
 
-    public function bulkDeleteHomepass(Request $request)
+    public function bulkDeleteCustomer(Request $request)
     {
-        $ids = $request->ids;
-        if (!$ids || !is_array($ids)) {
-            return response()->json(['success' => false, 'message' => 'Tidak ada data yang dipilih.']);
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || count($ids) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada customer yang dipilih.',
+            ], 422);
         }
 
         try {
-            SudirmanTowerAddress::whereIn('id', $ids)->delete(); // bisa soft delete kalau model pakai SoftDeletes
-            return response()->json(['success' => true, 'message' => count($ids) . ' alamat berhasil dihapus.']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus.']);
+            $deleted = SudirmanPark::whereIn('id', $ids)->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => $deleted . ' customer berhasil dihapus.',
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Bulk delete customer Sudirman gagal', [
+                'ids'   => $ids,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus customer.',
+            ], 500);
         }
     }
+
 }
