@@ -44,7 +44,8 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassExcel') }}">Export
                                         Excel</a></li>
-                                <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">Export PDF</a>
+                                <li><a class="dropdown-item" href="{{ route('sudirmanpark.exportHomepassPdf') }}">Export
+                                        PDF</a>
                                 </li>
                             </ul>
                         </div>
@@ -57,8 +58,9 @@
                         </a>
 
                         {{-- Delete Selected --}}
-                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-btn-danger toolbar-item">
-                            <i class="fa fa-trash"></i>
+                        <button type="button" id="deleteSelected" class="btn btn-sm toolbar-btn toolbar-item"
+                            style="background-color: white; border: 1px solid #dc3545; color: #dc3545;">
+                            <i class="fa fa-trash me-1" style="color: #dc3545;"></i>
                             <span class="btn-label">Delete Selected</span>
                         </button>
                     </div>
@@ -120,10 +122,8 @@
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
                                             <button type="button" class="btn btn-warning btn-sm edit-homepass-btn"
-                                                data-id="{{ $address->id }}"
-                                                data-tower="{{ $address->tower }}"
-                                                data-floor="{{ $address->floor }}"
-                                                data-unit="{{ $address->unit }}"
+                                                data-id="{{ $address->id }}" data-tower="{{ $address->tower }}"
+                                                data-floor="{{ $address->floor }}" data-unit="{{ $address->unit }}"
                                                 data-status="{{ $address->is_active ? 'Active' : 'Inactive' }}"
                                                 data-update-url="{{ route('sudirmanpark.updateHomepass', $address->id) }}">
                                                 <i class="bi bi-pencil-square"></i>
@@ -194,49 +194,53 @@
         </div>
 
         <!-- Modal: Create / Edit Homepass -->
-<div class="modal fade" id="homepassModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
-                <h5 class="modal-title fw-bold" id="homepassModalLabel">+ Add Homepass</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal fade" id="homepassModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header sticky-top bg-white" style="z-index: 2; border-bottom: 1px solid #f1f5f9;">
+                        <h5 class="modal-title fw-bold" id="homepassModalLabel">+ Add Homepass</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="homepassForm" method="POST" action="{{ route('sudirmanpark.storeHomepass') }}">
+                        @csrf
+                        <input type="hidden" name="_method" id="hp_method" value="POST">
+                        <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding-top: 1rem;">
+                            <input type="hidden" name="id" id="hp_id">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tower</label>
+                                <input type="text" name="tower" id="hp_tower" class="form-control form-control-sm"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Floor</label>
+                                <input type="text" name="floor" id="hp_floor" class="form-control form-control-sm"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Unit</label>
+                                <input type="text" name="unit" id="hp_unit" class="form-control form-control-sm"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Status</label>
+                                <select name="status" id="hp_status" class="form-select form-select-sm">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="border-top: 1px solid #f1f5f9;">
+                            <button type="button" class="btn btn-secondary btn-sm"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-sm" id="hpSaveBtn">Create Homepass</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <form id="homepassForm" method="POST" action="{{ route('sudirmanpark.storeHomepass') }}">
-                @csrf
-                <input type="hidden" name="_method" id="hp_method" value="POST">
-                <div class="modal-body" style="max-height: 65vh; overflow-y: auto; padding-top: 1rem;">
-                    <input type="hidden" name="id" id="hp_id">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Tower</label>
-                        <input type="text" name="tower" id="hp_tower" class="form-control form-control-sm" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Floor</label>
-                        <input type="text" name="floor" id="hp_floor" class="form-control form-control-sm" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Unit</label>
-                        <input type="text" name="unit" id="hp_unit" class="form-control form-control-sm" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Status</label>
-                        <select name="status" id="hp_status" class="form-select form-select-sm">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid #f1f5f9;">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm" id="hpSaveBtn">Create Homepass</button>
-                </div>
-            </form>
         </div>
-    </div>
-</div>
 
 
         <!-- Toast -->
@@ -392,7 +396,8 @@
                                 showToast('Berhasil dihapus');
                                 // Pastikan kembali ke daftar untuk menghindari 404 setelah delete
                                 setTimeout(() => {
-                                    window.location.href = "{{ route('sudirmanpark.alamat') }}";
+                                    window.location.href =
+                                        "{{ route('sudirmanpark.alamat') }}";
                                 }, 300);
                             })
                             .catch(() => alert('Gagal menghapus'));
@@ -432,19 +437,13 @@
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', function() {
-                const checkAll = document.getElementById('checkAll');
-                const rowCheckboxes = document.querySelectorAll('.rowCheckbox');
 
-                // Select / deselect all
-                if (checkAll) {
-                    checkAll.addEventListener('change', () => {
-                        rowCheckboxes.forEach(cb => cb.checked = checkAll.checked);
-                    });
-                }
+            document.addEventListener('DOMContentLoaded', () => {
+                const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+                const rowCheckboxes = document.querySelectorAll('.row-checkbox');
 
-                // Tombol Bulk Delete
-                const bulkDeleteBtn = document.createElement('button');
+                if (!bulkDeleteBtn) return;
+
                 bulkDeleteBtn.addEventListener('click', () => {
                     const ids = Array.from(rowCheckboxes)
                         .filter(cb => cb.checked)
@@ -457,8 +456,8 @@
 
                     if (!confirm(`Yakin ingin menghapus ${ids.length} alamat terpilih?`)) return;
 
-                    fetch('{{ route('sudirmanpark.bulkDeleteHomepass') }}', {
-                            method: 'POST',
+                    fetch("{{ route('sudirmanpark.bulkDeleteHomepass') }}", {
+                            method: 'DELETE', // ⬅️ harus DELETE, sesuai route
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
@@ -470,15 +469,13 @@
                         })
                         .then(res => res.json())
                         .then(data => {
-                            alert(data.message);
-                            if (data.success) location.reload();
+                            alert(data.message || 'Proses selesai.');
+                            if (data.success) {
+                                location.reload();
+                            }
                         })
                         .catch(() => alert('Terjadi kesalahan.'));
                 });
-
-                // Tambahkan tombol ke card body (misal setelah tombol tambah homepass)
-                const cardBody = document.querySelector('.card-body.d-flex.flex-wrap');
-                if (cardBody) cardBody.appendChild(bulkDeleteBtn);
             });
         </script>
     @endpush

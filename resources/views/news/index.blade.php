@@ -372,39 +372,6 @@
                     checkboxes.forEach(cb => cb.checked = selectAll.checked);
                 });
 
-                const deleteBtn = document.getElementById('deleteSelectedNews');
-                deleteBtn.addEventListener('click', function() {
-                    const selectedIds = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    if (selectedIds.length === 0) {
-                        alert('No news selected.');
-                        return;
-                    }
-                    if (!confirm(
-                            `Are you sure you want to delete ${selectedIds.length} selected news? This cannot be undone.`
-                        )) return;
-
-                    fetch("{{ route('news.bulkDelete') }}", {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                ids: selectedIds
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(data.message);
-                                location.reload();
-                            } else {
-                                alert(data.message);
-                            }
-                        })
-                        .catch(() => alert('Error, please try again.'));
-                });
-
                 document.querySelectorAll('.delete-form').forEach(form => {
                     form.addEventListener('submit', e => {
                         e.preventDefault();
@@ -414,6 +381,48 @@
                     });
                 });
 
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const deleteBtn = document.getElementById('deleteSelected');
+
+                if (!deleteBtn) return;
+
+                deleteBtn.addEventListener('click', function() {
+                    const checkedBoxes = document.querySelectorAll('.select-news:checked');
+                    const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+                    console.log('Checked count:', checkedBoxes.length, 'Selected IDs:', selectedIds);
+
+                    if (selectedIds.length === 0) {
+                        alert('No news selected.');
+                        return;
+                    }
+
+                    if (!confirm(
+                            `Are you sure you want to delete ${selectedIds.length} selected news? This cannot be undone.`
+                        )) return;
+
+                    fetch("{{ route('news.bulkDelete') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                ids: selectedIds
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message || 'Proses selesai.');
+                            if (data.success) location.reload();
+                        })
+                        .catch(() => alert('Error, please try again.'));
+                });
             });
         </script>
     @endpush

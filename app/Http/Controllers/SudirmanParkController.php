@@ -538,18 +538,29 @@ class SudirmanParkController extends Controller
         return $pdf->download('homepass_export_' . now()->format('Ymd_His') . '.pdf');
     }
 
-    public function bulkDelete(Request $request)
+    public function bulkDeleteHomepass(Request $request)
     {
-        $ids = $request->ids;
-        if (!$ids || !is_array($ids)) {
-            return response()->json(['success' => false, 'message' => 'Tidak ada data yang dipilih.']);
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || count($ids) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada data yang dipilih.',
+            ], 422);
         }
 
         try {
-            Customer::whereIn('id', $ids)->delete(); // langsung hapus permanen
-            return response()->json(['success' => true, 'message' => count($ids) . ' customer berhasil dihapus.']);
+            SudirmanTowerAddress::whereIn('id', $ids)->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($ids) . ' alamat berhasil dihapus.',
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus.',
+            ], 500);
         }
     }
 
