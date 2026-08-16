@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Seed demo users such as admin and sales.
-     */
     public function run(): void
     {
         // Membuat User Admin
